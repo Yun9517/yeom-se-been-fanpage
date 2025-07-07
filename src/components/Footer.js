@@ -24,9 +24,7 @@ const Footer = () => {
               </svg>
             </a>
             <a href="https://www.threads.com/@beena._s2" target="_blank" rel="noopener noreferrer" className="text-white mx-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-link">
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07L9.5 9.5M5 11a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07L9.5 9.5"></path>
-              </svg>
+              <img src={`${process.env.PUBLIC_URL}/threads-white-icon.png`} alt="Threads" width="24" height="24" />
             </a>
           </Col>
         </Row>
