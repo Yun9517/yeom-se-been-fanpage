@@ -3,15 +3,15 @@ import { Container, Row, Col, Card } from 'react-bootstrap';
 
 const photos = [
   {
-    src: '/yeomsebin_field.jpg',
+    src: `${process.env.PUBLIC_URL}/yeomsebin_field.jpg`,
     title: '球場應援',
   },
   {
-    src: '/yeomsebin_cuteface.jpg',
+    src: `${process.env.PUBLIC_URL}/yeomsebin_cuteface.jpg`,
     title: '可愛鬼臉',
   },
   {
-    src: '/yeomsebin_student.jpg',
+    src: `${process.env.PUBLIC_URL}/yeomsebin_student.jpg`,
     title: '活動裝扮',
   },
 ];

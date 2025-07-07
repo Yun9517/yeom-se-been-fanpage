@@ -39,3 +39,15 @@ h2 {
   border-radius: 0.25rem; /* Rounded corners for video container */
   overflow: hidden; /* Ensures the iframe respects the border-radius */
 }
+
+/* Profile Image Styles */
+.profile-image {
+  border: 5px solid #007bff; /* Blue border */
+  box-shadow: 0 0 15px rgba(0, 123, 255, 0.5); /* Blue glow effect */
+  transition: all 0.3s ease-in-out;
+}
+
+.profile-image:hover {
+  transform: scale(1.05); /* Slightly enlarge on hover */
+  box-shadow: 0 0 25px rgba(0, 123, 255, 0.7); /* More intense glow on hover */
+}
