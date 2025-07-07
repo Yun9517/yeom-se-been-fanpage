@@ -1,0 +1,41 @@
+/* General Body Styles */
+body {
+  font-family: 'Noto Sans TC', sans-serif; /* A good font for Chinese characters */
+  background-color: #f8f9fa; /* A light grey background */
+  color: #343a40; /* Dark grey text for better readability */
+}
+
+/* App container to ensure footer sticks to the bottom */
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+}
+
+/* Headings Style */
+h2 {
+  color: #007bff; /* A nice blue for headings */
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+/* Card Styles for a softer look */
+.card {
+  border: none;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* A subtle shadow */
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-5px); /* A little lift on hover */
+}
+
+/* Iframe container for responsive videos */
+.ratio {
+  border-radius: 0.25rem; /* Rounded corners for video container */
+  overflow: hidden; /* Ensures the iframe respects the border-radius */
+}
