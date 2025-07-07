@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/yeom-se-bin-fanpage/static/css/main.1be7abf9.css",
-    "main.js": "/yeom-se-bin-fanpage/static/js/main.789eba98.js",
+    "main.css": "/yeom-se-bin-fanpage/static/css/main.8c73b12e.css",
+    "main.js": "/yeom-se-bin-fanpage/static/js/main.bd96f2f5.js",
     "static/js/453.4e8e7140.chunk.js": "/yeom-se-bin-fanpage/static/js/453.4e8e7140.chunk.js",
     "index.html": "/yeom-se-bin-fanpage/index.html",
-    "main.1be7abf9.css.map": "/yeom-se-bin-fanpage/static/css/main.1be7abf9.css.map",
-    "main.789eba98.js.map": "/yeom-se-bin-fanpage/static/js/main.789eba98.js.map",
+    "main.8c73b12e.css.map": "/yeom-se-bin-fanpage/static/css/main.8c73b12e.css.map",
+    "main.bd96f2f5.js.map": "/yeom-se-bin-fanpage/static/js/main.bd96f2f5.js.map",
     "453.4e8e7140.chunk.js.map": "/yeom-se-bin-fanpage/static/js/453.4e8e7140.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.1be7abf9.css",
-    "static/js/main.789eba98.js"
+    "static/css/main.8c73b12e.css",
+    "static/js/main.bd96f2f5.js"
   ]
 }
