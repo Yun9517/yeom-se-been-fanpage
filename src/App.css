@@ -79,4 +79,21 @@ h2 {
   height: auto;
   border-radius: 8px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  margin-bottom: 1.5rem; /* Add some space below images */
+}
+
+/* Adjust spacing for the last image in a column */
+.about-section .col-md-6 img:last-child {
+  margin-bottom: 0; /* No margin for the last image */
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 767.98px) {
+  .about-section .row > .col-md-6 {
+    margin-bottom: 2rem; /* Add space between columns on small screens */
+  }
+
+  .about-section .row > .col-md-6:last-child {
+    margin-bottom: 0; /* No margin for the last column */
+  }
 }

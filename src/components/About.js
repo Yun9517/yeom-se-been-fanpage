@@ -26,8 +26,8 @@ const About = () => {
         <Container>
           <Row className="align-items-center flex-md-row-reverse">
             <Col md={6} data-aos="fade-left">
-              <Image src={`${process.env.PUBLIC_URL}/yeomsebin_2023_kia_01.jpg`} fluid rounded className="mb-3" />
-              <Image src={`${process.env.PUBLIC_URL}/yeomsebin_2023_kia_02.jpg`} fluid rounded />
+              <Image src={`${process.env.PUBLIC_URL}/yeomsebeen_2023_kia_01.jpg`} fluid rounded className="mb-3" />
+              <Image src={`${process.env.PUBLIC_URL}/yeomsebeen_2023_kia_02.jpg`} fluid rounded />
             </Col>
             <Col md={6} data-aos="fade-right">
               <h2 className="text-white">2023-2024 起亞虎時期</h2>
@@ -44,9 +44,9 @@ const About = () => {
         <Container>
           <Row className="align-items-center">
             <Col md={6} data-aos="fade-right">
-              <Image src={`${process.env.PUBLIC_URL}/yeomsebin_2025_rakuten_01.jpg`} fluid rounded className="mb-3" />
-              <Image src={`${process.env.PUBLIC_URL}/yeomsebin_2025_rakuten_02.jpg`} fluid rounded className="mb-3" />
-              <Image src={`${process.env.PUBLIC_URL}/yeomsebin_2025_nc_01.jpg`} fluid rounded />
+              <Image src={`${process.env.PUBLIC_URL}/yeomsebeen_2025_rakuten_01.jpg`} fluid rounded className="mb-3" />
+              <Image src={`${process.env.PUBLIC_URL}/yeomsebeen_2025_rakuten_02.jpg`} fluid rounded className="mb-3" />
+              <Image src={`${process.env.PUBLIC_URL}/yeomsebeen_2025_nc_01.jpg`} fluid rounded />
             </Col>
             <Col md={6} data-aos="fade-left">
               <h2 className="text-white">2025現況</h2>
