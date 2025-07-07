@@ -40,7 +40,7 @@ h2 {
   overflow: hidden; /* Ensures the iframe respects the border-radius */
 }
 
-/* Profile Image Styles */
+/* Profile Image Styles (from previous About section) */
 .profile-image {
   border: 5px solid #007bff; /* Blue border */
   box-shadow: 0 0 15px rgba(0, 123, 255, 0.5); /* Blue glow effect */
@@ -50,4 +50,33 @@ h2 {
 .profile-image:hover {
   transform: scale(1.05); /* Slightly enlarge on hover */
   box-shadow: 0 0 25px rgba(0, 123, 255, 0.7); /* More intense glow on hover */
+}
+
+/* About Section Styles */
+.about-section {
+  padding: 60px 0;
+  color: white;
+}
+
+.about-section h2 {
+  color: white; /* Headings in these sections should be white */
+}
+
+.section-2022 {
+  background: linear-gradient(to right, #FF0000, #FFFFFF); /* Red and White */
+}
+
+.section-2023 {
+  background: linear-gradient(to right, #FF5151, #000000); /* Red and Black */
+}
+
+.section-2025 {
+  background: linear-gradient(to right, #004B97, #D9006C); /* Blue and Wine Red */
+}
+
+.about-section img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
