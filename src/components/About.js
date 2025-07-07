@@ -9,7 +9,6 @@ const About = () => {
         <Container>
           <Row className="align-items-center">
             <Col md={6} data-aos="fade-right">
-              <Image src={`${process.env.PUBLIC_URL}/yeomsebeen_2022_volleyball_01.png`} fluid rounded className="mb-3" />
               <Image src={`${process.env.PUBLIC_URL}/yeomsebeen_2022_volleyball_02.jpg`} fluid rounded />
             </Col>
             <Col md={6} data-aos="fade-left">
