@@ -20,6 +20,12 @@ function App() {
       duration: 1000, // animation duration
       once: true, // whether animation should happen only once - while scrolling down
     });
+
+    // Remove loading indicator after app is mounted
+    const loadingIndicator = document.getElementById('loading-indicator');
+    if (loadingIndicator) {
+      loadingIndicator.style.display = 'none';
+    }
   }, []);
 
   return (
