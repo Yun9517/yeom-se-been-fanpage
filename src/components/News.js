@@ -9,7 +9,7 @@ const News = () => {
           <Col>
             <h1 className="text-white">最新消息</h1>
           
-          <div className="my-4">
+          <div className="my-4" style={{ overflow: 'hidden' }}>
             <h2 className="text-white">Threads 動態</h2>
             <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
               {/* Elfsight Social Feed */}
@@ -21,7 +21,7 @@ const News = () => {
             </div>
           </div>
 
-          <div className="my-4">
+          <div className="my-4" style={{ overflow: 'hidden' }}>
             <h2 className="text-white">Instagram 動態</h2>
             {/* Elfsight Instagram Feed */}
             <div dangerouslySetInnerHTML={{
