@@ -98,10 +98,12 @@ h2 {
   }
 }
 
-/* Force Elfsight Threads Widget to align left */
-.elfsight-app-84806fe0-be21-43f6-b389-27805bb9f9b0 {
-  text-align: left !important;
-  margin-left: 0 !important;
-  margin-right: auto !important; /* Ensure it doesn't center itself */
+/* Elfsight Widgets Size and Alignment */
+.elfsight-app-84806fe0-be21-43f6-b389-27805bb9f9b0, /* Threads Widget */
+.elfsight-app-f67c5a06-db6b-42cc-b17e-87e56c3dea9f { /* Instagram Widget */
+  max-width: 200px !important; /* Adjust this value as needed */
+  width: 100% !important;
+  margin-left: 0 !important; /* Ensure left alignment */
+  margin-right: auto !important; /* Ensure left alignment */
   display: block !important; /* Ensure it behaves as a block element */
 }
