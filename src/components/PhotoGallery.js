@@ -28,8 +28,9 @@ const PhotoGallery = () => {
   }));
 
   return (
-    <Container id="gallery" className="my-5">
-      <h2 className="text-center mb-4 text-white">照片牆</h2>
+    <section className="section-gallery py-5">
+      <Container id="gallery" className="my-5">
+        <h2 className="text-center mb-4 text-white">照片牆</h2>
       <Row>
         {photos.map((photo, idx) => (
           <Col md={4} key={idx} className="mb-4">
@@ -50,6 +51,7 @@ const PhotoGallery = () => {
         index={index}
       />
     </Container>
+    </section>
   );
 };
 

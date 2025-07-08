@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Container, Row, Col, Image } from 'react-bootstrap';
 
 const Profile = () => {
   return (
@@ -8,6 +8,11 @@ const Profile = () => {
         <Row>
           <Col>
             <h1 className="text-white">個人檔案</h1>
+            <Row className="justify-content-center mb-4">
+              <Col md={4}>
+                <Image src={`${process.env.PUBLIC_URL}/yeomsebeen_about.jpg`} fluid rounded className="d-block mx-auto" />
+              </Col>
+            </Row>
           <h4 className="text-white-80 mb-3">基本資料</h4>
           <p className="text-white"><strong>姓名:</strong> 廉世彬 (염세빈, Yeom Se-Been)</p>
           <p className="text-white"><strong>出生:</strong> 2002年4月23日, 韓國首爾</p>

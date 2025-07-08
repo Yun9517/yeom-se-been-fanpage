@@ -108,3 +108,14 @@ h2 {
   margin-right: auto !important; /* Ensure left alignment */
   display: block !important; /* Ensure it behaves as a block element */
 }
+
+/* Photo Gallery Section Style */
+.section-gallery {
+  background-color: #343a40; /* Dark background for contrast */
+  padding: 60px 0;
+  color: white;
+}
+
+.section-gallery h2 {
+  color: white; /* Ensure heading is white */
+}
