@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/yeom-se-bin-fanpage/static/css/main.0df1fa1f.css",
-    "main.js": "/yeom-se-bin-fanpage/static/js/main.e5ecb28c.js",
-    "static/js/453.4e8e7140.chunk.js": "/yeom-se-bin-fanpage/static/js/453.4e8e7140.chunk.js",
-    "index.html": "/yeom-se-bin-fanpage/index.html",
-    "main.0df1fa1f.css.map": "/yeom-se-bin-fanpage/static/css/main.0df1fa1f.css.map",
-    "main.e5ecb28c.js.map": "/yeom-se-bin-fanpage/static/js/main.e5ecb28c.js.map",
-    "453.4e8e7140.chunk.js.map": "/yeom-se-bin-fanpage/static/js/453.4e8e7140.chunk.js.map"
+    "main.css": "/yeom-se-been-fanpage/static/css/main.0df1fa1f.css",
+    "main.js": "/yeom-se-been-fanpage/static/js/main.1cfeb472.js",
+    "static/js/453.f3250033.chunk.js": "/yeom-se-been-fanpage/static/js/453.f3250033.chunk.js",
+    "index.html": "/yeom-se-been-fanpage/index.html",
+    "main.0df1fa1f.css.map": "/yeom-se-been-fanpage/static/css/main.0df1fa1f.css.map",
+    "main.1cfeb472.js.map": "/yeom-se-been-fanpage/static/js/main.1cfeb472.js.map",
+    "453.f3250033.chunk.js.map": "/yeom-se-been-fanpage/static/js/453.f3250033.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.0df1fa1f.css",
-    "static/js/main.e5ecb28c.js"
+    "static/js/main.1cfeb472.js"
   ]
 }
