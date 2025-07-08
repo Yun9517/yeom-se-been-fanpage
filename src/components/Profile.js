@@ -3,10 +3,11 @@ import { Container, Row, Col } from 'react-bootstrap';
 
 const Profile = () => {
   return (
-    <Container className="my-5">
-      <Row>
-        <Col>
-          <h1 className="text-white">個人檔案</h1>
+    <section className="about-section section-2025 py-5">
+      <Container>
+        <Row>
+          <Col>
+            <h1 className="text-white">個人檔案</h1>
           <h4 className="text-white-80 mb-3">基本資料</h4>
           <p className="text-white"><strong>姓名:</strong> 廉世彬 (염세빈, Yeom Se-Been)</p>
           <p className="text-white"><strong>出生:</strong> 2002年4月23日, 韓國首爾</p>
@@ -33,6 +34,7 @@ const Profile = () => {
         </Col>
       </Row>
     </Container>
+    </section>
   );
 };
 

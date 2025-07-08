@@ -3,10 +3,11 @@ import { Container, Row, Col } from 'react-bootstrap';
 
 const News = () => {
   return (
-    <Container className="my-5">
-      <Row>
-        <Col>
-          <h1 className="text-white">最新消息</h1>
+    <section className="about-section section-2022 py-5">
+      <Container>
+        <Row>
+          <Col>
+            <h1 className="text-white">最新消息</h1>
           
           <div className="my-4">
             <h2 className="text-white">Threads 動態</h2>
@@ -31,6 +32,7 @@ const News = () => {
         </Col>
       </Row>
     </Container>
+    </section>
   );
 };
 
