@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/yeom-se-bin-fanpage/static/css/main.1d72f2d8.css",
-    "main.js": "/yeom-se-bin-fanpage/static/js/main.8208417b.js",
+    "main.js": "/yeom-se-bin-fanpage/static/js/main.b949df6a.js",
     "static/js/453.4e8e7140.chunk.js": "/yeom-se-bin-fanpage/static/js/453.4e8e7140.chunk.js",
     "index.html": "/yeom-se-bin-fanpage/index.html",
     "main.1d72f2d8.css.map": "/yeom-se-bin-fanpage/static/css/main.1d72f2d8.css.map",
-    "main.8208417b.js.map": "/yeom-se-bin-fanpage/static/js/main.8208417b.js.map",
+    "main.b949df6a.js.map": "/yeom-se-bin-fanpage/static/js/main.b949df6a.js.map",
     "453.4e8e7140.chunk.js.map": "/yeom-se-bin-fanpage/static/js/453.4e8e7140.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.1d72f2d8.css",
-    "static/js/main.8208417b.js"
+    "static/js/main.b949df6a.js"
   ]
 }
