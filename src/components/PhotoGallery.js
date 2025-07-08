@@ -5,15 +5,15 @@ import "yet-another-react-lightbox/styles.css";
 
 const photos = [
   {
-    src: `${process.env.PUBLIC_URL}/yeomsebin_field.jpg`,
+    src: `${process.env.PUBLIC_URL}/yeomsebeen_field.jpg`,
     title: '球場應援',
   },
   {
-    src: `${process.env.PUBLIC_URL}/yeomsebin_cuteface.jpg`,
+    src: `${process.env.PUBLIC_URL}/yeomsebeen_cuteface.jpg`,
     title: '可愛鬼臉',
   },
   {
-    src: `${process.env.PUBLIC_URL}/yeomsebin_student.jpg`,
+    src: `${process.env.PUBLIC_URL}/yeomsebeen_student.jpg`,
     title: '活動裝扮',
   },
 ];

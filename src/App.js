@@ -29,7 +29,7 @@ function App() {
   }, []);
 
   return (
-    <Router basename="/yeom-se-bin-fanpage">
+    <Router basename="/yeom-se-been-fanpage">
       <div className="App d-flex flex-column min-vh-100">
         <Header />
         <main className="flex-grow-1">
