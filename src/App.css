@@ -97,3 +97,11 @@ h2 {
     margin-bottom: 0; /* No margin for the last column */
   }
 }
+
+/* Force Elfsight Threads Widget to align left */
+.elfsight-app-84806fe0-be21-43f6-b389-27805bb9f9b0 {
+  text-align: left !important;
+  margin-left: 0 !important;
+  margin-right: auto !important; /* Ensure it doesn't center itself */
+  display: block !important; /* Ensure it behaves as a block element */
+}
