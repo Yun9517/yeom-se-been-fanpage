@@ -3,6 +3,7 @@ body {
   font-family: 'Noto Sans TC', sans-serif; /* A good font for Chinese characters */
   background-color: #f8f9fa; /* A light grey background */
   color: #343a40; /* Dark grey text for better readability */
+  overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
 /* App container to ensure footer sticks to the bottom */
