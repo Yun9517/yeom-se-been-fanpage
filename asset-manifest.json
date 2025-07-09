@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/yeom-se-been-fanpage/static/css/main.0df1fa1f.css",
-    "main.js": "/yeom-se-been-fanpage/static/js/main.f700d5aa.js",
+    "main.js": "/yeom-se-been-fanpage/static/js/main.c8095de9.js",
     "static/js/453.f3250033.chunk.js": "/yeom-se-been-fanpage/static/js/453.f3250033.chunk.js",
     "index.html": "/yeom-se-been-fanpage/index.html",
     "main.0df1fa1f.css.map": "/yeom-se-been-fanpage/static/css/main.0df1fa1f.css.map",
-    "main.f700d5aa.js.map": "/yeom-se-been-fanpage/static/js/main.f700d5aa.js.map",
+    "main.c8095de9.js.map": "/yeom-se-been-fanpage/static/js/main.c8095de9.js.map",
     "453.f3250033.chunk.js.map": "/yeom-se-been-fanpage/static/js/453.f3250033.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.0df1fa1f.css",
-    "static/js/main.f700d5aa.js"
+    "static/js/main.c8095de9.js"
   ]
 }
