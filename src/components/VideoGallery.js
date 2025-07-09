@@ -27,7 +27,7 @@ const VideoGallery = () => {
         <Col md={6} className="mb-4">
           <div className="ratio ratio-16x9">
             <iframe 
-              src="https://www.youtube.com/embed/YlSq4EGFrl0" 
+              src="https://www.youtube.com/embed/uzDZwqO4lI8" 
               title="最新影片"
               allowFullScreen
             ></iframe>
