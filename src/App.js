@@ -3,7 +3,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import ReactGA from 'react-ga4';
 
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -13,6 +14,17 @@ import PhotoGallery from './components/PhotoGallery';
 import VideoGallery from './components/VideoGallery';
 import Profile from './components/Profile';
 import News from './components/News';
+
+// Component to track page views
+const PageTracker = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    ReactGA.send({ hitType: "pageview", page: location.pathname + location.search });
+  }, [location]);
+
+  return null;
+};
 
 function App() {
   useEffect(() => {
@@ -30,6 +42,7 @@ function App() {
 
   return (
     <Router basename="/yeom-se-been-fanpage">
+      <PageTracker />
       <div className="App d-flex flex-column min-vh-100">
         <Header />
         <main className="flex-grow-1">
