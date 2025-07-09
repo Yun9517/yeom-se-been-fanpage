@@ -78,6 +78,8 @@ h2 {
 
 .about-section img {
   max-width: 100%;
+  max-height: 400px; /* Add max-height to control size on large screens */
+  object-fit: cover; /* Ensures the image covers the area without distortion */
   height: auto;
   border-radius: 8px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);

@@ -1,45 +1,88 @@
+
+
 import React from 'react';
 import { Container, Row, Col, Image } from 'react-bootstrap';
+import './Profile.css';
 
 const Profile = () => {
+  const cheerleadingExperience = [
+    {
+      year: '2022',
+      teams: 'KEPCO Vixtorm Volleyball Team, Hana Bank Women\'s Basketball Team',
+      image: 'yeomsebeen_2022_volleyball_02.jpg',
+      fade: 'fade-right'
+    },
+    {
+      year: '2023',
+      teams: '起亞虎, 高陽索諾天空槍手',
+      image: 'yeomsebeen_2023_kia_02.jpg',
+      fade: 'fade-left'
+    },
+    {
+      year: '2024',
+      teams: '起亞虎, 安養正官庄赤紅火箭',
+      image: 'yeomsebeen_2023_kia_03.jpg',
+      fade: 'fade-right'
+    },
+    {
+      year: '2025',
+      teams: '樂天桃猿, NC恐龍',
+      image: 'yeomsebeen_2025_nc_01.jpg',
+      fade: 'fade-left'
+    }
+  ];
+
   return (
-    <section className="about-section section-2025 py-5">
-      <Container>
-        <Row>
-          <Col>
-            <h1 className="text-white">個人檔案</h1>
-            <Row className="justify-content-center mb-4">
-              <Col md={4}>
-                <Image src={`${process.env.PUBLIC_URL}/yeomsebeen_about.jpg`} fluid rounded className="d-block mx-auto" />
-              </Col>
-            </Row>
-          <h4 className="text-white-80 mb-3">基本資料</h4>
-          <p className="text-white"><strong>姓名:</strong> 廉世彬 (염세빈, Yeom Se-Been)</p>
-          <p className="text-white"><strong>出生:</strong> 2002年4月23日, 韓國首爾</p>
-          <p className="text-white"><strong>學歷:</strong> 白石藝術大學 實用音樂系</p>
-          <p className="text-white"><strong>出道日期:</strong> 2022年</p>
-          
-          <hr className="my-4" />
+    <div className="profile-background">
+      <Container className="my-5">
+        <Row className="justify-content-center">
+          <Col md={10} lg={8}>
+            <div className="profile-card">
+              {/* --- 基本資料 --- */}
+              <div className="text-center mb-4">
+                <Image src={`${process.env.PUBLIC_URL}/yeomsebeen_about.jpg`} roundedCircle width={150} height={150} className="profile-main-image" />
+                <h1 className="text-white mt-3">廉世彬 (염세빈)</h1>
+                <p className="text-white-50">Yeom Se-Been</p>
+              </div>
 
-          <h4 className="text-white-80 mb-3">啦啦隊經歷</h4>
-          <ul className="list-unstyled text-white">
-            <li className="mb-2"><strong>2022:</strong> KEPCO Vixtorm Volleyball Team, Hana Bank Women's Basketball Team</li>
-            <li className="mb-2"><strong>2023:</strong> 起亞虎, 高陽索諾天空槍手</li>
-            <li className="mb-2"><strong>2024:</strong> 起亞虎, 安養正官庄赤紅火箭</li>
-            <li className="mb-2"><strong>2025:</strong> 樂天桃猿, NC恐龍</li>
-          </ul>
+              <div className="profile-section">
+                <h3 className="section-title">基本資料</h3>
+                <p><strong>出生:</strong> 2002年4月23日, 韓國首爾</p>
+                <p><strong>學歷:</strong> 白石藝術大學 實用音樂系</p>
+                <p><strong>出道日期:</strong> 2022年</p>
+              </div>
 
-          <hr className="my-4" />
+              {/* --- 啦啦隊經歷 Timeline --- */}
+              <div className="profile-section">
+                <h3 className="section-title">啦啦隊經歷</h3>
+                <div id="profile-timeline" className="mt-4">
+                  <div className="timeline">
+                    {cheerleadingExperience.map((item, index) => (
+                      <div key={index} className={`timeline-item ${index % 2 === 0 ? 'left' : 'right'}`} data-aos={item.fade}>
+                        <div className="timeline-content">
+                          <span className="timeline-year">{item.year}</span>
+                          <p className="timeline-teams">{item.teams}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
 
-          <h4 className="text-white-80 mb-3">音樂作品</h4>
-          <ul className="list-unstyled text-white">
-            <li className="mb-2"><strong>2024:</strong> Snooze - 새벽감성</li>
-            <li className="mb-2"><strong>2025:</strong> Snooze - Cherry Blooming</li>
-          </ul>
-        </Col>
-      </Row>
-    </Container>
-    </section>
+              {/* --- 音樂作品 --- */}
+              <div className="profile-section">
+                <h3 className="section-title">音樂作品</h3>
+                <ul className="list-unstyled music-list">
+                  <li><strong>2024:</strong> Snooze - 새벽감성</li>
+                  <li><strong>2025:</strong> Snooze - Cherry Blooming</li>
+                </ul>
+              </div>
+
+            </div>
+          </Col>
+        </Row>
+      </Container>
+    </div>
   );
 };
 
