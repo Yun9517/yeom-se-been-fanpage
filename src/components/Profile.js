@@ -5,7 +5,7 @@ import { Container, Row, Col, Image } from 'react-bootstrap';
 import './Profile.css';
 
 const Profile = () => {
-  const cheerleadingExperience = [
+    const cheerleadingExperience = [
     {
       year: '2022',
       teams: 'KEPCO Vixtorm Volleyball Team, Hana Bank Women\'s Basketball Team',
@@ -73,8 +73,8 @@ const Profile = () => {
               <div className="profile-section">
                 <h3 className="section-title">音樂作品</h3>
                 <ul className="list-unstyled music-list">
-                  <li><strong>2024:</strong> Snooze - 새벽감성</li>
-                  <li><strong>2025:</strong> Snooze - Cherry Blooming</li>
+                  <li><strong>2024:</strong> <a href="https://www.youtube.com/watch?v=7xrOohoT6jg" target="_blank" rel="noopener noreferrer">Snooze - 새벽감성</a></li>
+                  <li><strong>2025:</strong> <a href="https://www.youtube.com/watch?v=0ViTu7kRdlM" target="_blank" rel="noopener noreferrer">Snooze - Cherry Blooming</a></li>
                 </ul>
               </div>
 
