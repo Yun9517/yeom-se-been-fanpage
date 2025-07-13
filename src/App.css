@@ -1,6 +1,7 @@
 /* General Body Styles */
 body {
   font-family: 'Noto Sans TC', sans-serif; /* A good font for Chinese characters */
+  font-display: swap; /* Ensure text is visible during font load */
   background: linear-gradient(to right, #D9006C, #000000); /* Set linear gradient background */
   color: #343a40; /* Dark grey text for better readability */
   overflow-x: hidden; /* Prevent horizontal scrolling */

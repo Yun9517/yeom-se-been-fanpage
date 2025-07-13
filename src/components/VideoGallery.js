@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 
-const videosData = [
-  { id: 'gMb8xHtg-VA', title: '固定影片 1' },
-  { id: '0ViTu7kRdlM', title: '固定影片 2' },
-  { id: 'uzDZwqO4lI8', title: '最新影片' },
-  { id: '7xrOohoT6jg', title: '最熱門影片' },
-];
+import { videosData } from '../data/contentData';
 
 const VideoPlayer = ({ videoId, title }) => {
   const [loaded, setLoaded] = useState(false);
