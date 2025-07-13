@@ -17,4 +17,15 @@ root.render(
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals((metric) => {
+  ReactGA.event({
+    category: 'Web Vitals',
+    action: metric.name,
+    value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value),
+    label: metric.id,
+    nonInteraction: true,
+  });
+});
