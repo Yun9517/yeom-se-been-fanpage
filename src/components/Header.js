@@ -15,6 +15,7 @@ const Header = () => {
             <Nav.Link as={NavLink} to="/videos">影音區</Nav.Link>
             <Nav.Link as={NavLink} to="/profile">個人檔案</Nav.Link>
             <Nav.Link as={NavLink} to="/news">最新消息</Nav.Link>
+            <Nav.Link as={NavLink} to="/quiz">粉絲小遊戲</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>

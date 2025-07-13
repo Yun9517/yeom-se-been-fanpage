@@ -14,6 +14,7 @@ import PhotoGallery from './components/PhotoGallery';
 import VideoGallery from './components/VideoGallery';
 import Profile from './components/Profile';
 import News from './components/News';
+import FanQuiz from './components/FanQuiz';
 
 // Component to track page views
 const PageTracker = () => {
@@ -53,6 +54,7 @@ function App() {
             <Route path="/videos" element={<VideoGallery />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/news" element={<News />} />
+            <Route path="/quiz" element={<FanQuiz />} />
           </Routes>
         </main>
         <Footer />
