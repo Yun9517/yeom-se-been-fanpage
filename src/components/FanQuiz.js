@@ -3,7 +3,7 @@ import { FiRefreshCcw, FiLink } from 'react-icons/fi';
 import { FaLine } from 'react-icons/fa';
 import './FanQuiz.css';
 
-const questions = [
+const masterQuestions = [
   {
     question: '廉世彬是哪一年出道的？',
     options: ['2020', '2021', '2022', '2023'],
@@ -29,12 +29,43 @@ const questions = [
     options: ['2025年6月16日(GMT+8)', '2025年6月18日(GMT+8)', '2025年5月16日(GMT+8)', '2025年5月18日(GMT+8)'],
     answer: '2025年6月16日(GMT+8)',
   },
+  {
+    question: '廉世彬就讀白石藝術大學時，主修甚麼科系呢?',
+    options: ['實用舞蹈系', '實用表演系', '實用音樂系', '實用話劇系'],
+    answer: '實用音樂系',
+  },
+  {
+    question: '廉世彬與河智媛、禹洙漢在台灣職棒明星賽期間，開的快閃店餐廳，店名是甚麼?',
+    options: ['好厝邊〝Hasubeen〞', '夢想食堂', '樂天三本柱美食餐廳', 'A Joy 響'],
+    answer: '好厝邊〝Hasubeen〞',
+  },
+  {
+    question: '廉世彬自出道以來受到眾多粉絲喜歡，有許多外號，以下哪個不是?',
+    options: ['啦啦隊女王', '拯救世界的廉世彬', '怪物新人', '阿彬'],
+    answer: '怪物新人',
+  },
+  {
+    question: '廉世彬首張單曲새벽감성，是在哪一年發布的?',
+    options: ['2021', '2022', '2023', '2024'],
+    answer: '2024',
+  },
+  {
+    question: '廉世彬的生日是哪一天',
+    options: ['2月9日', '4月23日', '4月25日', '9月8日'],
+    answer: '4月23日',
+  },
 ];
+
+const getRandomQuestions = (allQuestions, num = 5) => {
+  const shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, num);
+};
 
 function FanQuiz() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [showScore, setShowScore] = useState(false);
+  const [questions, setQuestions] = useState(() => getRandomQuestions(masterQuestions));
 
   const handleAnswerOptionClick = (selectedOption) => {
     if (selectedOption === questions[currentQuestion].answer) {
@@ -53,6 +84,7 @@ function FanQuiz() {
     setCurrentQuestion(0);
     setScore(0);
     setShowScore(false);
+    setQuestions(getRandomQuestions(masterQuestions)); // Get new random questions on reset
   };
 
   const generateShareContent = () => {

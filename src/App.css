@@ -1,7 +1,7 @@
 /* General Body Styles */
 body {
   font-family: 'Noto Sans TC', sans-serif; /* A good font for Chinese characters */
-  background-color: #f8f9fa; /* A light grey background */
+  background: linear-gradient(to right, #D9006C, #000000); /* Set linear gradient background */
   color: #343a40; /* Dark grey text for better readability */
   overflow-x: hidden; /* Prevent horizontal scrolling */
 }
@@ -20,7 +20,7 @@ main {
 
 /* Headings Style */
 h2 {
-  color: #007bff; /* A nice blue for headings */
+  color: white; /* A nice blue for headings */
   margin-bottom: 1.5rem;
   font-weight: 600;
 }
@@ -65,7 +65,7 @@ h2 {
 }
 
 .section-2022 {
-  background: linear-gradient(to right, #02C874, #46A3FF); /* Tiffany Green and Light Blue */
+  background: linear-gradient(to right, #D9006C, #000000); /* Wine Red and Black */
 }
 
 .section-2023 {
@@ -103,13 +103,13 @@ h2 {
 }
 
 /* Elfsight Widgets Size and Alignment */
-.elfsight-app-84806fe0-be21-43f6-b389-27805bb9f9b0, /* Threads Widget */
+.elfsight-app-84806fe0-be21-43f6-b389-27805bb9f9b0 { /* Threads Widget */
+  width: 200px; /* Set a fixed width to prevent resizing loops */
+}
+
 .elfsight-app-f67c5a06-db6b-42cc-b17e-87e56c3dea9f { /* Instagram Widget */
-  max-width: 200px !important; /* Adjust this value as needed */
-  width: 100% !important;
-  margin-left: 0 !important; /* Ensure left alignment */
-  margin-right: auto !important; /* Ensure left alignment */
-  display: block !important; /* Ensure it behaves as a block element */
+  width: 150px !important;
+  max-width: 150px !important;
 }
 
 /* Photo Gallery Section Style */
