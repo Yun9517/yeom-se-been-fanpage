@@ -106,7 +106,7 @@
   background-color: #00b900;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 400px) {
   .fan-quiz-container {
     padding: 20px 10px; /* Add horizontal padding for smaller screens */
   }
