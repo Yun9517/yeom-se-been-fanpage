@@ -7,7 +7,7 @@
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   max-width: 600px;
-  margin: 20px 10px;
+  margin: 20px auto;
 }
 
 .fan-quiz-container h2 {
@@ -104,4 +104,10 @@
 
 .share-line-button {
   background-color: #00b900;
+}
+
+@media (max-width: 768px) {
+  .fan-quiz-container {
+    padding: 20px 10px; /* Add horizontal padding for smaller screens */
+  }
 }
