@@ -56,7 +56,7 @@ function FanQuiz() {
   };
 
   const quizUrl = window.location.origin + '/quiz';
-    const imageUrl = window.location.origin + '/yeomsebeen_field.jpg';
+      const imageUrl = `${process.env.PUBLIC_URL}/yeomsebeen_field.jpg`;
 
   return (
     <div className="fan-quiz-container">
