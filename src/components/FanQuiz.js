@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { FiRefreshCcw, FiLink } from 'react-icons/fi';
 import { FaLine } from 'react-icons/fa';
 import './FanQuiz.css';
@@ -54,8 +55,20 @@ function FanQuiz() {
     window.open(lineShareUrl, '_blank');
   };
 
+  const quizUrl = window.location.origin + '/quiz';
+    const imageUrl = window.location.origin + '/yeomsebeen_field.jpg';
+
   return (
     <div className="fan-quiz-container">
+      <Helmet>
+        <title>염세빈 粉絲小遊戲！</title>
+        <meta property="og:title" content="염세빈 粉絲小遊戲！" />
+        <meta property="og:description" content="快來挑戰看看你對廉世彬的了解程度！" />
+        <meta property="og:image" content={imageUrl} />
+        <meta property="og:url" content={quizUrl} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content={imageUrl} />
+      </Helmet>
       <h2>염세빈 粉絲小遊戲！</h2>
       {showScore ? (
         <div className="score-section">
