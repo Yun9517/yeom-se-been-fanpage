@@ -51,7 +51,8 @@ function FanQuiz() {
 
   const handleShareLine = () => {
     const { shareText, shareUrl } = generateShareContent();
-    const lineShareUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
+    const lineMessage = `${shareText} ${shareUrl}`;
+    const lineShareUrl = `https://line.me/R/msg/text/?${encodeURIComponent(lineMessage)}`;
     window.open(lineShareUrl, '_blank');
   };
 
