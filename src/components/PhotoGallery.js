@@ -17,6 +17,10 @@ const photos = [
     src: `${process.env.PUBLIC_URL}/yeomsebeen_student.jpg`,
     title: '活動裝扮',
   },
+  {
+    src: `${process.env.PUBLIC_URL}/yeomsebeen_about.jpg`,
+    title: '專輯封面',
+  },
 ];
 
 const PhotoGallery = () => {

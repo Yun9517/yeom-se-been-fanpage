@@ -1,3 +1,37 @@
+export const newsData = [
+  {
+    id: 1,
+    date: '2025-07-16',
+    title: '廉世彬粉絲專頁正式上線！',
+    content: '為了讓更多人認識廉世彬，粉絲專頁今天正式啟動，提供最新的照片、影片與動態。'
+  },
+  {
+    id: 2,
+    date: '2025-07-17',
+    title: '個人介紹頁更新',
+    content: '快來了解廉世彬的經歷與音樂作品!'
+  },
+  {
+    id: 3,
+    date: '2025-07-18',
+    title: '粉絲小遊戲上線！',
+    content: '快來測試你對廉世彬的了解有多深！最新的粉絲小遊戲已經可以在網站上玩到。'
+  }
+  ,
+  {
+    id: 4,
+    date: '2025-07-19',
+    title: '照片牆新增最新照片',
+    content: '我們的照片牆已經更新，加入了廉世彬最新的活動照片，快來看看！'
+  },
+  {
+    id: 5,
+    date: '2025-07-20',
+    title: 'Instagram 動態嵌入',
+    content: '現在可以在網站上直接查看廉世彬的Instagram動態，隨時掌握她的最新動態！'
+  },
+];
+
 export const videosData = [
   { id: 'gMb8xHtg-VA', title: '固定影片 1' },
   { id: '0ViTu7kRdlM', title: '固定影片 2' },
