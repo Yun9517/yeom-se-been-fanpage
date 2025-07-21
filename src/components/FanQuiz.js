@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { FiRefreshCcw, FiLink } from 'react-icons/fi';
@@ -24,6 +23,7 @@ function FanQuiz() {
   const [showScore, setShowScore] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [userAnswers, setUserAnswers] = useState([]); // New state for user answers
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -43,9 +43,23 @@ function FanQuiz() {
   }, []);
 
   const handleAnswerOptionClick = (selectedOption) => {
-    if (selectedOption === questions[currentQuestion].answer) {
+    const currentQ = questions[currentQuestion];
+    const isCorrect = selectedOption === currentQ.answer;
+
+    if (isCorrect) {
       setScore(score + 1);
     }
+
+    // Record the user's answer
+    setUserAnswers(prevAnswers => [
+      ...prevAnswers,
+      {
+        question: currentQ.question,
+        correctAnswer: currentQ.answer,
+        userAnswer: selectedOption,
+        isCorrect: isCorrect,
+      },
+    ]);
 
     const nextQuestion = currentQuestion + 1;
     if (nextQuestion < questions.length) {
@@ -60,6 +74,7 @@ function FanQuiz() {
     setScore(0);
     setShowScore(false);
     setQuestions(getRandomQuestions(masterQuestions));
+    setUserAnswers([]); // Clear user answers on reset
   }, [masterQuestions]);
 
   const generateShareContent = () => {
@@ -118,6 +133,20 @@ function FanQuiz() {
               <button onClick={handleShareLink} className="quiz-button share-link-button"><FiLink /></button>
               <button onClick={resetQuiz} className="quiz-button play-again-button"><FiRefreshCcw /></button>
               <button onClick={handleShareLine} className="quiz-button share-line-button"><FaLine /></button>
+            </div>
+
+            {/* New section to display answers */}
+            <div className="quiz-answers-summary mt-4">
+              <h3>作答結果</h3>
+              {userAnswers.map((item, index) => (
+                <div key={index} className="answer-item mb-3 p-3 border rounded">
+                  <p><strong>問題 {index + 1}:</strong> {item.question}</p>
+                  <p><strong>你的答案:</strong> <span style={{ color: item.isCorrect ? '#28a745' : '#dc3545' }}>{item.userAnswer}</span></p>
+                  {!item.isCorrect && (
+                    <p><strong>正確答案:</strong> <span style={{ color: '#28a745' }}>{item.correctAnswer}</span></p>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         ) : (

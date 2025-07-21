@@ -106,8 +106,42 @@
   background-color: #00b900;
 }
 
+/* Styles for the new answers summary section */
+.quiz-answers-summary {
+  width: 100%;
+  background-color: #f8f9fa; /* Light background for contrast */
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.quiz-answers-summary h3 {
+  color: #333;
+  font-size: 1.1em; /* Even smaller heading */
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.quiz-answers-summary .answer-item {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.quiz-answers-summary .answer-item p {
+  font-size: 0.8em; /* Even smaller font size for paragraphs */
+  margin-bottom: 5px; /* Reduce space between lines */
+  color: #555;
+}
+
+.quiz-answers-summary .answer-item p strong {
+  color: #333;
+}
+
 @media (max-width: 400px) {
   .fan-quiz-container {
-    padding: 20px 10px; /* Add horizontal padding for smaller screens */
+    padding: 20px 15px; /* Increased horizontal padding for smaller screens */
   }
 }
