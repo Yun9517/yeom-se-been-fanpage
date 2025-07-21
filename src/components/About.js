@@ -1,5 +1,6 @@
 import React from 'react';
-import { Container, Row, Col, Image } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
+import ImageWithFallback from './ImageWithFallback'; // Import our custom component
 
 const About = () => {
   return (
@@ -9,7 +10,7 @@ const About = () => {
         <Container>
           <Row className="align-items-center">
             <Col md={6} data-aos="fade-right">
-              <Image src={`https://storage.googleapis.com/yeom-se-been-fanpage-assets/yeomsebeen_2022_volleyball_02.jpg`} fluid rounded />
+              <ImageWithFallback filename="yeomsebeen_2022_volleyball_02.jpg" fluid rounded />
             </Col>
             <Col md={6} data-aos="fade-left">
               <h2 className="text-white">2022 新人時期</h2>
@@ -26,8 +27,8 @@ const About = () => {
         <Container>
           <Row className="align-items-center flex-md-row-reverse">
             <Col md={6} data-aos="fade-left">
-              <Image src={`https://storage.googleapis.com/yeom-se-been-fanpage-assets/yeomsebeen_2023_kia_01.jpg`} fluid rounded className="mb-3" />
-              <Image src={`https://storage.googleapis.com/yeom-se-been-fanpage-assets/yeomsebeen_2023_kia_02.jpg`} fluid rounded />
+              <ImageWithFallback filename="yeomsebeen_2023_kia_01.jpg" fluid rounded className="mb-3" />
+              <ImageWithFallback filename="yeomsebeen_2023_kia_02.jpg" fluid rounded />
             </Col>
             <Col md={6} data-aos="fade-right">
               <h2 className="text-white">2023-2024 起亞虎時期</h2>
@@ -44,9 +45,9 @@ const About = () => {
         <Container>
           <Row className="align-items-center">
             <Col md={6} data-aos="fade-right">
-              <Image src={`https://storage.googleapis.com/yeom-se-been-fanpage-assets/yeomsebeen_2025_rakuten_01.jpg`} fluid rounded className="mb-3" />
-              <Image src={`https://storage.googleapis.com/yeom-se-been-fanpage-assets/yeomsebeen_2025_rakuten_02.jpg`} fluid rounded className="mb-3" />
-              <Image src={`https://storage.googleapis.com/yeom-se-been-fanpage-assets/yeomsebeen_2025_nc_01.jpg`} fluid rounded />
+              <ImageWithFallback filename="yeomsebeen_2025_rakuten_01.jpg" fluid rounded className="mb-3" />
+              <ImageWithFallback filename="yeomsebeen_2025_rakuten_02.jpg" fluid rounded className="mb-3" />
+              <ImageWithFallback filename="yeomsebeen_2025_nc_01.jpg" fluid rounded />
             </Col>
             <Col md={6} data-aos="fade-left">
               <h2 className="text-white">2025現況</h2>

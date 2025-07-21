@@ -6,19 +6,19 @@ import PhotoItem from './PhotoItem';
 
 const photos = [
   {
-    src: `https://storage.googleapis.com/yeom-se-been-fanpage-assets/yeomsebeen_field.jpg`,
+    filename: 'yeomsebeen_field.jpg',
     title: '球場應援',
   },
   {
-    src: `https://storage.googleapis.com/yeom-se-been-fanpage-assets/yeomsebeen_cuteface.jpg`,
+    filename: 'yeomsebeen_cuteface.jpg',
     title: '可愛鬼臉',
   },
   {
-    src: `https://storage.googleapis.com/yeom-se-been-fanpage-assets/yeomsebeen_student.jpg`,
+    filename: 'yeomsebeen_student.jpg',
     title: '活動裝扮',
   },
   {
-    src: `https://storage.googleapis.com/yeom-se-been-fanpage-assets/yeomsebeen_about.jpg`,
+    filename: 'yeomsebeen_about.jpg',
     title: '專輯封面',
   },
 ];
@@ -27,8 +27,9 @@ const PhotoGallery = () => {
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
 
+  // Lightbox still needs the full URL, so we construct it here
   const slides = photos.map(photo => ({
-    src: photo.src,
+    src: `https://storage.googleapis.com/yeom-se-been-fanpage-assets/${photo.filename}`,
     title: photo.title,
   }));
 

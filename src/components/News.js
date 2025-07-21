@@ -1,12 +1,35 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Button } from 'react-bootstrap';
-import { newsData } from '../data/contentData';
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Button, Spinner, Alert } from 'react-bootstrap';
+import { db } from '../firebase'; // Import Firestore instance
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import NewsItem from './NewsItem';
 
 const News = () => {
+  const [newsData, setNewsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
-  const sortedNews = [...newsData].sort((a, b) => b.id - a.id);
-  const visibleNews = isExpanded ? sortedNews : sortedNews.slice(0, 3);
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        const newsCollection = collection(db, 'news');
+        const q = query(newsCollection, orderBy('date', 'desc')); // Order by date descending
+        const newsSnapshot = await getDocs(q);
+        const newsList = newsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setNewsData(newsList);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching news from Firestore:", err);
+        setError('無法載入最新消息，請稍後再試。');
+        setLoading(false);
+      }
+    };
+
+    fetchNews();
+  }, []);
+
+  const visibleNews = isExpanded ? newsData : newsData.slice(0, 3);
 
   return (
     <section className="about-section section-2022 py-5">
@@ -15,7 +38,14 @@ const News = () => {
         <div className="mb-5">
           <h2 className="text-white">站內消息</h2>
           <div className="news-list">
-            {visibleNews.map(item => (
+            {loading && (
+              <div className="text-center">
+                <Spinner animation="border" variant="light" />
+                <p className="text-white-50 mt-2">載入中...</p>
+              </div>
+            )}
+            {error && <Alert variant="danger">{error}</Alert>}
+            {!loading && !error && visibleNews.map(item => (
               <NewsItem
                 key={item.id}
                 date={item.date}
@@ -24,7 +54,7 @@ const News = () => {
               />
             ))}
           </div>
-          {sortedNews.length > 3 && (
+          {newsData.length > 3 && !loading && !error && (
             <div className="text-center mt-4">
               <Button variant="outline-light" onClick={() => setIsExpanded(!isExpanded)}>
                 {isExpanded ? '收合舊消息' : '查看更多'}

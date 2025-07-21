@@ -1,5 +1,6 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
+import ImageWithFallback from './ImageWithFallback'; // Import our custom component
 
 const Footer = () => {
   return (
@@ -24,7 +25,7 @@ const Footer = () => {
               </svg>
             </a>
             <a href="https://www.threads.com/@beena._s2" target="_blank" rel="noopener noreferrer" className="text-white mx-2">
-              <img src={`https://storage.googleapis.com/yeom-se-been-fanpage-assets/threads-white-icon.png`} alt="Threads" width="24" height="24" />
+              <ImageWithFallback filename="threads-white-icon.png" alt="Threads" width="24" height="24" />
             </a>
           </Col>
         </Row>
