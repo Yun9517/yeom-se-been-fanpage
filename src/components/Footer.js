@@ -24,7 +24,7 @@ const Footer = () => {
               </svg>
             </a>
             <a href="https://www.threads.com/@beena._s2" target="_blank" rel="noopener noreferrer" className="text-white mx-2">
-              <img src={`${process.env.PUBLIC_URL}/threads-white-icon.png`} alt="Threads" width="24" height="24" />
+              <img src={`https://storage.googleapis.com/yeom-se-been-fanpage-assets/threads-white-icon.png`} alt="Threads" width="24" height="24" />
             </a>
           </Col>
         </Row>

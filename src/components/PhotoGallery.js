@@ -6,19 +6,19 @@ import PhotoItem from './PhotoItem';
 
 const photos = [
   {
-    src: `${process.env.PUBLIC_URL}/yeomsebeen_field.jpg`,
+    src: `https://storage.googleapis.com/yeom-se-been-fanpage-assets/yeomsebeen_field.jpg`,
     title: '球場應援',
   },
   {
-    src: `${process.env.PUBLIC_URL}/yeomsebeen_cuteface.jpg`,
+    src: `https://storage.googleapis.com/yeom-se-been-fanpage-assets/yeomsebeen_cuteface.jpg`,
     title: '可愛鬼臉',
   },
   {
-    src: `${process.env.PUBLIC_URL}/yeomsebeen_student.jpg`,
+    src: `https://storage.googleapis.com/yeom-se-been-fanpage-assets/yeomsebeen_student.jpg`,
     title: '活動裝扮',
   },
   {
-    src: `${process.env.PUBLIC_URL}/yeomsebeen_about.jpg`,
+    src: `https://storage.googleapis.com/yeom-se-been-fanpage-assets/yeomsebeen_about.jpg`,
     title: '專輯封面',
   },
 ];

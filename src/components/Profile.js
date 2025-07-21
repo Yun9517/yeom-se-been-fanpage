@@ -9,25 +9,25 @@ const Profile = () => {
     {
       year: '2022',
       teams: 'KEPCO Vixtorm Volleyball Team, Hana Bank Women\'s Basketball Team',
-      image: 'yeomsebeen_2022_volleyball_02.jpg',
+      image: 'https://storage.googleapis.com/yeom-se-been-fanpage-assets/yeomsebeen_2022_volleyball_02.jpg',
       fade: 'fade-right'
     },
     {
       year: '2023',
       teams: '起亞虎, 高陽索諾天空槍手',
-      image: 'yeomsebeen_2023_kia_02.jpg',
+      image: 'https://storage.googleapis.com/yeom-se-been-fanpage-assets/yeomsebeen_2023_kia_02.jpg',
       fade: 'fade-left'
     },
     {
       year: '2024',
       teams: '起亞虎, 安養正官庄赤紅火箭',
-      image: 'yeomsebeen_2023_kia_03.jpg',
+      image: 'https://storage.googleapis.com/yeom-se-been-fanpage-assets/yeomsebeen_2023_kia_03.jpg',
       fade: 'fade-right'
     },
     {
       year: '2025',
       teams: '樂天桃猿, NC恐龍',
-      image: 'yeomsebeen_2025_nc_01.jpg',
+      image: 'https://storage.googleapis.com/yeom-se-been-fanpage-assets/yeomsebeen_2025_nc_01.jpg',
       fade: 'fade-left'
     }
   ];
@@ -40,7 +40,7 @@ const Profile = () => {
             <div className="profile-card">
               {/* --- 基本資料 --- */}
               <div className="text-center mb-4">
-                <Image src={`${process.env.PUBLIC_URL}/yeomsebeen_about.jpg`} roundedCircle width={150} height={150} className="profile-main-image" />
+                <Image src={`https://storage.googleapis.com/yeom-se-been-fanpage-assets/yeomsebeen_about.jpg`} roundedCircle width={150} height={150} className="profile-main-image" />
                 <h1 className="text-white mt-3">廉世彬 (염세빈)</h1>
                 <p className="text-white-50">Yeom Se-Been</p>
               </div>

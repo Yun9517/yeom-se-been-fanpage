@@ -57,7 +57,7 @@ function FanQuiz() {
   };
 
   const quizUrl = window.location.origin + '/quiz';
-      const imageUrl = `${process.env.PUBLIC_URL}/yeomsebeen_field.jpg`;
+      const imageUrl = `https://storage.googleapis.com/yeom-se-been-fanpage-assets/yeomsebeen_field.jpg`;
 
   return (
     <div className="fan-quiz-container">
