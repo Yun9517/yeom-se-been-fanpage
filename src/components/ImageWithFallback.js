@@ -32,6 +32,7 @@ const ImageWithFallback = ({ filename, roundedCircle, className, ...props }) => 
       onError={handleError}
       alt={props.alt || filename} // Use filename as default alt text
       className={finalClassName}
+      loading="lazy" // Add lazy loading attribute
       {...props}
     />
   );
