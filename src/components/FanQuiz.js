@@ -6,7 +6,7 @@ import { Spinner, Alert, Accordion } from 'react-bootstrap'; // Import Accordion
 import './FanQuiz.css';
 
 import { db, auth } from '../firebase';
-import { collection, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, getDocs, addDoc, serverTimestamp, setDoc, doc, getDoc } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
 import Leaderboard from './Leaderboard';
@@ -64,6 +64,38 @@ function FanQuiz() {
 
     saveScore();
   }, [showScore, user, score, userAnswers]);
+
+  const checkAndUnlockAchievements = useCallback(async () => {
+    if (!user || user.isAnonymous) return; // Only check for logged-in users
+
+    const userAchievementsRef = doc(db, "userAchievements", user.uid);
+    const userAchievementsSnap = await getDoc(userAchievementsRef);
+    const userAchievements = userAchievementsSnap.exists() ? userAchievementsSnap.data() : {};
+
+    // Achievement: 首次作答全對
+    if (score === questions.length && !userAchievements.firstPerfectScore) {
+      await setDoc(userAchievementsRef, {
+        firstPerfectScore: true,
+        firstPerfectScoreDate: serverTimestamp()
+      }, { merge: true });
+      alert("恭喜！您解鎖了 [首次作答全對] 成就！");
+    }
+
+    // Achievement: 首次全錯
+    if (score === 0 && !userAchievements.firstAllWrong) {
+      await setDoc(userAchievementsRef, {
+        firstAllWrong: true,
+        firstAllWrongDate: serverTimestamp()
+      }, { merge: true });
+      alert("恭喜！您解鎖了 [首次全錯] 成就！");
+    }
+  }, [user, score, questions.length]);
+
+  useEffect(() => {
+    if (showScore && user && !user.isAnonymous) {
+      checkAndUnlockAchievements();
+    }
+  }, [showScore, user, checkAndUnlockAchievements]);
 
   const handleAnswerOptionClick = (selectedOption) => {
     const currentQ = questions[currentQuestion];

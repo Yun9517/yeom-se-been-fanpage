@@ -1,0 +1,46 @@
+/* src/components/Achievements.css */
+
+.achievement-card {
+    width: 150px;
+    height: 180px;
+    margin: 10px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.achievement-card.locked {
+    background-color: #343a40; /* Dark gray for locked achievements */
+    color: #6c757d; /* Lighter gray text */
+    border: 1px solid #495057;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.achievement-card.unlocked {
+    background-color: #28a745; /* Green for unlocked achievements */
+    color: #ffffff; /* White text */
+    border: 1px solid #218838;
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+}
+
+.achievement-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+}
+
+.achievement-icon {
+    margin-bottom: 10px;
+}
+
+.achievement-card.locked .achievement-icon svg {
+    filter: grayscale(100%); /* Grayscale for locked icons */
+    opacity: 0.5;
+}
+
+.achievement-card .card-title {
+    font-size: 1.1em;
+    font-weight: bold;
+}

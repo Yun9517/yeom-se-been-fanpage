@@ -61,6 +61,7 @@ const Header = () => {
             {user ? (
               <NavDropdown title={`歡迎, ${user.isAnonymous ? getAnonymousDisplayName() : user.displayName || '訪客'}`} id="basic-nav-dropdown">
                 <NavDropdown.Item as={NavLink} to="/quiz-history">我的遊戲紀錄</NavDropdown.Item>
+                <NavDropdown.Item as={NavLink} to="/achievements">我的成就</NavDropdown.Item>
                 <NavDropdown.Item onClick={handleLogout}>登出</NavDropdown.Item>
               </NavDropdown>
             ) : (

@@ -18,6 +18,7 @@ const Profile = lazy(() => import('./components/Profile'));
 const News = lazy(() => import('./components/News'));
 const FanQuiz = lazy(() => import('./components/FanQuiz'));
 const QuizHistory = lazy(() => import('./components/QuizHistory'));
+const Achievements = lazy(() => import('./components/Achievements'));
 
 // Component to track page views
 const PageTracker = () => {
@@ -61,6 +62,7 @@ function App() {
               <Route path="/news" element={<News />} />
               <Route path="/quiz" element={<FanQuiz />} />
               <Route path="/quiz-history" element={<QuizHistory />} />
+              <Route path="/achievements" element={<Achievements />} />
             </Routes>
           </Suspense>
         </main>
