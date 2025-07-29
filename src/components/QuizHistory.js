@@ -79,6 +79,14 @@ const QuizHistory = () => {
     );
   }
 
+  if (user.isAnonymous) {
+    return (
+      <Container className="mt-5">
+        <Alert variant="info">您目前以訪客模式登入。如需查看並儲存遊戲紀錄，請使用 Google 帳戶登入。</Alert>
+      </Container>
+    );
+  }
+
   // Calculate statistics
   const totalGames = history.length;
   const highestScore = history.reduce((max, record) => Math.max(max, record.score), 0);

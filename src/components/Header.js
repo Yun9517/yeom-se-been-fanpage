@@ -3,11 +3,24 @@ import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../firebase';
-import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithPopup, signOut, signInAnonymously } from 'firebase/auth';
 import { FaGoogle } from 'react-icons/fa';
 
 const Header = () => {
   const [user] = useAuthState(auth);
+
+  const anonymousNicknames = [
+    "阿彬鐵粉",
+    "被阿彬拯救的粉絲",
+    "女王阿彬的迷弟",
+    "阿彬的頭號粉絲",
+    "阿彬的忠實信徒"
+  ];
+
+  const getAnonymousDisplayName = () => {
+    const randomIndex = Math.floor(Math.random() * anonymousNicknames.length);
+    return anonymousNicknames[randomIndex];
+  };
 
   const handleGoogleLogin = async () => {
     const provider = new GoogleAuthProvider();
@@ -20,6 +33,14 @@ const Header = () => {
 
   const handleLogout = () => {
     signOut(auth);
+  };
+
+  const handleAnonymousLogin = async () => {
+    try {
+      await signInAnonymously(auth);
+    } catch (error) {
+      console.error('Error during anonymous login:', error);
+    }
   };
 
   return (
@@ -38,7 +59,7 @@ const Header = () => {
           </Nav>
           <Nav>
             {user ? (
-              <NavDropdown title={`歡迎, ${user.displayName}`} id="basic-nav-dropdown">
+              <NavDropdown title={`歡迎, ${user.isAnonymous ? getAnonymousDisplayName() : user.displayName || '訪客'}`} id="basic-nav-dropdown">
                 <NavDropdown.Item as={NavLink} to="/quiz-history">我的遊戲紀錄</NavDropdown.Item>
                 <NavDropdown.Item onClick={handleLogout}>登出</NavDropdown.Item>
               </NavDropdown>
@@ -46,6 +67,9 @@ const Header = () => {
               <NavDropdown title="登入" id="basic-nav-dropdown">
                 <NavDropdown.Item onClick={handleGoogleLogin}>
                   <FaGoogle className="me-2" /> 使用 Google 登入
+                </NavDropdown.Item>
+                <NavDropdown.Item onClick={handleAnonymousLogin}>
+                  匿名遊玩
                 </NavDropdown.Item>
               </NavDropdown>
             )}
