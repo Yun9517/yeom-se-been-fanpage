@@ -24,7 +24,7 @@
 }
 
 .quiz-history-accordion .accordion-body {
-    background-image: linear-gradient(to bottom right, #F00078, #2c3034); /* Pink-black gradient */
+    background-color: #2c3034; /* Background for body */
     color: #e9ecef;
     border-top: 1px solid #495057;
 }

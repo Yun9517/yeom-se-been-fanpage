@@ -2,11 +2,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { FiRefreshCcw, FiLink } from 'react-icons/fi';
 import { FaLine } from 'react-icons/fa';
-import { Spinner, Alert, Accordion } from 'react-bootstrap'; // Import Accordion
+import { Spinner, Alert, Accordion, Toast, ToastContainer } from 'react-bootstrap'; // Import Accordion, Toast, ToastContainer
 import './FanQuiz.css';
 
 import { db, auth } from '../firebase';
-import { collection, getDocs, addDoc, serverTimestamp, setDoc, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, serverTimestamp, setDoc, doc, getDoc, increment } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
 import Leaderboard from './Leaderboard';
@@ -27,6 +27,9 @@ function FanQuiz() {
   const [error, setError] = useState(null);
   const [userAnswers, setUserAnswers] = useState([]);
   const [user] = useAuthState(auth);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastVariant, setToastVariant] = useState('success');
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -78,7 +81,7 @@ function FanQuiz() {
         firstPerfectScore: true,
         firstPerfectScoreDate: serverTimestamp()
       }, { merge: true });
-      alert("恭喜！您解鎖了 [首次作答全對] 成就！");
+      showAchievementToast("恭喜！您解鎖了 [首次作答全對] 成就！");
     }
 
     // Achievement: 首次全錯
@@ -87,9 +90,79 @@ function FanQuiz() {
         firstAllWrong: true,
         firstAllWrongDate: serverTimestamp()
       }, { merge: true });
-      alert("恭喜！您解鎖了 [首次全錯] 成就！");
+      showAchievementToast("恭喜！您解鎖了 [首次全錯] 成就！");
     }
+
+    // Login Achievements
+    const loginDaysCount = userAchievements.loginDaysCount || 0;
+
+    if (loginDaysCount >= 1 && !userAchievements.firstLogin) {
+      await setDoc(userAchievementsRef, {
+        firstLogin: true,
+        firstLoginDate: serverTimestamp()
+      }, { merge: true });
+      showAchievementToast("恭喜！您解鎖了 [首次登入] 成就！");
+    }
+
+    if (loginDaysCount >= 3 && !userAchievements.threeDayLogin) {
+      await setDoc(userAchievementsRef, {
+        threeDayLogin: true,
+        threeDayLoginDate: serverTimestamp()
+      }, { merge: true });
+      showAchievementToast("恭喜！您解鎖了 [來三天囉] 成就！");
+    }
+
+    if (loginDaysCount >= 7 && !userAchievements.sevenDayLogin) {
+      await setDoc(userAchievementsRef, {
+        sevenDayLogin: true,
+        sevenDayLoginDate: serverTimestamp()
+      }, { merge: true });
+      showAchievementToast("恭喜！您解鎖了 [阿彬鐵粉] 成就！");
+    }
+
+    if (loginDaysCount >= 30 && !userAchievements.thirtyDayLogin) {
+      await setDoc(userAchievementsRef, {
+        thirtyDayLogin: true,
+        thirtyDayLoginDate: serverTimestamp()
+      }, { merge: true });
+      showAchievementToast("恭喜！您解鎖了 [女王的忠實護衛] 成就！");
+    }
+
+    // Quizzes Answered Achievements
+    const totalQuizzesAnswered = userAchievements.totalQuizzesAnswered || 0;
+
+    if (totalQuizzesAnswered >= 100 && !userAchievements.hundredQuizzes) {
+      await setDoc(userAchievementsRef, {
+        hundredQuizzes: true,
+        hundredQuizzesDate: serverTimestamp()
+      }, { merge: true });
+      showAchievementToast("恭喜！您解鎖了 [刷題高手] 成就！");
+    }
+
+    if (totalQuizzesAnswered >= 500 && !userAchievements.fiveHundredQuizzes) {
+      await setDoc(userAchievementsRef, {
+        fiveHundredQuizzes: true,
+        fiveHundredQuizzesDate: serverTimestamp()
+      }, { merge: true });
+      showAchievementToast("恭喜！您解鎖了 [刷題達人] 成就！");
+    }
+
+    // 阿彬代言人 (保留神秘感)
+    if (totalQuizzesAnswered >= 1000 && !userAchievements.thousandQuizzes) {
+      await setDoc(userAchievementsRef, {
+        thousandQuizzes: true,
+        thousandQuizzesDate: serverTimestamp()
+      }, { merge: true });
+      showAchievementToast("恭喜！您解鎖了 [阿彬代言人] 成就！");
+    }
+
   }, [user, score, questions.length]);
+
+  const showAchievementToast = (message, variant = 'success') => {
+    setToastMessage(message);
+    setToastVariant(variant);
+    setShowToast(true);
+  };
 
   useEffect(() => {
     if (showScore && user && !user.isAnonymous) {
@@ -120,6 +193,14 @@ function FanQuiz() {
       setCurrentQuestion(nextQuestion);
     } else {
       setShowScore(true);
+    }
+
+    // Update total quizzes answered count
+    if (user && !user.isAnonymous) {
+      const userAchievementsRef = doc(db, "userAchievements", user.uid);
+      setDoc(userAchievementsRef, {
+        totalQuizzesAnswered: increment(1)
+      }, { merge: true });
     }
   };
 
@@ -167,8 +248,16 @@ function FanQuiz() {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:image" content={`https://storage.googleapis.com/yeom-se-been-fanpage-assets/${ogImageUrl}`} />
       </Helmet>
+      <ToastContainer position="top-end" className="p-3">
+        <Toast onClose={() => setShowToast(false)} show={showToast} delay={3000} autohide bg={toastVariant}>
+          <Toast.Header>
+            <strong className="me-auto">成就解鎖！</strong>
+          </Toast.Header>
+          <Toast.Body>{toastMessage}</Toast.Body>
+        </Toast>
+      </ToastContainer>
       <div className="fan-quiz-container">
-        <h2>염세빈 粉絲小遊戲！</h2>
+        <h2>염세彬 粉絲小遊戲！</h2>
 
         {loading && (
           <div className="text-center">

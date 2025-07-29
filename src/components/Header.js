@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
 import { GoogleAuthProvider, signInWithPopup, signOut, signInAnonymously } from 'firebase/auth';
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { FaGoogle } from 'react-icons/fa';
 
 const Header = () => {
@@ -42,6 +43,33 @@ const Header = () => {
       console.error('Error during anonymous login:', error);
     }
   };
+
+  useEffect(() => {
+    const trackLoginDays = async () => {
+      if (user && !user.isAnonymous) {
+        const userAchievementsRef = doc(db, "userAchievements", user.uid);
+        const userAchievementsSnap = await getDoc(userAchievementsRef);
+        const userAchievements = userAchievementsSnap.exists() ? userAchievementsSnap.data() : {};
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Normalize to start of day
+
+        const lastLoginDate = userAchievements.lastLoginDate?.toDate();
+        let loginDaysCount = userAchievements.loginDaysCount || 0;
+
+        if (!lastLoginDate || lastLoginDate.setHours(0, 0, 0, 0) < today.getTime()) {
+          // If no last login date, or last login was before today
+          loginDaysCount += 1;
+          await setDoc(userAchievementsRef, {
+            lastLoginDate: serverTimestamp(),
+            loginDaysCount: loginDaysCount
+          }, { merge: true });
+        }
+      }
+    };
+
+    trackLoginDays();
+  }, [user]);
 
   return (
     <Navbar bg="dark" variant="dark" expand="lg" sticky="top">

@@ -27,6 +27,56 @@ const Achievements = () => {
       icon: <FaTimesCircle size={50} color="gray" />,
       unlocked: false,
     },
+    {
+      id: 'firstLogin',
+      name: '首次登入',
+      description: '首次登入網站！',
+      icon: <FaStar size={50} color="#FFD700" />,
+      unlocked: false,
+    },
+    {
+      id: 'threeDayLogin',
+      name: '來三天囉',
+      description: '連續登入三天！',
+      icon: <FaMedal size={50} color="#C0C0C0" />,
+      unlocked: false,
+    },
+    {
+      id: 'sevenDayLogin',
+      name: '阿彬鐵粉',
+      description: '連續登入七天！',
+      icon: <FaAward size={50} color="#FF4500" />,
+      unlocked: false,
+    },
+    {
+      id: 'thirtyDayLogin',
+      name: '女王的忠實護衛',
+      description: '連續登入三十天！',
+      icon: <FaAward size={50} color="#8A2BE2" />,
+      unlocked: false,
+    },
+    {
+      id: 'hundredQuizzes',
+      name: '刷題高手',
+      description: '累積作答 100 題！',
+      icon: <FaAward size={50} color="#00BFFF" />,
+      unlocked: false,
+    },
+    {
+      id: 'fiveHundredQuizzes',
+      name: '刷題達人',
+      description: '累積作答 500 題！',
+      icon: <FaMedal size={50} color="#FFD700" />,
+      unlocked: false,
+    },
+    {
+      id: 'thousandQuizzes',
+      name: '阿彬代言人',
+      description: '累積作答 1000 題！',
+      icon: <FaStar size={50} color="#FF4500" />,
+      unlocked: false,
+      hiddenDescription: true, // Mark as hidden description
+    },
     // Add more achievements here
   ];
 
@@ -104,7 +154,7 @@ const Achievements = () => {
             const tooltipContent = (
               <Tooltip id={`tooltip-${achievement.id}`}>
                 <strong>{achievement.name}</strong><br />
-                {achievement.description}<br />
+                {isUnlocked || !achievement.hiddenDescription ? achievement.description : '???'}<br />
                 {isUnlocked ? `解鎖日期: ${unlockDate}` : '尚未解鎖'}
               </Tooltip>
             );
