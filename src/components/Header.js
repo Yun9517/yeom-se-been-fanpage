@@ -46,7 +46,9 @@ const Header = () => {
 
   useEffect(() => {
     const trackLoginDays = async () => {
+      console.log("Header: trackLoginDays called. User:", user);
       if (user && !user.isAnonymous) {
+        console.log("Header: User is authenticated and not anonymous. Checking login days.");
         const userAchievementsRef = doc(db, "userAchievements", user.uid);
         const userAchievementsSnap = await getDoc(userAchievementsRef);
         const userAchievements = userAchievementsSnap.exists() ? userAchievementsSnap.data() : {};
@@ -57,14 +59,21 @@ const Header = () => {
         const lastLoginDate = userAchievements.lastLoginDate?.toDate();
         let loginDaysCount = userAchievements.loginDaysCount || 0;
 
+        console.log("Header: lastLoginDate from Firestore:", lastLoginDate, "loginDaysCount from Firestore:", loginDaysCount);
+
         if (!lastLoginDate || lastLoginDate.setHours(0, 0, 0, 0) < today.getTime()) {
-          // If no last login date, or last login was before today
+          console.log("Header: Incrementing loginDaysCount for today.");
           loginDaysCount += 1;
           await setDoc(userAchievementsRef, {
             lastLoginDate: serverTimestamp(),
             loginDaysCount: loginDaysCount
           }, { merge: true });
+          console.log("Header: Login days updated in Firestore. New count:", loginDaysCount);
+        } else {
+          console.log("Header: Already logged in today or lastLoginDate is future.");
         }
+      } else {
+        console.log("Header: User is null, anonymous, or not yet resolved.");
       }
     };
 
