@@ -53,6 +53,7 @@ function FanQuiz() {
             userName: user.displayName,
             userId: user.uid,
             score: score,
+            userAnswers: userAnswers, // Add userAnswers here
             createdAt: serverTimestamp()
           });
         } catch (e) {
@@ -62,7 +63,7 @@ function FanQuiz() {
     };
 
     saveScore();
-  }, [showScore, user, score]);
+  }, [showScore, user, score, userAnswers]);
 
   const handleAnswerOptionClick = (selectedOption) => {
     const currentQ = questions[currentQuestion];
@@ -124,7 +125,7 @@ function FanQuiz() {
   const ogImageUrl = `yeomsebeen_field.jpg`;
 
   return (
-    <div className="fan-quiz-container">
+    <>
       <Helmet>
         <title>염세빈 粉絲小遊戲！</title>
         <meta property="og:title" content="염세빈 粉絲小遊戲！" />
@@ -134,69 +135,73 @@ function FanQuiz() {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:image" content={`https://storage.googleapis.com/yeom-se-been-fanpage-assets/${ogImageUrl}`} />
       </Helmet>
-      <h2>염세빈 粉絲小遊戲！</h2>
+      <div className="fan-quiz-container">
+        <h2>염세빈 粉絲小遊戲！</h2>
 
-      {loading && (
-        <div className="text-center">
-          <Spinner animation="border" variant="light" />
-          <p className="text-white-50 mt-2">載入中...</p>
-        </div>
-      )}
-      {error && <Alert variant="danger">{error}</Alert>}
-
-      {!loading && !error && (
-        showScore ? (
-          <div className="score-section">
-            <div className="score-text">你獲得了 {score} 分，總分 {questions.length} 分！</div>
-            <div className="score-buttons">
-              <button onClick={handleShareLink} className="quiz-button share-link-button"><FiLink /></button>
-              <button onClick={resetQuiz} className="quiz-button play-again-button"><FiRefreshCcw /></button>
-              <button onClick={handleShareLine} className="quiz-button share-line-button"><FaLine /></button>
-            </div>
-
-            <div className="quiz-answers-summary mt-4">
-              <h3>作答結果</h3>
-              {userAnswers.map((item, index) => (
-                <div key={index} className="answer-item mb-3 p-3 border rounded">
-                  <p><strong>問題 {index + 1}:</strong> {item.question}</p>
-                  <p><strong>你的答案:</strong> <span style={{ color: item.isCorrect ? '#28a745' : '#dc3545' }}>{item.userAnswer}</span></p>
-                  {!item.isCorrect && (
-                    <p><strong>正確答案:</strong> <span style={{ color: '#28a745' }}>{item.correctAnswer}</span></p>
-                  )}
-                </div>
-              ))}
-            </div>
+        {loading && (
+          <div className="text-center">
+            <Spinner animation="border" variant="light" />
+            <p className="text-white-50 mt-2">載入中...</p>
           </div>
-        ) : (
-          questions.length > 0 && (
-            <div className="question-section">
-              <div className="question-count">
-                <span>問題 {currentQuestion + 1}</span>/{questions.length}
+        )}
+        {error && <Alert variant="danger">{error}</Alert>}
+
+        {!loading && !error && (
+          showScore ? (
+            <div className="score-section">
+              <div className="score-text">你獲得了 {score} 分，總分 {questions.length} 分！</div>
+              <div className="score-buttons">
+                <button onClick={handleShareLink} className="quiz-button share-link-button"><FiLink /></button>
+                <button onClick={resetQuiz} className="quiz-button play-again-button"><FiRefreshCcw /></button>
+                <button onClick={handleShareLine} className="quiz-button share-line-button"><FaLine /></button>
               </div>
-              <div className="question-text">
-                {questions[currentQuestion]?.question}
-              </div>
-              <div className="answer-section">
-                {questions[currentQuestion]?.options.map((option, index) => (
-                  <button key={index} onClick={() => handleAnswerOptionClick(option)}>
-                    {option}
-                  </button>
+
+              <div className="quiz-answers-summary mt-4">
+                <h3>作答結果</h3>
+                {userAnswers.map((item, index) => (
+                  <div key={index} className="answer-item mb-3 p-3 border rounded">
+                    <p><strong>問題 {index + 1}:</strong> {item.question}</p>
+                    <p><strong>你的答案:</strong> <span style={{ color: item.isCorrect ? '#28a745' : '#dc3545' }}>{item.userAnswer}</span></p>
+                    {!item.isCorrect && (
+                      <p><strong>正確答案:</strong> <span style={{ color: '#28a745' }}>{item.correctAnswer}</span></p>
+                    )}
+                  </div>
                 ))}
               </div>
             </div>
+          ) : (
+            questions.length > 0 && (
+              <div className="question-section">
+                <div className="question-count">
+                  <span>問題 {currentQuestion + 1}</span>/{questions.length}
+                </div>
+                <div className="question-text">
+                  {questions[currentQuestion]?.question}
+                </div>
+                <div className="answer-section">
+                  {questions[currentQuestion]?.options.map((option, index) => (
+                    <button key={`${currentQuestion}-${index}`} onClick={() => handleAnswerOptionClick(option)}>
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )
           )
-        )
-      )}
+        )}
+      </div>
 
-      <Accordion defaultActiveKey="0" className="mt-5">
-        <Accordion.Item eventKey="0">
-          <Accordion.Header>排行榜</Accordion.Header>
-          <Accordion.Body>
-            <Leaderboard />
-          </Accordion.Body>
-        </Accordion.Item>
-      </Accordion>
-    </div>
+      <div className="leaderboard-section mt-5">
+        <Accordion defaultActiveKey="0">
+          <Accordion.Item eventKey="0">
+            <Accordion.Header>排行榜</Accordion.Header>
+            <Accordion.Body>
+              <Leaderboard />
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
+      </div>
+    </>
   );
 }
 

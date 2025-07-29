@@ -1,0 +1,35 @@
+/* src/components/QuizHistory.css */
+
+.quiz-history-accordion .accordion-item {
+    margin-bottom: 10px;
+    border: 1px solid #495057;
+    border-radius: 5px;
+    overflow: hidden; /* Ensures border-radius applies correctly */
+}
+
+.quiz-history-accordion .accordion-header {
+    background-color: #343a40; /* Darker background for header */
+    color: #e9ecef;
+    border-bottom: 1px solid #495057;
+}
+
+.quiz-history-accordion .accordion-button {
+    background-color: #343a40 !important; /* Ensure button background matches header */
+    color: #e9ecef !important;
+    border: none;
+}
+
+.quiz-history-accordion .accordion-button:not(.collapsed) {
+    background-color: #495057 !important; /* Slightly different background when expanded */
+}
+
+.quiz-history-accordion .accordion-body {
+    background-image: linear-gradient(to bottom right, #F00078, #2c3034); /* Pink-black gradient */
+    color: #e9ecef;
+    border-top: 1px solid #495057;
+}
+
+.quiz-history-accordion .answer-item {
+    background-color: #343a40; /* Background for individual answer items */
+    border-color: #495057 !important;
+}

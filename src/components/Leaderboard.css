@@ -5,6 +5,7 @@
     background-color: #2c3034; /* Slightly lighter than table for depth */
     border-radius: 10px;
     border: 1px solid #495057;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Added box-shadow for depth */
   }
   
   .leaderboard-title {
@@ -12,11 +13,17 @@
     font-weight: bold;
   }
   
-  /* Ensure table text is readable */
+  /* Ensure table text is readable and adjust padding */
   .table.variant-dark,
   .table.variant-dark th,
   .table.variant-dark td {
     color: #e9ecef; /* Light gray for text */
+    padding: 12px; /* Adjusted padding */
+  }
+
+  /* Explicitly set background for dark table body */
+  .table.variant-dark tbody {
+    background-color: rgba(33, 37, 41, 0.8); /* Dark background for table body */
   }
   
   .rank-cell {
@@ -26,6 +33,7 @@
   
   .trophy-icon {
     margin-right: 5px;
+    font-size: 1.2em; /* Increased size */
   }
   
   /* Highlighting for top ranks */
@@ -43,4 +51,35 @@
     background-color: rgba(205, 127, 50, 0.2); /* Bronze with transparency */
     color: #cd7f32;
   }
-  
+
+  .current-user-row {
+    background-color: rgba(0, 123, 255, 0.1); /* Softer blue highlight */
+    font-weight: bold;
+  }
+
+  .form-label {
+    color: #e9ecef; /* White color for the label */
+  }
+
+  /* Attempt to fix dropdown z-index on mobile */
+  .form-control {
+    z-index: 1000; /* Ensure it's above other elements */
+  }
+
+  /* Pagination button styling */
+  .leaderboard-container .btn-secondary {
+    background-color: #F00078; /* Matching title color */
+    border-color: #F00078;
+  }
+
+  .leaderboard-container .btn-secondary:hover {
+    background-color: #d4006a; /* Darker shade on hover */
+    border-color: #d4006a;
+  }
+
+  /* Responsive adjustments for form control */
+  @media (max-width: 1024px) {
+    .leaderboard-container .form-control {
+      max-width: 150px; /* Limit width on smaller screens and tablets */
+    }
+  }
