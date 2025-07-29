@@ -140,6 +140,36 @@
   color: #333;
 }
 
+/* Accordion styles for dark theme */
+.accordion-button {
+  background-color: #343a40; /* Dark background */
+  color: #e9ecef; /* Light text */
+  border: 1px solid #495057; /* Subtle border */
+  border-radius: 5px; /* Rounded corners */
+  font-weight: bold;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: #212529; /* Even darker when expanded */
+  color: #e9ecef;
+  box-shadow: none;
+}
+
+.accordion-button:focus {
+  box-shadow: none;
+  border-color: #495057;
+}
+
+.accordion-button:hover {
+  background-color: #495057; /* Slightly lighter on hover */
+  color: #ffffff;
+}
+
+/* Adjust arrow color for visibility */
+.accordion-button::after {
+  filter: invert(1) grayscale(100%) brightness(200%); /* Make arrow white */
+}
+
 @media (max-width: 400px) {
   .fan-quiz-container {
     padding: 20px 15px; /* Increased horizontal padding for smaller screens */

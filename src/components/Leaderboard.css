@@ -1,0 +1,46 @@
+.leaderboard-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #2c3034; /* Slightly lighter than table for depth */
+    border-radius: 10px;
+    border: 1px solid #495057;
+  }
+  
+  .leaderboard-title {
+    color: #F00078; /* Custom title color */
+    font-weight: bold;
+  }
+  
+  /* Ensure table text is readable */
+  .table.variant-dark,
+  .table.variant-dark th,
+  .table.variant-dark td {
+    color: #e9ecef; /* Light gray for text */
+  }
+  
+  .rank-cell {
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  .trophy-icon {
+    margin-right: 5px;
+  }
+  
+  /* Highlighting for top ranks */
+  .rank-gold td {
+    background-color: rgba(255, 215, 0, 0.2); /* Gold with transparency */
+    color: #ffd700;
+  }
+  
+  .rank-silver td {
+    background-color: rgba(192, 192, 192, 0.2); /* Silver with transparency */
+    color: #c0c0c0;
+  }
+  
+  .rank-bronze td {
+    background-color: rgba(205, 127, 50, 0.2); /* Bronze with transparency */
+    color: #cd7f32;
+  }
+  

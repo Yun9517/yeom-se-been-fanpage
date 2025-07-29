@@ -2,12 +2,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { FiRefreshCcw, FiLink } from 'react-icons/fi';
 import { FaLine } from 'react-icons/fa';
-import { Spinner, Alert } from 'react-bootstrap';
+import { Spinner, Alert, Accordion } from 'react-bootstrap'; // Import Accordion
 import './FanQuiz.css';
 
-import { db } from '../firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { db, auth } from '../firebase';
+import { collection, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
+import Leaderboard from './Leaderboard';
 
 // Helper function to get random questions
 const getRandomQuestions = (allQuestions, num = 5) => {
@@ -23,7 +25,8 @@ function FanQuiz() {
   const [showScore, setShowScore] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [userAnswers, setUserAnswers] = useState([]); // New state for user answers
+  const [userAnswers, setUserAnswers] = useState([]);
+  const [user] = useAuthState(auth);
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -42,6 +45,25 @@ function FanQuiz() {
     fetchQuestions();
   }, []);
 
+  useEffect(() => {
+    const saveScore = async () => {
+      if (showScore && user) {
+        try {
+          await addDoc(collection(db, "scores"), {
+            userName: user.displayName,
+            userId: user.uid,
+            score: score,
+            createdAt: serverTimestamp()
+          });
+        } catch (e) {
+          console.error("Error adding document: ", e);
+        }
+      }
+    };
+
+    saveScore();
+  }, [showScore, user, score]);
+
   const handleAnswerOptionClick = (selectedOption) => {
     const currentQ = questions[currentQuestion];
     const isCorrect = selectedOption === currentQ.answer;
@@ -50,7 +72,6 @@ function FanQuiz() {
       setScore(score + 1);
     }
 
-    // Record the user's answer
     setUserAnswers(prevAnswers => [
       ...prevAnswers,
       {
@@ -74,7 +95,7 @@ function FanQuiz() {
     setScore(0);
     setShowScore(false);
     setQuestions(getRandomQuestions(masterQuestions));
-    setUserAnswers([]); // Clear user answers on reset
+    setUserAnswers([]);
   }, [masterQuestions]);
 
   const generateShareContent = () => {
@@ -100,8 +121,7 @@ function FanQuiz() {
     window.open(lineShareUrl, '_blank');
   };
 
-  // Use ImageWithFallback for the Open Graph image
-  const ogImageUrl = `yeomsebeen_field.jpg`; // Just the filename
+  const ogImageUrl = `yeomsebeen_field.jpg`;
 
   return (
     <div className="fan-quiz-container">
@@ -109,7 +129,6 @@ function FanQuiz() {
         <title>염세빈 粉絲小遊戲！</title>
         <meta property="og:title" content="염세빈 粉絲小遊戲！" />
         <meta property="og:description" content="快來挑戰看看你對廉世彬的了解程度！" />
-        {/* For Open Graph image, we need the direct URL, so we construct it here */}
         <meta property="og:image" content={`https://storage.googleapis.com/yeom-se-been-fanpage-assets/${ogImageUrl}`} />
         <meta property="og:url" content={window.location.href} />
         <meta name="twitter:card" content="summary_large_image" />
@@ -135,7 +154,6 @@ function FanQuiz() {
               <button onClick={handleShareLine} className="quiz-button share-line-button"><FaLine /></button>
             </div>
 
-            {/* New section to display answers */}
             <div className="quiz-answers-summary mt-4">
               <h3>作答結果</h3>
               {userAnswers.map((item, index) => (
@@ -169,6 +187,15 @@ function FanQuiz() {
           )
         )
       )}
+
+      <Accordion defaultActiveKey="0" className="mt-5">
+        <Accordion.Item eventKey="0">
+          <Accordion.Header>排行榜</Accordion.Header>
+          <Accordion.Body>
+            <Leaderboard />
+          </Accordion.Body>
+        </Accordion.Item>
+      </Accordion>
     </div>
   );
 }
