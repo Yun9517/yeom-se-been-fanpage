@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { db, auth } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { Container, Spinner, Alert, Row, Col, Card, OverlayTrigger, Tooltip, Dropdown } from 'react-bootstrap';
+import { Container, Spinner, Alert, Row, Col, Card, Dropdown, Modal } from 'react-bootstrap';
 import { FaQuestionCircle, FaAward } from 'react-icons/fa'; // For hidden achievements and general award icon
 import './Achievements.css';
 
@@ -14,6 +14,8 @@ const Achievements = () => {
   const [loading, setLoading] = useState(true); // For fetching achievements data
   const [error, setError] = useState(null);
   const [sortOption, setSortOption] = useState('tier'); // 'tier' or 'date'
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [currentAchievementDetail, setCurrentAchievementDetail] = useState(null);
 
   // Sort achievements by tier order and then by unlocked status
   const sortedAchievements = [...achievementsList].sort((a, b) => {
@@ -55,7 +57,7 @@ const Achievements = () => {
 
   useEffect(() => {
     const fetchAchievements = async () => {
-      if (authLoading) return; // Wait for auth state to load
+      if (authLoading) return;
 
       if (!user) {
         setLoading(false);
@@ -70,7 +72,7 @@ const Achievements = () => {
         if (docSnap.exists()) {
           setUserAchievements(docSnap.data());
         } else {
-          setUserAchievements({}); // No achievements yet
+          setUserAchievements({});
         }
       } catch (err) {
         console.error("Error fetching achievements:", err);
@@ -81,7 +83,7 @@ const Achievements = () => {
     };
 
     fetchAchievements();
-  }, [user, authLoading]); // Add authLoading to dependencies
+  }, [user, authLoading]);
 
   if (authLoading) {
     return (
@@ -153,25 +155,25 @@ const Achievements = () => {
             const displayDescription = isUnlocked || !achievement.hidden ? achievement.description : '???';
             const displayName = isUnlocked || !achievement.hidden ? achievement.name : '???';
 
-            const tooltipContent = (
-              <Tooltip id={`tooltip-${achievement.id}`}>
-                <strong>{displayName}</strong><br />
-                {displayDescription}<br />
-                {isUnlocked ? `解鎖日期: ${unlockDate}` : '尚未解鎖'}
-                {achievement.progressField && !isUnlocked && (
-                  achievement.hidden ? (
-                    <> <br /> 你正在慢慢解鎖中 </> 
-                  ) : (
-                    <> <br /> 進度: {currentProgress}/{achievement.targetValue} </> 
-                  )
-                )}
-              </Tooltip>
-            );
+            const handleCardClick = () => {
+              setCurrentAchievementDetail({
+                ...achievement,
+                isUnlocked,
+                unlockDate,
+                currentProgress,
+                displayDescription,
+                displayName,
+              });
+              setShowDetailModal(true);
+            };
 
             return (
               <Col key={achievement.id} className="d-flex justify-content-center">
-                <OverlayTrigger placement="top" overlay={tooltipContent}>
-                  <Card className={`achievement-card ${isUnlocked ? 'unlocked' : 'locked'} tier-${achievement.tier.toLowerCase()}`}>
+                  <Card 
+                    className={`achievement-card ${isUnlocked ? 'unlocked' : 'locked'} tier-${achievement.tier.toLowerCase()}`}
+                    onClick={handleCardClick}
+                    style={{ cursor: 'pointer' }} // Indicate it's clickable
+                  >
                     <Card.Body className="text-center">
                       <div className="achievement-icon">
                         {isUnlocked ? (
@@ -194,12 +196,51 @@ const Achievements = () => {
                       )}
                     </Card.Body>
                   </Card>
-                </OverlayTrigger>
               </Col>
             );
           })}
         </Row>
       )}
+
+      {/* Achievement Detail Modal */}
+      <Modal show={showDetailModal} onHide={() => setShowDetailModal(false)} centered>
+        <Modal.Header closeButton className="bg-dark text-white">
+          <Modal.Title>{currentAchievementDetail?.displayName}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="bg-dark text-white text-center">
+          {currentAchievementDetail && (
+            <>
+              <div className="mb-3">
+                {currentAchievementDetail.isUnlocked ? (
+                  <FaAward
+                    size={80}
+                    color={achievementTiers[currentAchievementDetail.tier]?.color}
+                    className={currentAchievementDetail.isUnlocked && (currentAchievementDetail.tier === 'PLATINUM' || currentAchievementDetail.tier === 'DIAMOND') ? `icon-glow tier-${currentAchievementDetail.tier.toLowerCase()}` : ''}
+                  />
+                ) : (
+                  <FaQuestionCircle size={80} color="#ccc" />
+                )}
+              </div>
+              <p>{currentAchievementDetail.displayDescription}</p>
+              <p><strong>等級:</strong> {achievementTiers[currentAchievementDetail.tier]?.name}</p>
+              {currentAchievementDetail.isUnlocked ? (
+                <p><strong>解鎖日期:</strong> {currentAchievementDetail.unlockDate}</p>
+              ) : (
+                <p>尚未解鎖</p>
+              )}
+              {currentAchievementDetail.progressField && !currentAchievementDetail.isUnlocked && (
+                currentAchievementDetail.hidden ? (
+                  <p>你正在慢慢解鎖中</p>
+                ) : (
+                  <p><strong>進度:</strong> {currentAchievementDetail.currentProgress}/{currentAchievementDetail.targetValue}</p>
+                )
+              )}
+            </>
+          )}
+        </Modal.Body>
+        <Modal.Footer className="bg-dark">
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };
