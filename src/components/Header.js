@@ -5,7 +5,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../firebase';
 import { GoogleAuthProvider, signInWithPopup, signOut, signInAnonymously } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { FaGoogle } from 'react-icons/fa';
+import { FaGoogle, FaAward } from 'react-icons/fa';
 
 import { achievementsList, achievementTiers } from '../data/achievements';
 
@@ -96,25 +96,32 @@ const Header = () => {
     trackLoginDays();
   }, [user]);
 
-  const getHighestAchievementTierColor = () => {
-    if (!user || user.isAnonymous || !userAchievements) return null; // No color for anonymous or no achievements
+  const getHighestAchievementTier = () => {
+    if (!user || user.isAnonymous || !userAchievements) return null;
 
-    let highestTier = null;
+    let highestTierInfo = null;
     let highestOrder = -1;
 
     for (const achievement of achievementsList) {
       if (userAchievements[achievement.id]) { // If achievement is unlocked
-        const tier = achievementTiers[achievement.tier];
-        if (tier && tier.order > highestOrder) {
-          highestOrder = tier.order;
-          highestTier = tier;
+        const tierKey = achievement.tier;
+        const tierData = achievementTiers[tierKey];
+        if (tierData && tierData.order > highestOrder) {
+          highestOrder = tierData.order;
+          highestTierInfo = { key: tierKey, ...tierData };
         }
       }
     }
-    return highestTier ? highestTier.color : null;
+    return highestTierInfo;
   };
 
-  const dropdownBgColor = getHighestAchievementTierColor();
+  const highestTierInfo = getHighestAchievementTier();
+  const dropdownBgColor = highestTierInfo ? highestTierInfo.color : null;
+
+  let iconClassName = '';
+  if (highestTierInfo && highestTierInfo.order >= 4) { // Platinum or higher
+    iconClassName = `icon-glow tier-${highestTierInfo.key.toLowerCase()}`;
+  }
 
   return (
     <Navbar bg="dark" variant="dark" expand="lg" sticky="top">
@@ -132,10 +139,26 @@ const Header = () => {
           </Nav>
           <Nav>
             {user ? (
-              <NavDropdown 
-                title={`歡迎, ${user.isAnonymous ? getAnonymousDisplayName() : user.displayName || '訪客'}`} 
+              <NavDropdown
+                title={
+                  <span>
+                    {user && !user.isAnonymous && (
+                      <FaAward
+                        size={24}
+                        className={iconClassName}
+                        style={{
+                          color: dropdownBgColor || '#ccc',
+                          marginRight: '8px',
+                          verticalAlign: 'middle'
+                        }}
+                      />
+                    )}
+                    <span style={{ verticalAlign: 'middle' }}>
+                      {`歡迎, ${user.isAnonymous ? getAnonymousDisplayName() : user.displayName || '訪客'}`}
+                    </span>
+                  </span>
+                }
                 id="basic-nav-dropdown"
-                style={dropdownBgColor ? { border: `4px solid ${dropdownBgColor}`, borderRadius: '5px', padding: '0 10px' } : {}}
               >
                 <NavDropdown.Item as={NavLink} to="/quiz-history">我的遊戲紀錄</NavDropdown.Item>
                 <NavDropdown.Item as={NavLink} to="/achievements">我的成就</NavDropdown.Item>

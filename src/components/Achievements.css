@@ -84,7 +84,6 @@
     box-shadow: 0 0 25px rgba(2, 223, 130, 0.8), 0 0 40px rgba(2, 223, 130, 0.5);
     position: relative;
     overflow: hidden;
-    /* Add a subtle animated border */
     animation: platinum-border-glow 2s infinite alternate;
 }
 
@@ -93,7 +92,25 @@
     to { border-color: #00FF99; }
 }
 
-.achievement-card.unlocked.tier-platinum::before {
+/* Diamond Tier */
+.achievement-card.unlocked.tier-diamond {
+    background: linear-gradient(135deg, #870087, #D462D4); /* Purple gradient */
+    color: #e0e0e0; /* Light text */
+    border: 3px solid #AE00AE; /* Vibrant purple border */
+    box-shadow: 0 0 25px rgba(174, 0, 174, 0.8), 0 0 40px rgba(174, 0, 174, 0.5);
+    position: relative;
+    overflow: hidden;
+    animation: diamond-border-glow 2s infinite alternate;
+}
+
+@keyframes diamond-border-glow {
+    from { border-color: #AE00AE; }
+    to { border-color: #FF00FF; }
+}
+
+/* Effects for both Platinum and Diamond */
+.achievement-card.unlocked.tier-platinum::before,
+.achievement-card.unlocked.tier-diamond::before {
     content: '';
     position: absolute;
     top: -50%;
@@ -111,7 +128,9 @@
 }
 
 .achievement-card.unlocked.tier-platinum .achievement-icon svg,
-.achievement-card.unlocked.tier-platinum .card-title {
+.achievement-card.unlocked.tier-platinum .card-title,
+.achievement-card.unlocked.tier-diamond .achievement-icon svg,
+.achievement-card.unlocked.tier-diamond .card-title {
     filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
 }
 
@@ -120,6 +139,7 @@
     background-color: #343a40; /* Dark background for the container */
     padding: 20px; /* Add some padding */
     border-radius: 8px; /* Optional: add some border-radius */
+    max-width: 960px; /* Constrain width to center content */
 }
 
 .leaderboard-container .dropdown {
@@ -174,3 +194,4 @@
         font-size: 0.7em; /* Smaller font size for progress text */
     }
 }
+

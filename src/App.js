@@ -6,6 +6,9 @@ import 'aos/dist/aos.css';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import ReactGA from 'react-ga4';
 import ScrollToTop from './components/ScrollToTop';
+import { auth, db } from './firebase'; // Import auth and db
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'; // Import firestore functions
+import { useAuthState } from 'react-firebase-hooks/auth'; // Import useAuthState
 
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -32,6 +35,32 @@ const PageTracker = () => {
 };
 
 function App() {
+  const [user] = useAuthState(auth);
+
+  useEffect(() => {
+    const checkEarlySupporterAchievement = async () => {
+      if (user && !user.isAnonymous) {
+        const achievementId = 'earlySupporter';
+        const userAchievementsRef = doc(db, 'userAchievements', user.uid);
+        const docSnap = await getDoc(userAchievementsRef);
+
+        if (!docSnap.exists() || !docSnap.data()[achievementId]) {
+          const cutoffDate = new Date('2025-08-31');
+          const now = new Date();
+
+          if (now <= cutoffDate) {
+            await setDoc(userAchievementsRef, {
+              [achievementId]: true,
+              [`${achievementId}Date`]: serverTimestamp()
+            }, { merge: true });
+          }
+        }
+      }
+    };
+
+    checkEarlySupporterAchievement();
+  }, [user]);
+
   useEffect(() => {
     AOS.init({
       duration: 1000, // animation duration

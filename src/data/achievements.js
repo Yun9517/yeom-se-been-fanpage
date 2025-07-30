@@ -3,6 +3,7 @@ export const achievementTiers = {
   SILVER: { name: '銀牌', order: 2, color: '#A9ACB6' },
   GOLD: { name: '金牌', order: 3, color: '#FFD017' },
   PLATINUM: { name: '白金', order: 4, color: '#02DF82' },
+  DIAMOND: { name: '鑽石', order: 5, color: '#AE00AE' },
 };
 
 export const achievementsList = [
@@ -35,17 +36,24 @@ export const achievementsList = [
     tier: 'PLATINUM',
     hidden: false,
   },
+  {
+    id: 'earlySupporter',
+    name: '首批阿彬粉',
+    description: '能找到阿彬粉絲頁的你不簡單，感謝你對阿彬的愛！',
+    tier: 'DIAMOND',
+    hidden: false, 
+  },
   // --- 答題表現類成就 ---
   {
     id: 'firstPerfectScore',
-    name: '首次作答全對',
-    description: '第一次就全部答對，太厲害了！',
+    name: '首次全對',
+    description: '全部答對，太厲害了！',
     tier: 'PLATINUM',
     hidden: false,
   },
   {
     id: 'firstAllWrong',
-    name: '沒關係，再試一次',
+    name: '沒關係',
     description: '第一次全部答錯，別灰心！',
     tier: 'BRONZE',
     hidden: false,

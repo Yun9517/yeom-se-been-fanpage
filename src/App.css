@@ -166,6 +166,28 @@ h2 {
   border-color: transparent transparent transparent white;
 }
 
+/* --- Header Icon Glow Effect --- */
+@keyframes icon-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 8px var(--glow-color));
+  }
+}
+
+.icon-glow {
+  animation: icon-glow 2.5s infinite ease-in-out;
+}
+
+.icon-glow.tier-platinum {
+  --glow-color: #00FF99;
+}
+
+.icon-glow.tier-diamond {
+  --glow-color: #FF00FF;
+}
+
 .yarl__button {
   z-index: 10 !important;
 }
