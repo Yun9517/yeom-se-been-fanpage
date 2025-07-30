@@ -75,9 +75,15 @@ function FanQuiz() {
     const userAchievementsSnap = await getDoc(userAchievementsRef);
     const userAchievements = userAchievementsSnap.exists() ? userAchievementsSnap.data() : {};
 
+    const achievementData = {
+      userName: user.displayName,
+      userEmail: user.email,
+    };
+
     // Achievement: 首次作答全對
     if (score === questions.length && !userAchievements.firstPerfectScore) {
       await setDoc(userAchievementsRef, {
+        ...achievementData,
         firstPerfectScore: true,
         firstPerfectScoreDate: serverTimestamp()
       }, { merge: true });
@@ -87,6 +93,7 @@ function FanQuiz() {
     // Achievement: 首次全錯
     if (score === 0 && !userAchievements.firstAllWrong) {
       await setDoc(userAchievementsRef, {
+        ...achievementData,
         firstAllWrong: true,
         firstAllWrongDate: serverTimestamp()
       }, { merge: true });
@@ -98,6 +105,7 @@ function FanQuiz() {
 
     if (loginDaysCount >= 1 && !userAchievements.firstLogin) {
       await setDoc(userAchievementsRef, {
+        ...achievementData,
         firstLogin: true,
         firstLoginDate: serverTimestamp()
       }, { merge: true });
@@ -106,6 +114,7 @@ function FanQuiz() {
 
     if (loginDaysCount >= 3 && !userAchievements.threeDayLogin) {
       await setDoc(userAchievementsRef, {
+        ...achievementData,
         threeDayLogin: true,
         threeDayLoginDate: serverTimestamp()
       }, { merge: true });
@@ -114,6 +123,7 @@ function FanQuiz() {
 
     if (loginDaysCount >= 7 && !userAchievements.sevenDayLogin) {
       await setDoc(userAchievementsRef, {
+        ...achievementData,
         sevenDayLogin: true,
         sevenDayLoginDate: serverTimestamp()
       }, { merge: true });
@@ -122,6 +132,7 @@ function FanQuiz() {
 
     if (loginDaysCount >= 30 && !userAchievements.thirtyDayLogin) {
       await setDoc(userAchievementsRef, {
+        ...achievementData,
         thirtyDayLogin: true,
         thirtyDayLoginDate: serverTimestamp()
       }, { merge: true });
@@ -133,6 +144,7 @@ function FanQuiz() {
 
     if (totalQuizzesAnswered >= 100 && !userAchievements.hundredQuizzes) {
       await setDoc(userAchievementsRef, {
+        ...achievementData,
         hundredQuizzes: true,
         hundredQuizzesDate: serverTimestamp()
       }, { merge: true });
@@ -141,6 +153,7 @@ function FanQuiz() {
 
     if (totalQuizzesAnswered >= 500 && !userAchievements.fiveHundredQuizzes) {
       await setDoc(userAchievementsRef, {
+        ...achievementData,
         fiveHundredQuizzes: true,
         fiveHundredQuizzesDate: serverTimestamp()
       }, { merge: true });
@@ -150,6 +163,7 @@ function FanQuiz() {
     // 阿彬代言人 (保留神秘感)
     if (totalQuizzesAnswered >= 1000 && !userAchievements.thousandQuizzes) {
       await setDoc(userAchievementsRef, {
+        ...achievementData,
         thousandQuizzes: true,
         thousandQuizzesDate: serverTimestamp()
       }, { merge: true });
@@ -199,6 +213,8 @@ function FanQuiz() {
     if (user && !user.isAnonymous) {
       const userAchievementsRef = doc(db, "userAchievements", user.uid);
       setDoc(userAchievementsRef, {
+        userName: user.displayName,
+        userEmail: user.email,
         totalQuizzesAnswered: increment(1)
       }, { merge: true });
     }
