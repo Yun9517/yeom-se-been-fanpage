@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const ImageWithFallback = ({ filename, roundedCircle, className, ...props }) => {
+const ImageWithFallback = ({ filename, roundedCircle, fluid, rounded, className, ...props }) => {
   const cloudStorageBaseUrl = `https://storage.googleapis.com/yeom-se-been-fanpage-assets`; // Your actual bucket URL
   const localBaseUrl = process.env.PUBLIC_URL;
 
@@ -23,8 +23,13 @@ const ImageWithFallback = ({ filename, roundedCircle, className, ...props }) => 
     }
   };
 
-  // Conditionally add 'rounded-circle' class
-  const finalClassName = roundedCircle ? `${className || ''} rounded-circle`.trim() : className;
+  // Conditionally add classes
+  const finalClassName = [
+    className,
+    roundedCircle ? 'rounded-circle' : '',
+    !roundedCircle && rounded ? 'rounded' : '',
+    fluid ? 'img-fluid' : ''
+  ].filter(Boolean).join(' ');
 
   return (
     <img

@@ -9,6 +9,7 @@ import ScrollToTop from './components/ScrollToTop';
 import { auth, db } from './firebase'; // Import auth and db
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'; // Import firestore functions
 import { useAuthState } from 'react-firebase-hooks/auth'; // Import useAuthState
+import packageJson from '../package.json'; // Import package.json
 
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -72,6 +73,10 @@ function App() {
     if (loadingIndicator) {
       loadingIndicator.style.display = 'none';
     }
+
+    // Log app version
+    console.log(`Yeom Se-been Fanpage v${packageJson.version} is running.`);
+
   }, []);
 
   return (
