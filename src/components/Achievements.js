@@ -54,16 +54,35 @@ const Achievements = () => {
     return 0; // Default case, maintain original order
   });
 
+  // Effect to reset achievements when user logs in/out
+  useEffect(() => {
+    if (user) {
+      // User logged in or changed, reset achievements to default
+      setUserAchievements({});
+      setLoading(true); // Set loading to true to re-fetch
+      setError(null); // Clear any previous errors
+    } else {
+      // User logged out, clear achievements and reset states
+      setUserAchievements({});
+      setLoading(false); // Ensure loading is false when logged out
+      setError("請先登入以查看成就。");
+    }
+  }, [user]); // Only depends on user
 
+  // Main effect to fetch achievements
   useEffect(() => {
     const fetchAchievements = async () => {
-      if (authLoading) return;
-
-      if (!user) {
-        setLoading(false);
-        setError("請先登入以查看成就。");
+      if (authLoading) {
+        // Still authenticating, don't fetch yet.
         return;
       }
+
+      if (!user) {
+        // User is not logged in (handled by the separate useEffect above), so just return.
+        return;
+      }
+
+      setLoading(true); // Start loading for data fetch
 
       try {
         const docRef = doc(db, "userAchievements", user.uid);
