@@ -116,6 +116,12 @@
 }
 
 /* Dropdown for sorting */
+.leaderboard-container {
+    background-color: #343a40; /* Dark background for the container */
+    padding: 20px; /* Add some padding */
+    border-radius: 8px; /* Optional: add some border-radius */
+}
+
 .leaderboard-container .dropdown {
     margin-left: auto; /* Push dropdown to the right */
 }

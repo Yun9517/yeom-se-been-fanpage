@@ -143,7 +143,7 @@ const Achievements = () => {
       {sortedAchievements.length === 0 ? (
         <Alert variant="info">目前沒有可解鎖的成就。</Alert>
       ) : (
-        <Row xs={1} sm={2} md={3} lg={4} className="g-4">
+        <Row xs={2} sm={2} md={3} lg={4} className="g-4">
           {sortedAchievements.map((achievement) => {
             const isUnlocked = userAchievements[achievement.id];
             const unlockDate = userAchievements[`${achievement.id}Date`]?.toDate().toLocaleDateString();
