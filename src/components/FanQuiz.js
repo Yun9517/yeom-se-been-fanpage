@@ -266,11 +266,12 @@ function FanQuiz() {
       // Increment totalQuizSessions and other stats when the quiz ends
       if (user && !user.isAnonymous) {
         const userAchievementsRef = doc(db, "userAchievements", user.uid);
+        const finalScore = isCorrect ? score + 1 : score; // Calculate final score for this quiz session
         const updateData = {
           totalQuizSessions: increment(1),
           totalQuizzesAnswered: increment(questions.length),
-          totalCorrectAnswers: increment(score),
-          totalIncorrectAnswers: increment(questions.length - score),
+          totalCorrectAnswers: increment(finalScore),
+          totalIncorrectAnswers: increment(questions.length - finalScore),
         };
         setDoc(userAchievementsRef, updateData, { merge: true });
       }
