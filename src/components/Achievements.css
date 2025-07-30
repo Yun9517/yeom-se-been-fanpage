@@ -55,8 +55,8 @@
 
 /* Silver Tier */
 .achievement-card.unlocked.tier-silver {
-    background-color: #A9ACB6; /* Darker silver based on new color */
-    color: #302f2f; /* Lighter text for contrast */
+    background-color: #7F828A; /* Darker silver based on new color */
+    color: #E0E2E6; /* Lighter text for contrast */
     border: 2px solid #A9ACB6; /* New silver border */
     box-shadow: 0 0 15px rgba(169, 172, 182, 0.6);
 }
@@ -146,4 +146,25 @@
     font-size: 0.8em;
     color: #adb5bd; /* Light gray color */
     margin-top: 5px;
+}
+
+/* Responsive adjustments for achievement cards */
+@media (max-width: 767.98px) {
+    .achievement-card {
+        width: 120px; /* Smaller width for mobile */
+        height: 150px; /* Smaller height for mobile */
+        margin: 8px; /* Slightly reduced margin */
+    }
+
+    .achievement-card .card-title {
+        font-size: 0.9em; /* Smaller font size for title */
+    }
+
+    .achievement-icon svg {
+        font-size: 40px !important; /* Smaller icon size */
+    }
+
+    .achievement-progress {
+        font-size: 0.7em; /* Smaller font size for progress text */
+    }
 }

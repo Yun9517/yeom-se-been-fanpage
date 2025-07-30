@@ -325,7 +325,7 @@ function FanQuiz() {
         <meta name="twitter:image" content={`https://storage.googleapis.com/yeom-se-been-fanpage-assets/${ogImageUrl}`} />
       </Helmet>
       <ToastContainer position="top-end" className="p-3">
-        <Toast onClose={() => setShowToast(false)} show={showToast} delay={3000} autohide bg={toastVariant}>
+        <Toast onClose={() => setShowToast(false)} show={showToast} delay={5000} autohide bg={toastVariant}>
           <Toast.Header>
             <strong className="me-auto">成就解鎖！</strong>
           </Toast.Header>
