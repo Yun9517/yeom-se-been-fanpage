@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -7,8 +7,24 @@ import { GoogleAuthProvider, signInWithPopup, signOut, signInAnonymously } from 
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { FaGoogle } from 'react-icons/fa';
 
+import { achievementsList, achievementTiers } from '../data/achievements';
+
 const Header = () => {
   const [user] = useAuthState(auth);
+  const [userAchievements, setUserAchievements] = useState({});
+
+  useEffect(() => {
+    const fetchUserAchievements = async () => {
+      if (user && !user.isAnonymous) {
+        const userAchievementsRef = doc(db, "userAchievements", user.uid);
+        const userAchievementsSnap = await getDoc(userAchievementsRef);
+        if (userAchievementsSnap.exists()) {
+          setUserAchievements(userAchievementsSnap.data());
+        }
+      }
+    };
+    fetchUserAchievements();
+  }, [user]);
 
   const anonymousNicknames = [
     "阿彬鐵粉",
@@ -51,13 +67,13 @@ const Header = () => {
         console.log("Header: User is authenticated and not anonymous. Checking login days.");
         const userAchievementsRef = doc(db, "userAchievements", user.uid);
         const userAchievementsSnap = await getDoc(userAchievementsRef);
-        const userAchievements = userAchievementsSnap.exists() ? userAchievementsSnap.data() : {};
+        const userAchievementsData = userAchievementsSnap.exists() ? userAchievementsSnap.data() : {};
 
         const today = new Date();
         today.setHours(0, 0, 0, 0); // Normalize to start of day
 
-        const lastLoginDate = userAchievements.lastLoginDate?.toDate();
-        let loginDaysCount = userAchievements.loginDaysCount || 0;
+        const lastLoginDate = userAchievementsData.lastLoginDate?.toDate();
+        let loginDaysCount = userAchievementsData.loginDaysCount || 0;
 
         console.log("Header: lastLoginDate from Firestore:", lastLoginDate, "loginDaysCount from Firestore:", loginDaysCount);
 
@@ -80,6 +96,26 @@ const Header = () => {
     trackLoginDays();
   }, [user]);
 
+  const getHighestAchievementTierColor = () => {
+    if (!user || user.isAnonymous || !userAchievements) return null; // No color for anonymous or no achievements
+
+    let highestTier = null;
+    let highestOrder = -1;
+
+    for (const achievement of achievementsList) {
+      if (userAchievements[achievement.id]) { // If achievement is unlocked
+        const tier = achievementTiers[achievement.tier];
+        if (tier && tier.order > highestOrder) {
+          highestOrder = tier.order;
+          highestTier = tier;
+        }
+      }
+    }
+    return highestTier ? highestTier.color : null;
+  };
+
+  const dropdownBgColor = getHighestAchievementTierColor();
+
   return (
     <Navbar bg="dark" variant="dark" expand="lg" sticky="top">
       <Container>
@@ -90,13 +126,17 @@ const Header = () => {
             <Nav.Link as={NavLink} to="/" end>首頁</Nav.Link>
             <Nav.Link as={NavLink} to="/gallery">照片牆</Nav.Link>
             <Nav.Link as={NavLink} to="/videos">影音區</Nav.Link>
-            <Nav.Link as={NavLink} to="/profile">個人檔案</Nav.Link>
+            <Nav.Link as={NavLink} to="/profile">生涯經歷</Nav.Link>
             <Nav.Link as={NavLink} to="/news">最新消息</Nav.Link>
             <Nav.Link as={NavLink} to="/quiz">粉絲小遊戲</Nav.Link>
           </Nav>
           <Nav>
             {user ? (
-              <NavDropdown title={`歡迎, ${user.isAnonymous ? getAnonymousDisplayName() : user.displayName || '訪客'}`} id="basic-nav-dropdown">
+              <NavDropdown 
+                title={`歡迎, ${user.isAnonymous ? getAnonymousDisplayName() : user.displayName || '訪客'}`} 
+                id="basic-nav-dropdown"
+                style={dropdownBgColor ? { border: `4px solid ${dropdownBgColor}`, borderRadius: '5px', padding: '0 10px' } : {}}
+              >
                 <NavDropdown.Item as={NavLink} to="/quiz-history">我的遊戲紀錄</NavDropdown.Item>
                 <NavDropdown.Item as={NavLink} to="/achievements">我的成就</NavDropdown.Item>
                 <NavDropdown.Item onClick={handleLogout}>登出</NavDropdown.Item>

@@ -141,6 +141,62 @@ function FanQuiz() {
 
     // Quizzes Answered Achievements
     const totalQuizzesAnswered = userAchievements.totalQuizzesAnswered || 0;
+    const totalCorrectAnswers = userAchievements.totalCorrectAnswers || 0;
+    const totalIncorrectAnswers = userAchievements.totalIncorrectAnswers || 0;
+
+    if (totalCorrectAnswers >= 10 && !userAchievements.tenCorrectAnswers) {
+      await setDoc(userAchievementsRef, {
+        ...achievementData,
+        tenCorrectAnswers: true,
+        tenCorrectAnswersDate: serverTimestamp(),
+      }, { merge: true });
+      showAchievementToast("恭喜！您解鎖了 [小有成就] 成就！");
+    }
+
+    if (totalCorrectAnswers >= 50 && !userAchievements.fiftyCorrectAnswers) {
+      await setDoc(userAchievementsRef, {
+        ...achievementData,
+        fiftyCorrectAnswers: true,
+        fiftyCorrectAnswersDate: serverTimestamp(),
+      }, { merge: true });
+      showAchievementToast("恭喜！您解鎖了 [鋼鐵粉絲] 成就！");
+    }
+
+    if (totalCorrectAnswers >= 100 && !userAchievements.hundredCorrectAnswers) {
+      await setDoc(userAchievementsRef, {
+        ...achievementData,
+        hundredCorrectAnswers: true,
+        hundredCorrectAnswersDate: serverTimestamp(),
+      }, { merge: true });
+      showAchievementToast("恭喜！您解鎖了 [阿彬知識王] 成就！");
+    }
+
+    if (totalIncorrectAnswers >= 10 && !userAchievements.tenIncorrectAnswers) {
+      await setDoc(userAchievementsRef, {
+        ...achievementData,
+        tenIncorrectAnswers: true,
+        tenIncorrectAnswersDate: serverTimestamp(),
+      }, { merge: true });
+      showAchievementToast("恭喜！您解鎖了 [再接再厲] 成就！");
+    }
+
+    if (totalIncorrectAnswers >= 50 && !userAchievements.fiftyIncorrectAnswers) {
+      await setDoc(userAchievementsRef, {
+        ...achievementData,
+        fiftyIncorrectAnswers: true,
+        fiftyIncorrectAnswersDate: serverTimestamp(),
+      }, { merge: true });
+      showAchievementToast("恭喜！您解鎖了 [不怕失敗] 成就！");
+    }
+
+    if (totalIncorrectAnswers >= 100 && !userAchievements.hundredIncorrectAnswers) {
+      await setDoc(userAchievementsRef, {
+        ...achievementData,
+        hundredIncorrectAnswers: true,
+        hundredIncorrectAnswersDate: serverTimestamp(),
+      }, { merge: true });
+      showAchievementToast("恭喜！您解鎖了 [越挫越勇] 成就！");
+    }
 
     if (totalQuizzesAnswered >= 100 && !userAchievements.hundredQuizzes) {
       await setDoc(userAchievementsRef, {
@@ -209,14 +265,18 @@ function FanQuiz() {
       setShowScore(true);
     }
 
-    // Update total quizzes answered count
+    // Update total quizzes answered, correct, and incorrect counts
     if (user && !user.isAnonymous) {
       const userAchievementsRef = doc(db, "userAchievements", user.uid);
-      setDoc(userAchievementsRef, {
+      const updateData = {
         userName: user.displayName,
         userEmail: user.email,
-        totalQuizzesAnswered: increment(1)
-      }, { merge: true });
+        totalQuizzesAnswered: increment(1),
+        ...(isCorrect 
+          ? { totalCorrectAnswers: increment(1) } 
+          : { totalIncorrectAnswers: increment(1) })
+      };
+      setDoc(userAchievementsRef, updateData, { merge: true });
     }
   };
 

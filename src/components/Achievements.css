@@ -10,20 +10,8 @@
     justify-content: center;
     align-items: center;
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
-
-.achievement-card.locked {
-    background-color: #343a40; /* Dark gray for locked achievements */
-    color: #6c757d; /* Lighter gray text */
-    border: 1px solid #495057;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.achievement-card.unlocked {
-    background-color: #28a745; /* Green for unlocked achievements */
-    color: #ffffff; /* White text */
-    border: 1px solid #218838;
-    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+    overflow: hidden; /* Ensure borders/shadows are contained */
+    position: relative; /* For pseudo-elements */
 }
 
 .achievement-card:hover {
@@ -33,6 +21,21 @@
 
 .achievement-icon {
     margin-bottom: 10px;
+    z-index: 1; /* Ensure icon is above pseudo-elements */
+}
+
+.achievement-card .card-title {
+    font-size: 1.1em;
+    font-weight: bold;
+    z-index: 1; /* Ensure title is above pseudo-elements */
+}
+
+/* --- Locked State --- */
+.achievement-card.locked {
+    background-color: #343a40; /* Dark gray for locked achievements */
+    color: #6c757d; /* Lighter gray text */
+    border: 1px solid #495057;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .achievement-card.locked .achievement-icon svg {
@@ -40,7 +43,107 @@
     opacity: 0.5;
 }
 
-.achievement-card .card-title {
-    font-size: 1.1em;
-    font-weight: bold;
+/* --- Unlocked States (Tier-based) --- */
+
+/* Bronze Tier */
+.achievement-card.unlocked.tier-bronze {
+    background-color: #5A4D37; /* Darker bronze based on new color */
+    color: #E0D0B0; /* Lighter text for contrast */
+    border: 2px solid #8C7853; /* New bronze border */
+    box-shadow: 0 0 10px rgba(140, 120, 83, 0.5);
+}
+
+/* Silver Tier */
+.achievement-card.unlocked.tier-silver {
+    background-color: #A9ACB6; /* Darker silver based on new color */
+    color: #302f2f; /* Lighter text for contrast */
+    border: 2px solid #A9ACB6; /* New silver border */
+    box-shadow: 0 0 15px rgba(169, 172, 182, 0.6);
+}
+
+/* Gold Tier */
+.achievement-card.unlocked.tier-gold {
+    background-color: #FDD017; /* Darker gold */
+    color: #5a4a2a; /* Gold text */
+    border: 2px solid #ffd700; /* Gold border */
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+    /* Add a subtle glow effect */
+    animation: gold-glow 1.5s infinite alternate;
+}
+
+@keyframes gold-glow {
+    from { box-shadow: 0 0 20px rgba(255, 215, 0, 0.7); }
+    to { box-shadow: 0 0 30px rgba(255, 215, 0, 0.9); }
+}
+
+/* Platinum Tier */
+.achievement-card.unlocked.tier-platinum {
+    background: linear-gradient(135deg, #008040, #01B468); /* Green gradient */
+    color: #e0e0e0; /* Light text */
+    border: 3px solid #02DF82; /* Vibrant green border */
+    box-shadow: 0 0 25px rgba(2, 223, 130, 0.8), 0 0 40px rgba(2, 223, 130, 0.5);
+    position: relative;
+    overflow: hidden;
+    /* Add a subtle animated border */
+    animation: platinum-border-glow 2s infinite alternate;
+}
+
+@keyframes platinum-border-glow {
+    from { border-color: #02DF82; }
+    to { border-color: #00FF99; }
+}
+
+.achievement-card.unlocked.tier-platinum::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(from 0deg at 50% 50%, transparent 0%, rgba(255,255,255,0.1) 20%, transparent 40%, transparent 60%, rgba(255,255,255,0.1) 80%, transparent 100%);
+    animation: rotate-border 4s linear infinite;
+    z-index: 0;
+}
+
+@keyframes rotate-border {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.achievement-card.unlocked.tier-platinum .achievement-icon svg,
+.achievement-card.unlocked.tier-platinum .card-title {
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+}
+
+/* Dropdown for sorting */
+.leaderboard-container .dropdown {
+    margin-left: auto; /* Push dropdown to the right */
+}
+
+.leaderboard-container .dropdown-toggle {
+    background-color: #495057; /* Darker background for button */
+    border-color: #495057;
+    color: #ffffff;
+}
+
+.leaderboard-container .dropdown-menu {
+    background-color: #343a40; /* Darker background for dropdown menu */
+    border-color: #495057;
+}
+
+.leaderboard-container .dropdown-item {
+    color: #ffffff;
+}
+
+.leaderboard-container .dropdown-item:hover,
+.leaderboard-container .dropdown-item:active {
+    background-color: #5a6268; /* Hover/active background */
+    color: #ffffff;
+}
+
+/* Achievement Progress */
+.achievement-progress {
+    font-size: 0.8em;
+    color: #adb5bd; /* Light gray color */
+    margin-top: 5px;
 }

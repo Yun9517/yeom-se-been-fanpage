@@ -7,15 +7,17 @@ import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import './QuizHistory.css';
 
 const QuizHistory = () => {
-  const [user] = useAuthState(auth);
+  const [user, authLoading] = useAuthState(auth);
   const [history, setHistory] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // For fetching quiz history data
   const [error, setError] = useState(null);
   const [sortField, setSortField] = useState('createdAt'); // Default sort field
   const [sortOrder, setSortOrder] = useState('desc'); // Default sort order
 
   useEffect(() => {
     const fetchQuizHistory = async () => {
+      if (authLoading) return; // Wait for auth state to load
+
       if (!user) {
         setLoading(false);
         setError("請先登入以查看遊戲紀錄。");
@@ -43,7 +45,7 @@ const QuizHistory = () => {
     };
 
     fetchQuizHistory();
-  }, [user, sortField, sortOrder]); // Add sortField and sortOrder to dependencies
+  }, [user, authLoading, sortField, sortOrder]); // Add authLoading to dependencies
 
   const handleSort = (field) => {
     if (field === sortField) {
@@ -53,6 +55,15 @@ const QuizHistory = () => {
       setSortOrder('desc'); // Default to descending when changing sort field
     }
   };
+
+  if (authLoading) {
+    return (
+      <Container className="mt-5 text-center">
+        <Spinner animation="border" variant="light" />
+        <p className="text-white-50 mt-2">載入使用者狀態...</p>
+      </Container>
+    );
+  }
 
   if (loading) {
     return (

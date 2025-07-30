@@ -1,9 +1,9 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import ImageWithFallback from './ImageWithFallback'; // Import our custom component
-import './Profile.css';
+import './CareerJourney.css';
 
-const Profile = () => {
+const CareerJourney = () => {
     const cheerleadingExperience = [
     {
       year: '2022',
@@ -85,4 +85,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default CareerJourney;
