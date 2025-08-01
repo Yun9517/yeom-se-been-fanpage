@@ -191,3 +191,18 @@ h2 {
 .yarl__button {
   z-index: 10 !important;
 }
+
+/* Custom Gradient Button */
+.btn-theme-gradient {
+  background: linear-gradient(45deg, #005AB5, #921AFF) !important;
+  border: none;
+  color: white;
+  transition: all 0.3s ease;
+  background-size: 150% auto;
+}
+
+.btn-theme-gradient:hover {
+  background-position: right center; /* change the direction of the change here */
+  box-shadow: 0 4px 15px 0 rgba(146, 26, 255, 0.4);
+  color: white;
+}

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { FiRefreshCcw, FiLink } from 'react-icons/fi';
 import { FaLine } from 'react-icons/fa';
-import { Spinner, Alert, Accordion, Toast, ToastContainer } from 'react-bootstrap'; // Import Accordion, Toast, ToastContainer
+import { Spinner, Alert, Accordion, Toast, ToastContainer, Button } from 'react-bootstrap';
 import './FanQuiz.css';
 
 import { db, auth } from '../firebase';
@@ -378,9 +378,14 @@ function FanQuiz() {
                 </div>
                 <div className="answer-section">
                   {questions[currentQuestion]?.options.map((option, index) => (
-                    <button key={`${currentQuestion}-${index}`} onClick={() => handleAnswerOptionClick(option)}>
-                      {option}
-                    </button>
+                    <Button
+                    key={index}
+                    onClick={() => handleAnswerOptionClick(option)}
+                    className="answer-btn btn-theme-gradient w-100 mb-2"
+                    disabled={showScore} // Use showScore to disable button after quiz ends
+                  >
+                    {option}
+                  </Button>
                   ))}
                 </div>
               </div>

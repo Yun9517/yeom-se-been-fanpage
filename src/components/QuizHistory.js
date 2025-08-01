@@ -296,7 +296,7 @@ const QuizHistory = () => {
 
               {/* Filter buttons - grouped on one line and aligned to the right */}
               <div className="d-flex justify-content-end">
-                <Button variant="primary" onClick={handleFilter} className="me-2" size="sm">
+                <Button onClick={handleFilter} className="me-2 btn-theme-gradient" size="sm">
                   篩選
                 </Button>
                 <Button variant="outline-secondary" onClick={handleClearFilter} size="sm">

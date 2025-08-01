@@ -36,20 +36,23 @@
     font-size: 1.2em; /* Increased size */
   }
   
-  /* Highlighting for top ranks */
+  /* Highlighting for top ranks - bold text with a glow effect */
   .rank-gold td {
-    background-color: rgba(255, 215, 0, 0.2); /* Gold with transparency */
     color: #ffd700;
+    font-weight: bold;
+    text-shadow: 0 0 7px #ffd700; /* Gold glow */
   }
   
   .rank-silver td {
-    background-color: rgba(192, 192, 192, 0.2); /* Silver with transparency */
     color: #c0c0c0;
+    font-weight: bold;
+    text-shadow: 0 0 7px #c0c0c0; /* Silver glow */
   }
   
   .rank-bronze td {
-    background-color: rgba(205, 127, 50, 0.2); /* Bronze with transparency */
     color: #cd7f32;
+    font-weight: bold;
+    text-shadow: 0 0 7px #cd7f32; /* Bronze glow */
   }
 
   .current-user-row {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db, auth } from '../firebase';
 import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
-import { Table, Button, Form } from 'react-bootstrap';
+import { Table, Button, Dropdown } from 'react-bootstrap';
 import { FaTrophy } from 'react-icons/fa';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import './Leaderboard.css';
@@ -56,10 +56,7 @@ const Leaderboard = () => {
     }
   };
 
-  const handlePageSizeChange = (e) => {
-    setPageSize(Number(e.target.value));
-    setCurrentPage(1); // Reset to first page when page size changes
-  };
+  
 
   const getRankClass = (index) => {
     // Adjust index for current page
@@ -72,16 +69,24 @@ const Leaderboard = () => {
 
   return (
     <div className="leaderboard-container mt-5">
-      <Form.Group controlId="pageSizeSelect" className="mb-3">
-        <Form.Label>每頁顯示筆數:</Form.Label>
-        <Form.Control as="select" value={pageSize} onChange={handlePageSizeChange}>
-          <option value={10}>10</option>
-          <option value={20}>20</option>
-          <option value={50}>50</option>
-          <option value={100}>100</option>
-        </Form.Control>
-      </Form.Group>
-      <Table striped bordered hover responsive variant="dark">
+      {/* Header Section with Title and Page Size Selector */}
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h2 className="leaderboard-title mb-0">排行榜</h2>
+        <Dropdown>
+          <Dropdown.Toggle id="dropdown-pagesize" size="sm" className="btn-theme-gradient">
+            每頁 {pageSize} 筆
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            <Dropdown.Item onClick={() => setPageSize(10)}>10</Dropdown.Item>
+            <Dropdown.Item onClick={() => setPageSize(20)}>20</Dropdown.Item>
+            <Dropdown.Item onClick={() => setPageSize(50)}>50</Dropdown.Item>
+            <Dropdown.Item onClick={() => setPageSize(100)}>100</Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+      </div>
+
+      {/* Leaderboard Table */}
+      <Table striped bordered responsive variant="dark">
         <thead>
           <tr>
             <th>#</th>
@@ -121,7 +126,7 @@ const Leaderboard = () => {
           <Button onClick={handlePrevPage} disabled={loading} variant="secondary">上一頁</Button>
         )}
         {currentPage < totalPages && (
-          <Button onClick={handleNextPage} disabled={loading} variant="secondary">下一頁</Button>
+          <Button onClick={handleNextPage} disabled={loading} variant="secondary" className="ms-auto">下一頁</Button>
         )}
       </div>
     </div>
