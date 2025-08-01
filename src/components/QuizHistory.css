@@ -1,7 +1,7 @@
 /* src/components/QuizHistory.css */
 
 .quiz-history-accordion .accordion-item {
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     border: 1px solid #495057;
     border-radius: 5px;
     overflow: hidden; /* Ensures border-radius applies correctly */
@@ -17,10 +17,15 @@
     background-color: #343a40 !important; /* Ensure button background matches header */
     color: #e9ecef !important;
     border: none;
+    padding: 0.75rem 1.25rem; /* 調整內距讓按鈕變小 */
+    font-size: 0.9rem; /* 調整字體大小 */
 }
 
 .quiz-history-accordion .accordion-button:not(.collapsed) {
     background-color: #495057 !important; /* Slightly different background when expanded */
+    border: none;
+    padding: 0.75rem 1.25rem; /* 調整內距讓按鈕變小 */
+    font-size: 0.9rem; /* 調整字體大小 */
 }
 
 .quiz-history-accordion .accordion-body {
@@ -32,4 +37,45 @@
 .quiz-history-accordion .answer-item {
     background-color: #343a40; /* Background for individual answer items */
     border-color: #495057 !important;
+}
+
+
+
+.date-filter-container {
+    display: flex;
+    flex-wrap: wrap; /* Allow items to wrap to the next line */
+    justify-content: flex-end; /* Align items to the right */
+    gap: 10px;
+}
+
+/* Responsive styles for filter controls */
+@media (max-width: 767.98px) {
+    .filter-controls {
+        align-items: stretch !important; /* Override inline style */
+    }
+
+    .filter-controls .dropdown,
+    .filter-controls .date-filter-container {
+        width: 100%;
+    }
+
+    .filter-controls .dropdown .dropdown-toggle {
+        width: 100%;
+    }
+
+    .date-filter-container {
+        flex-direction: column;
+    }
+
+    .date-filter-container .input-group {
+        width: 100%;
+    }
+
+    .date-filter-container .d-flex {
+        justify-content: stretch !important;
+    }
+
+    .date-filter-container .d-flex .btn {
+        flex-grow: 1;
+    }
 }

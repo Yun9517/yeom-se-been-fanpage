@@ -1,108 +1,90 @@
 import React, { useState, useEffect } from 'react';
 import { db, auth } from '../firebase';
-import { collection, query, where, orderBy, getDocs, limit, startAfter, doc, getDoc as getSingleDoc } from 'firebase/firestore';
+import { collection, query, where, orderBy, getDocs, limit, startAfter, doc, getDoc as getSingleDoc, Timestamp } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { Container, Spinner, Alert, Table, Accordion, Button, Dropdown, Form, InputGroup } from 'react-bootstrap';
+import { Container, Spinner, Alert, Table, Accordion, Button, Dropdown, Form, InputGroup, Row, Col } from 'react-bootstrap';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import './QuizHistory.css';
 
 const QuizHistory = () => {
   const [user, authLoading] = useAuthState(auth);
   const [history, setHistory] = useState([]);
-  const [userAchievementsData, setUserAchievementsData] = useState({}); // New state for user achievements
-  const [loading, setLoading] = useState(true); // For fetching quiz history data
+  const [userAchievementsData, setUserAchievementsData] = useState({});
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [sortField, setSortField] = useState('createdAt'); // Default sort field
-  const [sortOrder, setSortOrder] = useState('desc'); // Default sort order
+  const [dateError, setDateError] = useState(''); // State for date validation error
+  const [sortField, setSortField] = useState('createdAt');
+  const [sortOrder, setSortOrder] = useState('desc');
 
-  // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10); // Number of items per page
-  const [lastVisible, setLastVisible] = useState(null); // Last document of the current page
-  const [pageHistory, setPageHistory] = useState([null]); // To store lastVisible for previous pages
-  const [hasMore, setHasMore] = useState(false); // Indicates if there's a next page
-  const [customItemsPerPage, setCustomItemsPerPage] = useState(''); // For custom input
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [lastVisible, setLastVisible] = useState(null);
+  const [pageHistory, setPageHistory] = useState([null]);
+  const [hasMore, setHasMore] = useState(false);
+  const [customItemsPerPage, setCustomItemsPerPage] = useState('');
 
-  // Effect to reset pagination when user logs in/out
+  const [startDateInput, setStartDateInput] = useState('');
+  const [endDateInput, setEndDateInput] = useState('');
+
+  const [filterStartDate, setFilterStartDate] = useState('');
+  const [filterEndDate, setFilterEndDate] = useState('');
+
   useEffect(() => {
     if (user) {
-      // User logged in or changed, reset pagination to first page
       setCurrentPage(1);
       setLastVisible(null);
       setPageHistory([null]);
       setHasMore(false);
-      setError(null); // Clear any previous errors
+      setError(null);
     } else {
-      // User logged out, clear history and reset states
       setHistory([]);
-      setLoading(false); // Ensure loading is false when logged out
+      setLoading(false);
       setError("請先登入以查看遊戲紀錄。");
       setCurrentPage(1);
       setLastVisible(null);
       setPageHistory([null]);
       setHasMore(false);
     }
-  }, [user]); // Only depends on user
+  }, [user]);
 
-  // Main effect to fetch quiz history
   useEffect(() => {
     const fetchQuizHistory = async () => {
-      if (authLoading) {
-        // Still authenticating, don't fetch yet.
-        return;
-      }
+      if (authLoading) return;
+      if (!user) return;
 
-      if (!user) {
-        // User is not logged in (handled by the separate useEffect above), so just return.
-        // The UI will show "請先登入..."
-        return;
-      }
-
-      setLoading(true); // Start loading for data fetch
+      setLoading(true);
 
       try {
-        // Fetch user achievements for total quizzes answered
         const userAchievementsRef = doc(db, "userAchievements", user.uid);
         const userAchievementsSnap = await getSingleDoc(userAchievementsRef);
-        if (userAchievementsSnap.exists()) {
-          setUserAchievementsData(userAchievementsSnap.data());
-        } else {
-          setUserAchievementsData({});
+        setUserAchievementsData(userAchievementsSnap.exists() ? userAchievementsSnap.data() : {});
+
+        let baseQuery = collection(db, "scores");
+        let q = query(baseQuery, where("userId", "==", user.uid));
+
+        if (filterStartDate) {
+          const startTimestamp = Timestamp.fromDate(new Date(filterStartDate + 'T00:00:00'));
+          q = query(q, where("createdAt", ">=", startTimestamp));
+        }
+        if (filterEndDate) {
+          const endTimestamp = Timestamp.fromDate(new Date(filterEndDate + 'T23:59:59'));
+          q = query(q, where("createdAt", "<=", endTimestamp));
         }
 
-        let q;
-        if (pageHistory[currentPage - 1] === null) { // First page or going back to a page without a startAfter doc
-          q = query(
-            collection(db, "scores"),
-            where("userId", "==", user.uid),
-            orderBy(sortField, sortOrder),
-            limit(itemsPerPage + 1) // Fetch one more to check if there's a next page
-          );
-        } else {
-          // For subsequent pages, use startAfter
-          q = query(
-            collection(db, "scores"),
-            where("userId", "==", user.uid),
-            orderBy(sortField, sortOrder),
-            startAfter(pageHistory[currentPage - 1]), // Start after the last document of the previous page
-            limit(itemsPerPage + 1)
-          );
+        q = query(q, orderBy(sortField, sortOrder));
+
+        if (pageHistory[currentPage - 1]) {
+          q = query(q, startAfter(pageHistory[currentPage - 1]));
         }
+
+        q = query(q, limit(itemsPerPage + 1));
 
         const querySnapshot = await getDocs(q);
-        const fetchedHistory = [];
-        querySnapshot.forEach(doc => {
-          fetchedHistory.push({ id: doc.id, ...doc.data() });
-        });
+        const fetchedHistory = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-        // Determine if there's a next page
         setHasMore(fetchedHistory.length > itemsPerPage);
-
-        // Slice the array to get only the items for the current page
         const currentItems = fetchedHistory.slice(0, itemsPerPage);
         setHistory(currentItems);
-
-        // Update lastVisible for pagination
         setLastVisible(querySnapshot.docs[currentItems.length - 1]);
 
       } catch (err) {
@@ -115,12 +97,12 @@ const QuizHistory = () => {
 
     fetchQuizHistory();
 
-  }, [user, authLoading, sortField, sortOrder, currentPage, itemsPerPage, pageHistory]);
+  }, [user, authLoading, sortField, sortOrder, currentPage, itemsPerPage, filterStartDate, filterEndDate, pageHistory]);
 
   const handleNextPage = () => {
     if (hasMore) {
       setCurrentPage(prevPage => prevPage + 1);
-      setPageHistory(prevHistory => [...prevHistory, lastVisible]); // Store lastVisible for current page
+      setPageHistory(prevHistory => [...prevHistory, lastVisible]);
     }
   };
 
@@ -128,9 +110,9 @@ const QuizHistory = () => {
     if (currentPage > 1) {
       setCurrentPage(prevPage => prevPage - 1);
       const newPageHistory = [...pageHistory];
-      newPageHistory.pop(); // Remove the current page's lastVisible
+      newPageHistory.pop();
       setPageHistory(newPageHistory);
-      setLastVisible(newPageHistory[newPageHistory.length - 1]); // Set lastVisible to the one for the previous page
+      setLastVisible(newPageHistory[newPageHistory.length - 1]);
     }
   };
 
@@ -139,9 +121,41 @@ const QuizHistory = () => {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
       setSortField(field);
-      setSortOrder('desc'); // Default to descending when changing sort field
+      setSortOrder('desc');
     }
-    // Reset pagination when sort changes
+    setCurrentPage(1);
+    setLastVisible(null);
+    setPageHistory([null]);
+    setHasMore(false);
+  };
+
+  const handleFilter = () => {
+    setDateError(''); // Clear previous errors
+
+    if (!startDateInput && !endDateInput) {
+      setDateError('請至少選擇一個開始或結束日期。');
+      return;
+    }
+
+    if (startDateInput && endDateInput && new Date(startDateInput) > new Date(endDateInput)) {
+      setDateError('開始日期不能晚於結束日期。');
+      return;
+    }
+
+    setFilterStartDate(startDateInput);
+    setFilterEndDate(endDateInput);
+    setCurrentPage(1);
+    setLastVisible(null);
+    setPageHistory([null]);
+    setHasMore(false);
+  };
+
+  const handleClearFilter = () => {
+    setStartDateInput('');
+    setEndDateInput('');
+    setFilterStartDate('');
+    setFilterEndDate('');
+    setDateError(''); // Also clear date error
     setCurrentPage(1);
     setLastVisible(null);
     setPageHistory([null]);
@@ -150,7 +164,6 @@ const QuizHistory = () => {
 
   const handleItemsPerPageChange = (num) => {
     setItemsPerPage(num);
-    // Reset pagination when items per page changes
     setCurrentPage(1);
     setLastVisible(null);
     setPageHistory([null]);
@@ -162,7 +175,7 @@ const QuizHistory = () => {
     if (num > 0) {
       handleItemsPerPageChange(num);
     } else {
-      alert('請輸入有效的數字。');
+      setDateError('請輸入有效的數字。');
     }
   };
 
@@ -208,65 +221,111 @@ const QuizHistory = () => {
     );
   }
 
-  // Calculate statistics
-  const totalGamesOverall = userAchievementsData.totalQuizSessions || 0; // Use total quiz sessions from achievements
+  const totalGamesOverall = userAchievementsData.totalQuizSessions || 0;
   const highestScore = history.reduce((max, record) => Math.max(max, record.score), 0);
   const averageScore = history.length > 0 ? (history.reduce((sum, record) => sum + record.score, 0) / history.length).toFixed(2) : 0;
 
   return (
     <Container className="mt-5 leaderboard-container">
       <h2>我的遊戲紀錄</h2>
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <div className="mb-4 p-3 rounded" style={{ backgroundColor: '#343a40', color: '#e9ecef' }}>
-          <p><strong>總遊戲次數:</strong> {totalGamesOverall}</p>
-          <p><strong>本頁遊戲次數:</strong> {history.length}</p>
-          <p><strong>最高分數 (本頁):</strong> {highestScore}</p>
-          <p><strong>平均分數 (本頁):</strong> {averageScore}</p>
-        </div>
-        <Dropdown className="ms-auto">
-          <Dropdown.Toggle variant="secondary" id="dropdown-items-per-page">
-            每頁顯示: {itemsPerPage}
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
-            <Dropdown.Item onClick={() => handleItemsPerPageChange(10)}>10</Dropdown.Item>
-            <Dropdown.Item onClick={() => handleItemsPerPageChange(20)}>20</Dropdown.Item>
-            <Dropdown.Item onClick={() => handleItemsPerPageChange(50)}>50</Dropdown.Item>
-            <Dropdown.Divider />
-            <Dropdown.Item as="div" onClick={(e) => e.stopPropagation()}>
-              <InputGroup className="p-2">
+      {/* The main container with a unified background */}
+      <div className="p-3 rounded mb-3" style={{ backgroundColor: '#343a40' }}>
+        <Row className="align-items-center gy-3"> {/* gy-3 adds vertical gap on mobile */}
+          {/* Left Column: Stats */}
+          <Col md={6} style={{ color: '#e9ecef' }}>
+            {/* Use a responsive grid for better alignment across all devices */}
+            <Row>
+              <Col xs={12}><p className="mb-1"><strong>總遊戲次數:</strong> {totalGamesOverall}</p></Col>
+              <Col xs={12}><p className="mb-1"><strong>本頁遊戲次數:</strong> {history.length}</p></Col>
+              <Col xs={12}><p className="mb-1"><strong>最高分數 (本頁):</strong> {highestScore}</p></Col>
+              <Col xs={12}><p className="mb-0"><strong>平均分數 (本頁):</strong> {averageScore}</p></Col>
+            </Row>
+          </Col>
+
+          {/* Right Column: Filters - now with a vertical layout */}
+          <Col md={6} className="filter-controls">
+            <div className="d-flex flex-column">
+              {/* Items per page dropdown - full width */}
+              <Dropdown className="w-100 mb-2">
+                <Dropdown.Toggle variant="primary" id="dropdown-items-per-page" size="sm" className="w-100">
+                  每頁顯示: {itemsPerPage}
+                </Dropdown.Toggle>
+                <Dropdown.Menu className="w-100">
+                  <Dropdown.Item onClick={() => handleItemsPerPageChange(10)}>10</Dropdown.Item>
+                  <Dropdown.Item onClick={() => handleItemsPerPageChange(20)}>20</Dropdown.Item>
+                  <Dropdown.Item onClick={() => handleItemsPerPageChange(50)}>50</Dropdown.Item>
+                  <Dropdown.Divider />
+                  <Dropdown.Item as="div" onClick={(e) => e.stopPropagation()}>
+                    <InputGroup size="sm" className="p-2">
+                      <Form.Control
+                        type="number"
+                        placeholder="自訂"
+                        value={customItemsPerPage}
+                        onChange={(e) => setCustomItemsPerPage(e.target.value)}
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') handleCustomItemsPerPageSubmit();
+                        }}
+                      />
+                      <Button variant="outline-secondary" onClick={handleCustomItemsPerPageSubmit}>
+                        設定
+                      </Button>
+                    </InputGroup>
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+
+              {/* Date filters - each on its own line */}
+              <InputGroup size="sm" className="mb-2">
+                <InputGroup.Text>開始</InputGroup.Text>
                 <Form.Control
-                  type="number"
-                  placeholder="自訂"
-                  value={customItemsPerPage}
-                  onChange={(e) => setCustomItemsPerPage(e.target.value)}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      handleCustomItemsPerPageSubmit();
-                    }
-                  }}
+                  type="date"
+                  value={startDateInput}
+                  onChange={(e) => setStartDateInput(e.target.value)}
+                  max={new Date().toISOString().split('T')[0]}
                 />
-                <Button variant="outline-secondary" onClick={handleCustomItemsPerPageSubmit}>
-                  設定
-                </Button>
               </InputGroup>
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
+              <InputGroup size="sm" className="mb-2">
+                <InputGroup.Text>結束</InputGroup.Text>
+                <Form.Control
+                  type="date"
+                  value={endDateInput}
+                  onChange={(e) => setEndDateInput(e.target.value)}
+                  max={new Date().toISOString().split('T')[0]}
+                />
+              </InputGroup>
+
+              {/* Filter buttons - grouped on one line and aligned to the right */}
+              <div className="d-flex justify-content-end">
+                <Button variant="primary" onClick={handleFilter} className="me-2" size="sm">
+                  篩選
+                </Button>
+                <Button variant="outline-secondary" onClick={handleClearFilter} size="sm">
+                  清除
+                </Button>
+              </div>
+            </div>
+          </Col>
+        </Row>
       </div>
-      {history.length === 0 ? (
+      {dateError && (
+        <Alert variant="warning" onClose={() => setDateError('')} dismissible>
+          {dateError}
+        </Alert>
+      )}
+      {history.length === 0 && !loading ? (
         <Alert variant="info">您還沒有任何遊戲紀錄。</Alert>
       ) : (
         <>
-          <Table striped bordered hover responsive variant="dark">
+          <Table striped bordered hover responsive variant="dark" style={{ tableLayout: 'fixed', wordWrap: 'break-word' }}>
             <thead>
               <tr>
-                <th onClick={() => handleSort('createdAt')} style={{ cursor: 'pointer' }}>
+                <th onClick={() => handleSort('createdAt')} style={{ cursor: 'pointer', width: '25%' }}>
                   日期 {sortField === 'createdAt' && (sortOrder === 'asc' ? '▲' : '▼')}
                 </th>
-                <th onClick={() => handleSort('score')} style={{ cursor: 'pointer' }}>
+                <th onClick={() => handleSort('score')} style={{ cursor: 'pointer', width: '20%' }}>
                   分數 {sortField === 'score' && (sortOrder === 'asc' ? '▲' : '▼')}
                 </th>
-                <th>作答結果</th>
+                <th style={{ width: '55%' }}>作答結果</th>
               </tr>
             </thead>
             <tbody>
