@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { FiRefreshCcw, FiLink } from 'react-icons/fi';
 import { FaLine } from 'react-icons/fa';
@@ -6,11 +6,12 @@ import { Alert, Accordion, Toast, ToastContainer, Button } from 'react-bootstrap
 import './FanQuiz.css';
 
 import { db, auth } from '../firebase';
-import { collection, getDocs, addDoc, serverTimestamp, setDoc, doc, getDoc, increment } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, setDoc, doc, getDoc, increment } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
 import Leaderboard from './Leaderboard';
 import LoadingSpinner from './LoadingSpinner';
+import useFirestoreCollection from '../hooks/useFirestoreCollection';
 
 // Helper function to get random questions
 const getRandomQuestions = (allQuestions, num = 5) => {
@@ -19,35 +20,24 @@ const getRandomQuestions = (allQuestions, num = 5) => {
 };
 
 function FanQuiz() {
-  const [masterQuestions, setMasterQuestions] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [showScore, setShowScore] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [userAnswers, setUserAnswers] = useState([]);
   const [user] = useAuthState(auth);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastVariant, setToastVariant] = useState('success');
 
+  const quizQueryConstraints = useMemo(() => [], []); // No specific order for initial fetch, will be shuffled anyway
+  const { data: masterQuestions, loading, error } = useFirestoreCollection('quizzes', quizQueryConstraints);
+
   useEffect(() => {
-    const fetchQuestions = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "quizzes"));
-        const fetchedQuestions = querySnapshot.docs.map(doc => doc.data());
-        setMasterQuestions(fetchedQuestions);
-        setQuestions(getRandomQuestions(fetchedQuestions));
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching questions from Firestore:", err);
-        setError("無法載入題目，請稍後再試。");
-        setLoading(false);
-      }
-    };
-    fetchQuestions();
-  }, []);
+    if (!loading && !error && masterQuestions.length > 0) {
+      setQuestions(getRandomQuestions(masterQuestions));
+    }
+  }, [masterQuestions, loading, error]);
 
   useEffect(() => {
     const saveScore = async () => {

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { db, auth } from '../firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import React, { useState, useEffect, useMemo } from 'react';
+import { auth } from '../firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { Container, Alert, Row, Col, Card, Dropdown, Modal } from 'react-bootstrap';
 import LoadingSpinner from './LoadingSpinner';
@@ -8,118 +7,77 @@ import { FaQuestionCircle, FaAward } from 'react-icons/fa'; // For hidden achiev
 import './Achievements.css';
 
 import { achievementsList, achievementTiers } from '../data/achievements';
+import useFirestoreDocument from '../hooks/useFirestoreDocument';
 
 const Achievements = () => {
   const [user, authLoading] = useAuthState(auth);
-  const [userAchievements, setUserAchievements] = useState({});
-  const [loading, setLoading] = useState(true); // For fetching achievements data
-  const [error, setError] = useState(null);
   const [sortOption, setSortOption] = useState('tier'); // 'tier' or 'date'
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [currentAchievementDetail, setCurrentAchievementDetail] = useState(null);
 
-  // Sort achievements by tier order and then by unlocked status
-  const sortedAchievements = [...achievementsList].sort((a, b) => {
-    // Primary sort: hidden achievements last
-    if (a.hidden && !b.hidden) return 1;
-    if (!a.hidden && b.hidden) return -1;
+  // Fetch user achievements using the custom hook
+  const { data: userAchievements, loading: userAchievementsLoading, error: userAchievementsError } = useFirestoreDocument(
+    "userAchievements",
+    user ? user.uid : null // Only fetch if user is available
+  );
 
-    // If hidden status is the same, apply existing sorting logic
-    const isUnlockedA = userAchievements[a.id];
-    const isUnlockedB = userAchievements[b.id];
-
-    // Secondary sort: unlocked achievements first
-    if (isUnlockedA && !isUnlockedB) return -1;
-    if (!isUnlockedA && isUnlockedB) return 1;
-
-    // Tertiary sort: based on user's sortOption
-    if (sortOption === 'tier') {
-      const tierOrderA = achievementTiers[a.tier]?.order || 99;
-      const tierOrderB = achievementTiers[b.tier]?.order || 99;
-      return tierOrderB - tierOrderA; // Descending order for tier (Platinum > Gold > Silver > Bronze)
-    } else if (sortOption === 'date') {
-      // Sort by unlock date (newest first)
-      const dateA = isUnlockedA ? userAchievements[`${a.id}Date`]?.toDate() : null;
-      const dateB = isUnlockedB ? userAchievements[`${b.id}Date`]?.toDate() : null;
-
-      if (dateA && dateB) {
-        return dateB.getTime() - dateA.getTime();
-      } else if (dateA) {
-        return -1; // A has date, B doesn't (B is locked or no date), A comes first
-      } else if (dateB) {
-        return 1; // B has date, A doesn't, B comes first
-      } else {
-        return 0; // Neither has date (both locked or no date), maintain original order
-      }
-    }
-    return 0; // Default case, maintain original order
-  });
+  // Combine loading and error states
+  const loading = authLoading || userAchievementsLoading;
+  const error = userAchievementsError;
 
   // Effect to reset achievements when user logs in/out
   useEffect(() => {
-    if (user) {
-      // User logged in or changed, reset achievements to default
-      setUserAchievements({});
-      setLoading(true); // Set loading to true to re-fetch
-      setError(null); // Clear any previous errors
-    } else {
+    if (!user) {
       // User logged out, clear achievements and reset states
-      setUserAchievements({});
-      setLoading(false); // Ensure loading is false when logged out
-      setError("請先登入以查看成就。");
+      // userAchievements is already null/empty from useFirestoreDocument when user is null
+      // setLoading(false); // Handled by useFirestoreDocument
+      // setError("請先登入以查看成就。"); // Handled by useFirestoreDocument
     }
   }, [user]); // Only depends on user
 
-  // Main effect to fetch achievements
-  useEffect(() => {
-    const fetchAchievements = async () => {
-      if (authLoading) {
-        // Still authenticating, don't fetch yet.
-        return;
-      }
+  // Sort achievements by tier order and then by unlocked status
+  const sortedAchievements = useMemo(() => {
+    if (!userAchievements) return []; // Return empty array if no user achievements data
 
-      if (!user) {
-        // User is not logged in (handled by the separate useEffect above), so just return.
-        return;
-      }
+    return [...achievementsList].sort((a, b) => {
+      // Primary sort: hidden achievements last
+      if (a.hidden && !b.hidden) return 1;
+      if (!a.hidden && b.hidden) return -1;
 
-      setLoading(true); // Start loading for data fetch
-      console.log("Achievements: Starting to fetch achievements for user:", user.uid);
+      // If hidden status is the same, apply existing sorting logic
+      const isUnlockedA = userAchievements[a.id];
+      const isUnlockedB = userAchievements[b.id];
 
-      try {
-        const docRef = doc(db, "userAchievements", user.uid);
-        const docSnap = await getDoc(docRef);
+      // Secondary sort: unlocked achievements first
+      if (isUnlockedA && !isUnlockedB) return -1;
+      if (!isUnlockedA && isUnlockedB) return 1;
 
-        if (docSnap.exists()) {
-          setUserAchievements(docSnap.data());
-          console.log("Achievements: User achievements fetched successfully.");
+      // Tertiary sort: based on user's sortOption
+      if (sortOption === 'tier') {
+        const tierOrderA = achievementTiers[a.tier]?.order || 99;
+        const tierOrderB = achievementTiers[b.tier]?.order || 99;
+        return tierOrderB - tierOrderA; // Descending order for tier (Platinum > Gold > Silver > Bronze)
+      } else if (sortOption === 'date') {
+        // Sort by unlock date (newest first)
+        const dateA = isUnlockedA ? userAchievements[`${a.id}Date`]?.toDate() : null;
+        const dateB = isUnlockedB ? userAchievements[`${b.id}Date`]?.toDate() : null;
+
+        if (dateA && dateB) {
+          return dateB.getTime() - dateA.getTime();
+        } else if (dateA) {
+          return -1; // A has date, B doesn't (B is locked or no date), A comes first
+        } else if (dateB) {
+          return 1; // B has date, A doesn't, B comes first
         } else {
-          setUserAchievements({});
-          console.log("Achievements: No user achievements found.");
+          return 0; // Neither has date (both locked or no date), maintain original order
         }
-      } catch (err) {
-        console.error("Achievements: Error fetching achievements:", err);
-        setError("無法載入成就，請稍後再試。");
-      } finally {
-        setLoading(false);
-        console.log("Achievements: Finished fetching achievements.");
       }
-    };
-
-    fetchAchievements();
-  }, [user, authLoading]);
-
-  if (authLoading) {
-    console.log("Achievements: Loading user authentication status...");
-    return (
-      <Container className="mt-5 text-center">
-        <LoadingSpinner loading={true} />
-      </Container>
-    );
-  }
+      return 0; // Default case, maintain original order
+    });
+  }, [userAchievements, sortOption]);
 
   if (loading) {
-    console.log("Achievements: Loading achievements data...");
+    console.log("Achievements: Loading user authentication status or achievements data...");
     return (
       <Container className="mt-5 text-center">
         <LoadingSpinner loading={true} />
@@ -171,10 +129,10 @@ const Achievements = () => {
       ) : (
         <Row xs={2} sm={2} md={3} lg={4} className="g-4">
           {sortedAchievements.map((achievement) => {
-            const isUnlocked = userAchievements[achievement.id];
-            const unlockDate = userAchievements[`${achievement.id}Date`]?.toDate().toLocaleDateString();
+            const isUnlocked = userAchievements && userAchievements[achievement.id];
+            const unlockDate = userAchievements && userAchievements[`${achievement.id}Date`]?.toDate().toLocaleDateString();
 
-            const currentProgress = achievement.progressField ? (userAchievements[achievement.progressField] || 0) : 0;
+            const currentProgress = achievement.progressField ? (userAchievements && (userAchievements[achievement.progressField] || 0)) : 0;
 
             const displayDescription = isUnlocked || !achievement.hidden ? achievement.description : '???';
             const displayName = isUnlocked || !achievement.hidden ? achievement.name : '???';

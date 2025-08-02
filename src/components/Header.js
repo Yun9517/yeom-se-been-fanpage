@@ -149,7 +149,10 @@ const Header = () => {
                         style={{
                           color: dropdownBgColor || '#ccc',
                           marginRight: '8px',
-                          verticalAlign: 'middle'
+                          verticalAlign: 'middle',
+                          filter: highestTierInfo && highestTierInfo.key === 'DIAMOND' ? 'drop-shadow(0 0 5px rgba(0, 0, 150, 0.5))' : 
+                                  highestTierInfo && highestTierInfo.key === 'MASTER' ? 'drop-shadow(0 0 5px rgba(174, 0, 174, 0.5))' : 
+                                  'none'
                         }}
                       />
                     )}

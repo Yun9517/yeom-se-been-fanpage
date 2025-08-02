@@ -1,35 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Container, Row, Col, Button, Alert } from 'react-bootstrap';
-import { db } from '../firebase'; // Import Firestore instance
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { orderBy } from 'firebase/firestore';
 import NewsItem from './NewsItem';
-
 import LoadingSpinner from './LoadingSpinner';
+import useFirestoreCollection from '../hooks/useFirestoreCollection';
 
 const News = () => {
-  const [newsData, setNewsData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const newsQueryConstraints = useMemo(() => [
+    orderBy('date', 'desc')
+  ], []);
+
+  const { data: newsData, loading, error } = useFirestoreCollection(
+    'news',
+    newsQueryConstraints
+  );
   const [isExpanded, setIsExpanded] = useState(false);
-
-  useEffect(() => {
-    const fetchNews = async () => {
-      try {
-        const newsCollection = collection(db, 'news');
-        const q = query(newsCollection, orderBy('date', 'desc')); // Order by date descending
-        const newsSnapshot = await getDocs(q);
-        const newsList = newsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setNewsData(newsList);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching news from Firestore:", err);
-        setError('無法載入最新消息，請稍後再試。');
-        setLoading(false);
-      }
-    };
-
-    fetchNews();
-  }, []);
 
   const visibleNews = isExpanded ? newsData : newsData.slice(0, 3);
 
@@ -42,7 +27,12 @@ const News = () => {
           <div className="news-list">
             {loading && <LoadingSpinner loading={loading} />}
             {error && <Alert variant="danger">{error}</Alert>}
-            {!loading && !error && visibleNews.map(item => (
+            {!loading && !error && newsData.length === 0 && (
+              <div className="text-center text-white-50">
+                <p>目前沒有最新消息。</p>
+              </div>
+            )}
+            {!loading && !error && newsData.length > 0 && visibleNews.map(item => (
               <NewsItem
                 key={item.id}
                 date={item.date}

@@ -94,18 +94,33 @@
 
 /* Diamond Tier */
 .achievement-card.unlocked.tier-diamond {
-    background: linear-gradient(135deg, #870087, #D462D4); /* Purple gradient */
+    background: linear-gradient(135deg, #00BFFF, #87CEFA); /* High-light blue gradient */
     color: #e0e0e0; /* Light text */
-    border: 3px solid #AE00AE; /* Vibrant purple border */
-    box-shadow: 0 0 25px rgba(174, 0, 174, 0.8), 0 0 40px rgba(174, 0, 174, 0.5);
+    border: 3px solid #00BFFF; /* Vibrant blue border */
+    box-shadow: 0 0 25px rgba(0, 0, 150, 0.8), 0 0 40px rgba(0, 0, 150, 0.5); /* 深藍色光暈 */
     position: relative;
     overflow: hidden;
     animation: diamond-border-glow 2s infinite alternate;
 }
 
 @keyframes diamond-border-glow {
+    from { border-color: #00BFFF; }
+    to { border-color: #007BFF; } /* 更深的藍色 */
+}
+
+.achievement-card.unlocked.tier-master {
+    background: linear-gradient(135deg, #AE00AE, #D462D4); /* Original Diamond purple gradient */
+    color: #e0e0e0; /* Light text */
+    border: 3px solid #AE00AE; /* Original Diamond vibrant purple border */
+    box-shadow: 0 0 25px rgba(174, 0, 174, 0.8), 0 0 40px rgba(174, 0, 174, 0.5); /* 原鑽石紫色光暈 */
+    position: relative;
+    overflow: hidden;
+    animation: master-border-glow 2s infinite alternate;
+}
+
+@keyframes master-border-glow {
     from { border-color: #AE00AE; }
-    to { border-color: #FF00FF; }
+    to { border-color: #FF00FF; } /* 原鑽石紫色 */
 }
 
 /* Effects for both Platinum and Diamond */
@@ -128,10 +143,18 @@
 }
 
 .achievement-card.unlocked.tier-platinum .achievement-icon svg,
-.achievement-card.unlocked.tier-platinum .card-title,
+.achievement-card.unlocked.tier-platinum .card-title {
+    filter: drop-shadow(0 0 5px rgba(2, 223, 130, 0.5)); /* Platinum green glow */
+}
+
 .achievement-card.unlocked.tier-diamond .achievement-icon svg,
 .achievement-card.unlocked.tier-diamond .card-title {
-    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+    filter: drop-shadow(0 0 5px rgba(0, 0, 150, 0.5)); /* 更深的藍色光暈 */
+}
+
+.achievement-card.unlocked.tier-master .achievement-icon svg,
+.achievement-card.unlocked.tier-master .card-title {
+    filter: drop-shadow(0 0 5px rgba(174, 0, 174, 0.5)); /* 大師紫色光暈 */
 }
 
 .modal-header .btn-close {

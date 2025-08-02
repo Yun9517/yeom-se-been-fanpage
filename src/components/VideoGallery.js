@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Container, Row, Col, Alert } from 'react-bootstrap';
-import { db } from '../firebase';
-import { collection, getDocs } from 'firebase/firestore';
 import LoadingSpinner from './LoadingSpinner';
+import useFirestoreCollection from '../hooks/useFirestoreCollection';
 
 const VideoPlayer = ({ videoId, title }) => {
   const [loaded, setLoaded] = useState(false);
@@ -28,34 +27,25 @@ const VideoPlayer = ({ videoId, title }) => {
 };
 
 const VideoGallery = () => {
-  const [videosData, setVideosData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const videoQueryConstraints = useMemo(() => [
+    // orderBy('date', 'desc') // 暫時移除此行，測試是否能載入資料
+  ], []);
 
-  useEffect(() => {
-    const fetchVideos = async () => {
-      try {
-        const videosCollection = collection(db, 'videos');
-        const videosSnapshot = await getDocs(videosCollection);
-        const videosList = videosSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setVideosData(videosList);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching videos from Firestore:", err);
-        setError('無法載入影片，請稍後再試。');
-        setLoading(false);
-      }
-    };
-
-    fetchVideos();
-  }, []);
+  const { data: videosData, loading, error } = useFirestoreCollection(
+    'videos',
+    videoQueryConstraints
+  );
 
   return (
     <Container id="videos" className="my-5">
       <h2 className="text-center mb-4">影音區</h2>
       {loading && <LoadingSpinner loading={loading} />}
       {error && <Alert variant="danger">{error}</Alert>}
-      {!loading && !error && (
+      {!loading && !error && videosData.length === 0 ? (
+        <div className="text-center text-white-50">
+          <p>目前沒有影片。</p>
+        </div>
+      ) : (
         <Row>
           {videosData.map((video) => (
             <Col md={6} className="mb-4" key={video.id}>

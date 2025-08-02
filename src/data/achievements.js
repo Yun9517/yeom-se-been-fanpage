@@ -3,7 +3,8 @@ export const achievementTiers = {
   SILVER: { name: '銀牌', order: 2, color: '#A9ACB6' },
   GOLD: { name: '金牌', order: 3, color: '#FFD017' },
   PLATINUM: { name: '白金', order: 4, color: '#02DF82' },
-  DIAMOND: { name: '鑽石', order: 5, color: '#AE00AE' },
+  DIAMOND: { name: '鑽石', order: 5, color: '#00BFFF' }, // 高亮水藍色
+  MASTER: { name: '大師', order: 6, color: '#AE00AE' }, // 原鑽石色
 };
 
 export const achievementsList = [

@@ -1,41 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { db, auth } from '../firebase';
-import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
+import React, { useState, useEffect, useMemo } from 'react';
+import { auth } from '../firebase';
+import { orderBy } from 'firebase/firestore';
 import { Table, Button, Dropdown } from 'react-bootstrap';
 import { FaTrophy } from 'react-icons/fa';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import './Leaderboard.css';
 
 import LoadingSpinner from './LoadingSpinner';
+import useFirestoreCollection from '../hooks/useFirestoreCollection';
 
 const Leaderboard = () => {
-  const [allScores, setAllScores] = useState([]); // Stores all scores fetched
-  const [scores, setScores] = useState([]); // Scores for current page
   // eslint-disable-next-line no-unused-vars
   const [currentUser] = useAuthState(auth);
-  const [loading, setLoading] = useState(true); // Loading state
   const [pageSize, setPageSize] = useState(10); // User customizable page size
   const [currentPage, setCurrentPage] = useState(1); // Current page number
 
-  useEffect(() => {
-    setLoading(true);
-    const scoresCollection = collection(db, 'scores');
-    const q = query(scoresCollection, orderBy('score', 'desc'));
+  const leaderboardQueryConstraints = useMemo(() => [
+    orderBy('score', 'desc')
+  ], []);
 
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const fetchedScores = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setAllScores(fetchedScores);
-      setLoading(false);
-    }, (error) => {
-      console.error("Error fetching scores:", error);
-      setLoading(false);
-    });
+  // eslint-disable-next-line no-unused-vars
+  const { data: allScores, loading, error } = useFirestoreCollection(
+    'scores',
+    leaderboardQueryConstraints,
+    true // Enable live updates for leaderboard
+  );
 
-    return () => unsubscribe();
-  }, []);
+  const [scores, setScores] = useState([]); // Scores for current page
 
   useEffect(() => {
     // Update scores for current page whenever allScores or pageSize changes

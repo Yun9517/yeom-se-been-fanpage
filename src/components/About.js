@@ -1,8 +1,36 @@
 import React from 'react';
-import { Container, Row, Col, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Container, Row, Col, OverlayTrigger, Tooltip, Alert } from 'react-bootstrap';
 import ImageWithFallback from './ImageWithFallback'; // Import our custom component
+import LoadingSpinner from './LoadingSpinner';
+import useFirestoreDocument from '../hooks/useFirestoreDocument';
 
 const About = () => {
+  const { data: aboutContent, loading, error } = useFirestoreDocument('pages', 'about');
+
+  if (loading) {
+    return (
+      <Container className="mt-5 text-center">
+        <LoadingSpinner loading={true} />
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container className="mt-5">
+        <Alert variant="danger">{error}</Alert>
+      </Container>
+    );
+  }
+
+  if (!aboutContent) {
+    return (
+      <Container className="mt-5">
+        <Alert variant="info">找不到關於頁面的內容。</Alert>
+      </Container>
+    );
+  }
+
   return (
     <div className="about-sections">
       {/* 2022 新人時期 */}
@@ -22,9 +50,9 @@ const About = () => {
               </OverlayTrigger>
             </Col>
             <Col md={6} data-aos="fade-left">
-              <h2 className="text-white">2022 新人時期</h2>
+              <h2 className="text-white">{aboutContent.section2022Title}</h2>
               <p className="text-white">
-                2022年12月3日正式以職業啦啦隊員出道的廉世彬，當時先參與職業男子排球 KEPCO Vixtorm Volleyball Team 以及職業女子籃球 Hana Bank Women's Basketball Team的應援工作，當時受到的關注度還不高
+                {aboutContent.section2022Content}
               </p>
             </Col>
           </Row>
@@ -58,9 +86,9 @@ const About = () => {
               </OverlayTrigger>
             </Col>
             <Col md={6} data-aos="fade-right">
-              <h2 className="text-white">2023-2024 起亞虎時期</h2>
+              <h2 className="text-white">{aboutContent.section2023Title}</h2>
               <p className="text-white">
-                2023年正式加入起亞虎隊應援團，在起亞虎的這兩年，她也分別和邊荷律以及李珠珢成為隊友。2024年在韓國的網路論《Dctrend》上舉辦了一個職業啦啦隊人氣投票，而她最終以12,817票擊敗權熙媛、李珠珢以及李多慧拿下冠軍，也被封為2024年度職業啦啦隊女王，人氣也是在這時期快速上升。除了職業啦啦隊工作外，2024年11月12日廉世彬以藝名Snooze發表個人參與創作的單曲새벽감성，顯示出她多才多藝的面向。
+                {aboutContent.section2023Content}
               </p>
             </Col>
           </Row>
@@ -104,9 +132,9 @@ const About = () => {
               </OverlayTrigger>
             </Col>
             <Col md={6} data-aos="fade-left">
-              <h2 className="text-white">2025現況</h2>
+              <h2 className="text-white">{aboutContent.section2025Title}</h2>
               <p className="text-white">
-                在季初宣布加入NC恐龍隊，隨後在2月26日宣布加入台灣樂天桃猿隊，IG粉絲也在今年突破10萬，個人相關周邊商品總是銷售一空。有歌手夢的她，在今年6月16日以Snooze藝名發行個人第二張單曲Cherry Blooming，且在桃園棒球場7月水蜜桃趴活動時撥放。在7月19日即將首次參加中華職棒明星賽，參與開幕表演，並且會在明星賽期間在球場內開快閃店「好厝邊 Hasubeen」攜手知名餐飲品牌「饗食天堂」聯名推出韓式料理，首度圓夢當店長，販賣韓國美食。啦啦隊女王廉世彬的故事還在繼續，帶給粉絲們驚喜
+                {aboutContent.section2025Content}
               </p>
             </Col>
           </Row>

@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { db, auth } from '../firebase';
-import { collection, query, where, orderBy, getDocs, limit, startAfter, doc, getDoc as getSingleDoc, Timestamp } from 'firebase/firestore';
+import { collection, query, where, orderBy, getDocs, limit, startAfter, Timestamp } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { Container, Alert, Table, Accordion, Button, Dropdown, Form, InputGroup, Row, Col } from 'react-bootstrap';
 import LoadingSpinner from './LoadingSpinner';
+import useFirestoreDocument from '../hooks/useFirestoreDocument';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import './QuizHistory.css';
 
 const QuizHistory = () => {
   const [user, authLoading] = useAuthState(auth);
   const [history, setHistory] = useState([]);
-  const [userAchievementsData, setUserAchievementsData] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [loadingHistory, setLoadingHistory] = useState(true); // Separate loading for history data
+  const [errorHistory, setErrorHistory] = useState(null); // Separate error for history data
   const [dateError, setDateError] = useState(''); // State for date validation error
   const [sortField, setSortField] = useState('createdAt');
   const [sortOrder, setSortOrder] = useState('desc');
@@ -30,17 +30,27 @@ const QuizHistory = () => {
   const [filterStartDate, setFilterStartDate] = useState('');
   const [filterEndDate, setFilterEndDate] = useState('');
 
+  // Fetch user achievements data using useFirestoreDocument
+  const { data: userAchievementsData, loading: userAchievementsLoading, error: userAchievementsError } = useFirestoreDocument(
+    "userAchievements",
+    user ? user.uid : null
+  );
+
+  // Combine loading and error states for the component
+  const loading = authLoading || userAchievementsLoading || loadingHistory;
+  const error = userAchievementsError || errorHistory;
+
   useEffect(() => {
     if (user) {
       setCurrentPage(1);
       setLastVisible(null);
       setPageHistory([null]);
       setHasMore(false);
-      setError(null);
+      setErrorHistory(null);
     } else {
       setHistory([]);
-      setLoading(false);
-      setError("請先登入以查看遊戲紀錄。");
+      setLoadingHistory(false);
+      setErrorHistory("請先登入以查看遊戲紀錄。");
       setCurrentPage(1);
       setLastVisible(null);
       setPageHistory([null]);
@@ -50,18 +60,13 @@ const QuizHistory = () => {
 
   useEffect(() => {
     const fetchQuizHistory = async () => {
-      if (authLoading) return;
+      if (authLoading || userAchievementsLoading) return; // Wait for auth and user achievements to load
       if (!user) return;
 
-      setLoading(true);
+      setLoadingHistory(true);
       console.log("QuizHistory: Starting to fetch quiz history for user:", user.uid);
 
       try {
-        const userAchievementsRef = doc(db, "userAchievements", user.uid);
-        const userAchievementsSnap = await getSingleDoc(userAchievementsRef);
-        setUserAchievementsData(userAchievementsSnap.exists() ? userAchievementsSnap.data() : {});
-        console.log("QuizHistory: User achievements data fetched.");
-
         let baseQuery = collection(db, "scores");
         let q = query(baseQuery, where("userId", "==", user.uid));
 
@@ -93,16 +98,16 @@ const QuizHistory = () => {
 
       } catch (err) {
         console.error("QuizHistory: Error fetching quiz history:", err);
-        setError("無法載入遊戲紀錄，請稍後再試。");
+        setErrorHistory("無法載入遊戲紀錄，請稍後再試。");
       } finally {
-        setLoading(false);
+        setLoadingHistory(false);
         console.log("QuizHistory: Finished fetching game history.");
       }
     };
 
     fetchQuizHistory();
 
-  }, [user, authLoading, sortField, sortOrder, currentPage, itemsPerPage, filterStartDate, filterEndDate, pageHistory]);
+  }, [user, authLoading, userAchievementsLoading, sortField, sortOrder, currentPage, itemsPerPage, filterStartDate, filterEndDate, pageHistory]);
 
   const handleNextPage = () => {
     if (hasMore) {
