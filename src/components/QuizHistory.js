@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { db, auth } from '../firebase';
 import { collection, query, where, orderBy, getDocs, limit, startAfter, doc, getDoc as getSingleDoc, Timestamp } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { Container, Spinner, Alert, Table, Accordion, Button, Dropdown, Form, InputGroup, Row, Col } from 'react-bootstrap';
+import { Container, Alert, Table, Accordion, Button, Dropdown, Form, InputGroup, Row, Col } from 'react-bootstrap';
+import LoadingSpinner from './LoadingSpinner';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import './QuizHistory.css';
 
@@ -53,11 +54,13 @@ const QuizHistory = () => {
       if (!user) return;
 
       setLoading(true);
+      console.log("QuizHistory: Starting to fetch quiz history for user:", user.uid);
 
       try {
         const userAchievementsRef = doc(db, "userAchievements", user.uid);
         const userAchievementsSnap = await getSingleDoc(userAchievementsRef);
         setUserAchievementsData(userAchievementsSnap.exists() ? userAchievementsSnap.data() : {});
+        console.log("QuizHistory: User achievements data fetched.");
 
         let baseQuery = collection(db, "scores");
         let q = query(baseQuery, where("userId", "==", user.uid));
@@ -86,12 +89,14 @@ const QuizHistory = () => {
         const currentItems = fetchedHistory.slice(0, itemsPerPage);
         setHistory(currentItems);
         setLastVisible(querySnapshot.docs[currentItems.length - 1]);
+        console.log("QuizHistory: Game history fetched successfully.");
 
       } catch (err) {
-        console.error("Error fetching quiz history:", err);
+        console.error("QuizHistory: Error fetching quiz history:", err);
         setError("無法載入遊戲紀錄，請稍後再試。");
       } finally {
         setLoading(false);
+        console.log("QuizHistory: Finished fetching game history.");
       }
     };
 
@@ -180,19 +185,19 @@ const QuizHistory = () => {
   };
 
   if (authLoading) {
+    console.log("QuizHistory: Loading user authentication status...");
     return (
       <Container className="mt-5 text-center">
-        <Spinner animation="border" variant="light" />
-        <p className="text-white-50 mt-2">載入使用者狀態...</p>
+        <LoadingSpinner loading={true} />
       </Container>
     );
   }
 
   if (loading) {
+    console.log("QuizHistory: Loading game history data...");
     return (
       <Container className="mt-5 text-center">
-        <Spinner animation="border" variant="light" />
-        <p className="text-white-50 mt-2">載入遊戲紀錄中...</p>
+        <LoadingSpinner loading={true} />
       </Container>
     );
   }

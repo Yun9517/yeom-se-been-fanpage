@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Spinner, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Alert } from 'react-bootstrap';
 import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
+import LoadingSpinner from './LoadingSpinner';
 
 const VideoPlayer = ({ videoId, title }) => {
   const [loaded, setLoaded] = useState(false);
@@ -52,12 +53,7 @@ const VideoGallery = () => {
   return (
     <Container id="videos" className="my-5">
       <h2 className="text-center mb-4">影音區</h2>
-      {loading && (
-        <div className="text-center">
-          <Spinner animation="border" variant="dark" />
-          <p className="mt-2">載入中...</p>
-        </div>
-      )}
+      {loading && <LoadingSpinner loading={loading} />}
       {error && <Alert variant="danger">{error}</Alert>}
       {!loading && !error && (
         <Row>

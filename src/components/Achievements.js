@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { db, auth } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { Container, Spinner, Alert, Row, Col, Card, Dropdown, Modal } from 'react-bootstrap';
+import { Container, Alert, Row, Col, Card, Dropdown, Modal } from 'react-bootstrap';
+import LoadingSpinner from './LoadingSpinner';
 import { FaQuestionCircle, FaAward } from 'react-icons/fa'; // For hidden achievements and general award icon
 import './Achievements.css';
 
@@ -83,6 +84,7 @@ const Achievements = () => {
       }
 
       setLoading(true); // Start loading for data fetch
+      console.log("Achievements: Starting to fetch achievements for user:", user.uid);
 
       try {
         const docRef = doc(db, "userAchievements", user.uid);
@@ -90,14 +92,17 @@ const Achievements = () => {
 
         if (docSnap.exists()) {
           setUserAchievements(docSnap.data());
+          console.log("Achievements: User achievements fetched successfully.");
         } else {
           setUserAchievements({});
+          console.log("Achievements: No user achievements found.");
         }
       } catch (err) {
-        console.error("Error fetching achievements:", err);
+        console.error("Achievements: Error fetching achievements:", err);
         setError("無法載入成就，請稍後再試。");
       } finally {
         setLoading(false);
+        console.log("Achievements: Finished fetching achievements.");
       }
     };
 
@@ -105,19 +110,19 @@ const Achievements = () => {
   }, [user, authLoading]);
 
   if (authLoading) {
+    console.log("Achievements: Loading user authentication status...");
     return (
       <Container className="mt-5 text-center">
-        <Spinner animation="border" variant="light" />
-        <p className="text-white-50 mt-2">載入使用者狀態...</p>
+        <LoadingSpinner loading={true} />
       </Container>
     );
   }
 
   if (loading) {
+    console.log("Achievements: Loading achievements data...");
     return (
       <Container className="mt-5 text-center">
-        <Spinner animation="border" variant="light" />
-        <p className="text-white-50 mt-2">載入成就中...</p>
+        <LoadingSpinner loading={true} />
       </Container>
     );
   }

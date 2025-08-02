@@ -13,6 +13,7 @@ import packageJson from '../package.json'; // Import package.json
 
 import Header from './components/Header';
 import Footer from './components/Footer';
+import LoadingSpinner from './components/LoadingSpinner';
 
 const Home = lazy(() => import('./components/Home'));
 const About = lazy(() => import('./components/About'));
@@ -86,7 +87,7 @@ function App() {
       <div className="App d-flex flex-column min-vh-100">
         <Header />
         <main className="flex-grow-1">
-          <Suspense fallback={<div>載入中...</div>}>
+          <Suspense fallback={<LoadingSpinner loading={true} />}>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />

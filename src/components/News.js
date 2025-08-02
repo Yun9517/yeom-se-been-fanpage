@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Button, Spinner, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Button, Alert } from 'react-bootstrap';
 import { db } from '../firebase'; // Import Firestore instance
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import NewsItem from './NewsItem';
+
+import LoadingSpinner from './LoadingSpinner';
 
 const News = () => {
   const [newsData, setNewsData] = useState([]);
@@ -38,12 +40,7 @@ const News = () => {
         <div className="mb-5">
           <h2 className="text-white">站內消息</h2>
           <div className="news-list">
-            {loading && (
-              <div className="text-center">
-                <Spinner animation="border" variant="light" />
-                <p className="text-white-50 mt-2">載入中...</p>
-              </div>
-            )}
+            {loading && <LoadingSpinner loading={loading} />}
             {error && <Alert variant="danger">{error}</Alert>}
             {!loading && !error && visibleNews.map(item => (
               <NewsItem

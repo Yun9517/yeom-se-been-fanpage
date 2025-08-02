@@ -6,6 +6,8 @@ import { FaTrophy } from 'react-icons/fa';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import './Leaderboard.css';
 
+import LoadingSpinner from './LoadingSpinner';
+
 const Leaderboard = () => {
   const [allScores, setAllScores] = useState([]); // Stores all scores fetched
   const [scores, setScores] = useState([]); // Scores for current page
@@ -98,7 +100,9 @@ const Leaderboard = () => {
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan="4" className="text-center">載入中...</td>
+              <td colSpan="4" className="text-center">
+                <LoadingSpinner loading={loading} />
+              </td>
             </tr>
           ) : (
             scores.map((score, index) => (

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { FiRefreshCcw, FiLink } from 'react-icons/fi';
 import { FaLine } from 'react-icons/fa';
-import { Spinner, Alert, Accordion, Toast, ToastContainer, Button } from 'react-bootstrap';
+import { Alert, Accordion, Toast, ToastContainer, Button } from 'react-bootstrap';
 import './FanQuiz.css';
 
 import { db, auth } from '../firebase';
@@ -10,6 +10,7 @@ import { collection, getDocs, addDoc, serverTimestamp, setDoc, doc, getDoc, incr
 import { useAuthState } from 'react-firebase-hooks/auth';
 
 import Leaderboard from './Leaderboard';
+import LoadingSpinner from './LoadingSpinner';
 
 // Helper function to get random questions
 const getRandomQuestions = (allQuestions, num = 5) => {
@@ -333,12 +334,7 @@ function FanQuiz() {
       <div className="fan-quiz-container">
         <h2>염세彬 粉絲小遊戲！</h2>
 
-        {loading && (
-          <div className="text-center">
-            <Spinner animation="border" variant="light" />
-            <p className="text-white-50 mt-2">載入中...</p>
-          </div>
-        )}
+        {loading && <LoadingSpinner loading={loading} />}
         {error && <Alert variant="danger">{error}</Alert>}
 
         {!loading && !error && (
