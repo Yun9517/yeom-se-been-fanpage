@@ -154,7 +154,7 @@
 
 .achievement-card.unlocked.tier-master .achievement-icon svg,
 .achievement-card.unlocked.tier-master .card-title {
-    filter: drop-shadow(0 0 5px rgba(174, 0, 174, 0.5)); /* 大師紫色光暈 */
+    filter: drop-shadow(0 0 5px rgba(0, 0, 150, 0.5)); /* 深藍色光暈 */
 }
 
 .modal-header .btn-close {

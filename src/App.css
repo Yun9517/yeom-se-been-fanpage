@@ -185,7 +185,11 @@ h2 {
 }
 
 .icon-glow.tier-diamond {
-  --glow-color: #FF00FF;
+  --glow-color: #000099; /* 深藍色 */
+}
+
+.icon-glow.tier-master {
+  --glow-color: #AE00AE; /* 紫色 */
 }
 
 .yarl__button {

@@ -197,10 +197,14 @@ const Achievements = () => {
                   <FaAward
                     size={80}
                     color={achievementTiers[currentAchievementDetail.tier]?.color}
-                    className={currentAchievementDetail.isUnlocked && (currentAchievementDetail.tier === 'PLATINUM' || currentAchievementDetail.tier === 'DIAMOND') ? `icon-glow tier-${currentAchievementDetail.tier.toLowerCase()}` : ''}
+                    className={`icon-glow tier-${currentAchievementDetail.tier.toLowerCase()}`}
                   />
                 ) : (
-                  <FaQuestionCircle size={80} color="#ccc" />
+                  <FaQuestionCircle
+                    size={80}
+                    color="#ccc"
+                    className="icon-glow tier-locked" // Add a class for locked achievements if you want a subtle glow
+                  />
                 )}
               </div>
               <p>{currentAchievementDetail.displayDescription}</p>

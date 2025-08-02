@@ -126,11 +126,19 @@ const Header = () => {
   return (
     <Navbar bg="dark" variant="dark" expand="lg" sticky="top">
       <Container>
-        <Navbar.Brand as={NavLink} to="/">廉世彬粉絲專頁</Navbar.Brand>
+        <Navbar.Brand as={NavLink} to="/">
+          <img
+            src={process.env.PUBLIC_URL + '/yeomsebeen_about.jpg'}
+            height="30"
+            className="d-inline-block align-top"
+            alt="Logo"
+            style={{ marginRight: '8px', borderRadius: '5px' }}
+          />
+          廉世彬粉絲專頁
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link as={NavLink} to="/" end>首頁</Nav.Link>
             <Nav.Link as={NavLink} to="/gallery">照片牆</Nav.Link>
             <Nav.Link as={NavLink} to="/videos">影音區</Nav.Link>
             <Nav.Link as={NavLink} to="/profile">生涯經歷</Nav.Link>
