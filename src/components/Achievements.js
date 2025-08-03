@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { auth } from '../firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { Container, Alert, Row, Col, Card, Dropdown, Modal } from 'react-bootstrap';
@@ -11,6 +12,7 @@ import useFirestoreDocument from '../hooks/useFirestoreDocument';
 
 const Achievements = () => {
   const [user, authLoading] = useAuthState(auth);
+  const navigate = useNavigate();
   const [sortOption, setSortOption] = useState('tier'); // 'tier' or 'date'
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [currentAchievementDetail, setCurrentAchievementDetail] = useState(null);
@@ -25,15 +27,15 @@ const Achievements = () => {
   const loading = authLoading || userAchievementsLoading;
   const error = userAchievementsError;
 
-  // Effect to reset achievements when user logs in/out
+  // Effect to handle redirection on logout
   useEffect(() => {
-    if (!user) {
-      // User logged out, clear achievements and reset states
-      // userAchievements is already null/empty from useFirestoreDocument when user is null
-      // setLoading(false); // Handled by useFirestoreDocument
-      // setError("請先登入以查看成就。"); // Handled by useFirestoreDocument
+    if (!authLoading && !user) {
+      const timer = setTimeout(() => {
+        navigate('/');
+      }, 3000);
+      return () => clearTimeout(timer);
     }
-  }, [user]); // Only depends on user
+  }, [user, authLoading, navigate]);
 
   // Sort achievements by tier order and then by unlocked status
   const sortedAchievements = useMemo(() => {
@@ -85,18 +87,18 @@ const Achievements = () => {
     );
   }
 
-  if (error) {
+  if (!user) {
     return (
       <Container className="mt-5">
-        <Alert variant="danger">{error}</Alert>
+        <Alert variant="warning">請登入後繼續使用此功能</Alert>
       </Container>
     );
   }
 
-  if (!user) {
+  if (error) {
     return (
       <Container className="mt-5">
-        <Alert variant="info">請登入以查看您的成就。</Alert>
+        <Alert variant="danger">{error}</Alert>
       </Container>
     );
   }

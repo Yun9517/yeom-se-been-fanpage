@@ -331,8 +331,8 @@ function FanQuiz() {
           showScore ? (
             <div className="score-section">
               <div className="score-text">你獲得了 {score} 分，總分 {questions.length} 分！</div>
-              {user && user.isAnonymous && (
-                <Alert variant="info" className="mt-3" style={{ fontSize: '0.85em' }}>您的作答結果不會進入排行榜。如需記錄分數，請使用 Google 帳戶登入。</Alert>
+              {(!user || user.isAnonymous) && (
+                <Alert variant="info" className="mt-3" style={{ fontSize: '0.65em' }}>您的作答結果不會進入排行榜。如需記錄分數，請使用 Google 帳戶登入。</Alert>
               )}
               <div className="score-buttons">
                 <button onClick={handleShareLink} className="quiz-button share-link-button"><FiLink /></button>

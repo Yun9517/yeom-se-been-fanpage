@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { db, auth } from '../firebase';
 import { collection, query, where, orderBy, getDocs, limit, startAfter, Timestamp } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -10,6 +11,7 @@ import './QuizHistory.css';
 
 const QuizHistory = () => {
   const [user, authLoading] = useAuthState(auth);
+  const navigate = useNavigate();
   const [history, setHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(true); // Separate loading for history data
   const [errorHistory, setErrorHistory] = useState(null); // Separate error for history data
@@ -48,15 +50,23 @@ const QuizHistory = () => {
       setHasMore(false);
       setErrorHistory(null);
     } else {
+      // Redirect on logout
+      const timer = setTimeout(() => {
+        navigate('/');
+      }, 3000);
+
+      // Reset state
       setHistory([]);
       setLoadingHistory(false);
-      setErrorHistory("請先登入以查看遊戲紀錄。");
+      setErrorHistory(null); // Clear error on logout
       setCurrentPage(1);
       setLastVisible(null);
       setPageHistory([null]);
       setHasMore(false);
+
+      return () => clearTimeout(timer);
     }
-  }, [user]);
+  }, [user, navigate]);
 
   useEffect(() => {
     const fetchQuizHistory = async () => {
@@ -207,18 +217,18 @@ const QuizHistory = () => {
     );
   }
 
-  if (error) {
+  if (!user) {
     return (
       <Container className="mt-5">
-        <Alert variant="danger">{error}</Alert>
+        <Alert variant="warning">請登入後繼續使用此功能</Alert>
       </Container>
     );
   }
 
-  if (!user) {
+  if (error) {
     return (
       <Container className="mt-5">
-        <Alert variant="info">請登入以查看您的遊戲紀錄。</Alert>
+        <Alert variant="danger">{error}</Alert>
       </Container>
     );
   }
