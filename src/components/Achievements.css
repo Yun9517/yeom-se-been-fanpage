@@ -30,6 +30,8 @@
     z-index: 1; /* Ensure title is above pseudo-elements */
 }
 
+
+
 /* --- Locked State --- */
 .achievement-card.locked {
     background-color: #343a40; /* Dark gray for locked achievements */
@@ -226,5 +228,15 @@
     .achievement-progress {
         font-size: 0.7em; /* Smaller font size for progress text */
     }
+}
+
+/* Custom styles for RedemptionStore Tabs */
+.redemption-tabs .nav-link {
+  color: #FFFFFF; /* White color for inactive tabs */
+  font-weight: bold; /* Bold font for inactive tabs */
+}
+
+.redemption-tabs .nav-link.active {
+  color: #0d6efd; /* Default active color from Bootstrap */
 }
 

@@ -7,13 +7,15 @@ import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-route
 import ReactGA from 'react-ga4';
 import ScrollToTop from './components/ScrollToTop';
 import { auth, db } from './firebase'; // Import auth and db
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'; // Import firestore functions
+import { doc, getDoc, setDoc, serverTimestamp, increment } from 'firebase/firestore'; // Import firestore functions
 import { useAuthState } from 'react-firebase-hooks/auth'; // Import useAuthState
 import packageJson from '../package.json'; // Import package.json
 
 import Header from './components/Header';
 import Footer from './components/Footer';
 import LoadingSpinner from './components/LoadingSpinner';
+
+import { achievementsList, pointRules } from './data/achievements'; // Import achievements data
 
 const Home = lazy(() => import('./components/Home'));
 const About = lazy(() => import('./components/About'));
@@ -24,6 +26,7 @@ const News = lazy(() => import('./components/News'));
 const FanQuiz = lazy(() => import('./components/FanQuiz'));
 const QuizHistory = lazy(() => import('./components/QuizHistory'));
 const Achievements = lazy(() => import('./components/Achievements'));
+const RedemptionStore = lazy(() => import('./components/RedemptionStore'));
 
 // Component to track page views
 const PageTracker = () => {
@@ -63,6 +66,48 @@ function App() {
     checkEarlySupporterAchievement();
   }, [user]);
 
+  // New useEffect for retroactive points
+  useEffect(() => {
+    const grantRetroactivePoints = async () => {
+      if (user && !user.isAnonymous) {
+        const userAchievementsRef = doc(db, 'userAchievements', user.uid);
+        const userAchievementsSnap = await getDoc(userAchievementsRef);
+        const userAchievementsData = userAchievementsSnap.exists() ? userAchievementsSnap.data() : {};
+
+        // Check if retroactive points have already been granted
+        if (!userAchievementsData.retroactivePointsGranted) {
+          let totalRetroactivePoints = 0;
+
+          for (const achievement of achievementsList) {
+            // Only grant points for achievements that are not redeemable (as redeemable ones are bought with points)
+            // and are actually unlocked by the user
+            if (!achievement.redeemable && userAchievementsData[achievement.id]) {
+              const points = pointRules.oneTime[achievement.tier];
+              if (points) {
+                totalRetroactivePoints += points;
+              }
+            }
+          }
+
+          if (totalRetroactivePoints > 0) {
+            await setDoc(userAchievementsRef, {
+              points: increment(totalRetroactivePoints),
+              retroactivePointsGranted: true,
+            }, { merge: true });
+            console.log(`Granted ${totalRetroactivePoints} retroactive points to user ${user.uid}`);
+          } else {
+            // If no points were granted, still mark as granted to avoid re-checking
+            await setDoc(userAchievementsRef, {
+              retroactivePointsGranted: true,
+            }, { merge: true });
+          }
+        }
+      }
+    };
+
+    grantRetroactivePoints();
+  }, [user]);
+
   useEffect(() => {
     AOS.init({
       duration: 1000, // animation duration
@@ -86,7 +131,7 @@ function App() {
       <PageTracker />
       <div className="App d-flex flex-column min-vh-100">
         <Header />
-        <main className="flex-grow-1">
+        <main className="flex-grow-1 pb-3">
           <Suspense fallback={<LoadingSpinner loading={true} />}>
             <Routes>
               <Route path="/" element={<Home />} />
@@ -98,6 +143,7 @@ function App() {
               <Route path="/quiz" element={<FanQuiz />} />
               <Route path="/quiz-history" element={<QuizHistory />} />
               <Route path="/achievements" element={<Achievements />} />
+              <Route path="/store" element={<RedemptionStore />} />
             </Routes>
           </Suspense>
         </main>

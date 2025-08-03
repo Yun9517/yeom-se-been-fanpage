@@ -12,6 +12,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import Leaderboard from './Leaderboard';
 import LoadingSpinner from './LoadingSpinner';
 import useFirestoreCollection from '../hooks/useFirestoreCollection';
+import { achievementsList, pointRules } from '../data/achievements';
 
 // Helper function to get random questions
 const getRandomQuestions = (allQuestions, num = 5) => {
@@ -71,63 +72,49 @@ function FanQuiz() {
       userEmail: user.email,
     };
 
+    const grantAchievement = async (achievementId) => {
+        const achievement = achievementsList.find(a => a.id === achievementId);
+        if (!achievement) return;
+
+        const pointsGained = pointRules.oneTime[achievement.tier] || 0;
+        
+        await setDoc(userAchievementsRef, {
+            ...achievementData,
+            [achievementId]: true,
+            [`${achievementId}Date`]: serverTimestamp(),
+            points: increment(pointsGained)
+        }, { merge: true });
+
+        showAchievementToast(`恭喜！您解鎖了 [${achievement.name}] 成就！獲得 ${pointsGained} 點！`);
+    };
+
     // Achievement: 首次作答全對
     if (score === questions.length && !userAchievements.firstPerfectScore) {
-      await setDoc(userAchievementsRef, {
-        ...achievementData,
-        firstPerfectScore: true,
-        firstPerfectScoreDate: serverTimestamp()
-      }, { merge: true });
-      showAchievementToast("恭喜！您解鎖了 [首次作答全對] 成就！");
+      await grantAchievement('firstPerfectScore');
     }
 
     // Achievement: 首次全錯
     if (score === 0 && !userAchievements.firstAllWrong) {
-      await setDoc(userAchievementsRef, {
-        ...achievementData,
-        firstAllWrong: true,
-        firstAllWrongDate: serverTimestamp()
-      }, { merge: true });
-      showAchievementToast("恭喜！您解鎖了 [首次全錯] 成就！");
+      await grantAchievement('firstAllWrong');
     }
 
     // Login Achievements
     const loginDaysCount = userAchievements.loginDaysCount || 0;
 
     if (loginDaysCount >= 1 && !userAchievements.firstLogin) {
-      await setDoc(userAchievementsRef, {
-        ...achievementData,
-        firstLogin: true,
-        firstLoginDate: serverTimestamp()
-      }, { merge: true });
-      showAchievementToast("恭喜！您解鎖了 [首次登入] 成就！");
+      await grantAchievement('firstLogin');
     }
 
     if (loginDaysCount >= 3 && !userAchievements.threeDayLogin) {
-      await setDoc(userAchievementsRef, {
-        ...achievementData,
-        threeDayLogin: true,
-        threeDayLoginDate: serverTimestamp()
-      }, { merge: true });
-      showAchievementToast("恭喜！您解鎖了 [來三天囉] 成就！");
+      await grantAchievement('threeDayLogin');
     }
 
     if (loginDaysCount >= 7 && !userAchievements.sevenDayLogin) {
-      await setDoc(userAchievementsRef, {
-        ...achievementData,
-        sevenDayLogin: true,
-        sevenDayLoginDate: serverTimestamp()
-      }, { merge: true });
-      showAchievementToast("恭喜！您解鎖了 [阿彬鐵粉] 成就！");
+      await grantAchievement('sevenDayLogin');
     }
 
     if (loginDaysCount >= 30 && !userAchievements.thirtyDayLogin) {
-      await setDoc(userAchievementsRef, {
-        ...achievementData,
-        thirtyDayLogin: true,
-        thirtyDayLoginDate: serverTimestamp()
-      }, { merge: true });
-      showAchievementToast("恭喜！您解鎖了 [女王的忠實護衛] 成就！");
+      await grantAchievement('thirtyDayLogin');
     }
 
     // Quizzes Answered Achievements
@@ -136,85 +123,39 @@ function FanQuiz() {
     const totalIncorrectAnswers = userAchievements.totalIncorrectAnswers || 0;
 
     if (totalCorrectAnswers >= 10 && !userAchievements.tenCorrectAnswers) {
-      await setDoc(userAchievementsRef, {
-        ...achievementData,
-        tenCorrectAnswers: true,
-        tenCorrectAnswersDate: serverTimestamp(),
-      }, { merge: true });
-      showAchievementToast("恭喜！您解鎖了 [小有成就] 成就！");
+      await grantAchievement('tenCorrectAnswers');
     }
 
     if (totalCorrectAnswers >= 50 && !userAchievements.fiftyCorrectAnswers) {
-      await setDoc(userAchievementsRef, {
-        ...achievementData,
-        fiftyCorrectAnswers: true,
-        fiftyCorrectAnswersDate: serverTimestamp(),
-      }, { merge: true });
-      showAchievementToast("恭喜！您解鎖了 [鋼鐵粉絲] 成就！");
+      await grantAchievement('fiftyCorrectAnswers');
     }
 
     if (totalCorrectAnswers >= 100 && !userAchievements.hundredCorrectAnswers) {
-      await setDoc(userAchievementsRef, {
-        ...achievementData,
-        hundredCorrectAnswers: true,
-        hundredCorrectAnswersDate: serverTimestamp(),
-      }, { merge: true });
-      showAchievementToast("恭喜！您解鎖了 [阿彬知識王] 成就！");
+      await grantAchievement('hundredCorrectAnswers');
     }
 
     if (totalIncorrectAnswers >= 10 && !userAchievements.tenIncorrectAnswers) {
-      await setDoc(userAchievementsRef, {
-        ...achievementData,
-        tenIncorrectAnswers: true,
-        tenIncorrectAnswersDate: serverTimestamp(),
-      }, { merge: true });
-      showAchievementToast("恭喜！您解鎖了 [再接再厲] 成就！");
+      await grantAchievement('tenIncorrectAnswers');
     }
 
     if (totalIncorrectAnswers >= 50 && !userAchievements.fiftyIncorrectAnswers) {
-      await setDoc(userAchievementsRef, {
-        ...achievementData,
-        fiftyIncorrectAnswers: true,
-        fiftyIncorrectAnswersDate: serverTimestamp(),
-      }, { merge: true });
-      showAchievementToast("恭喜！您解鎖了 [不怕失敗] 成就！");
+      await grantAchievement('fiftyIncorrectAnswers');
     }
 
     if (totalIncorrectAnswers >= 100 && !userAchievements.hundredIncorrectAnswers) {
-      await setDoc(userAchievementsRef, {
-        ...achievementData,
-        hundredIncorrectAnswers: true,
-        hundredIncorrectAnswersDate: serverTimestamp(),
-      }, { merge: true });
-      showAchievementToast("恭喜！您解鎖了 [越挫越勇] 成就！");
+      await grantAchievement('hundredIncorrectAnswers');
     }
 
     if (totalQuizzesAnswered >= 100 && !userAchievements.hundredQuizzes) {
-      await setDoc(userAchievementsRef, {
-        ...achievementData,
-        hundredQuizzes: true,
-        hundredQuizzesDate: serverTimestamp()
-      }, { merge: true });
-      showAchievementToast("恭喜！您解鎖了 [刷題高手] 成就！");
+      await grantAchievement('hundredQuizzes');
     }
 
     if (totalQuizzesAnswered >= 500 && !userAchievements.fiveHundredQuizzes) {
-      await setDoc(userAchievementsRef, {
-        ...achievementData,
-        fiveHundredQuizzes: true,
-        fiveHundredQuizzesDate: serverTimestamp()
-      }, { merge: true });
-      showAchievementToast("恭喜！您解鎖了 [刷題達人] 成就！");
+      await grantAchievement('fiveHundredQuizzes');
     }
 
-    // 阿彬代言人 (保留神秘感)
     if (totalQuizzesAnswered >= 1000 && !userAchievements.thousandQuizzes) {
-      await setDoc(userAchievementsRef, {
-        ...achievementData,
-        thousandQuizzes: true,
-        thousandQuizzesDate: serverTimestamp()
-      }, { merge: true });
-      showAchievementToast("恭喜！您解鎖了 [阿彬代言人] 成就！");
+      await grantAchievement('thousandQuizzes');
     }
 
   }, [user, score, questions.length]);

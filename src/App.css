@@ -7,15 +7,16 @@ body {
   overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
-/* App container to ensure footer sticks to the bottom */
+/* App container to ensure footer sticks to the bottom and content scrolls */
 .App {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh; /* Full viewport height */
 }
 
 main {
   flex: 1;
+  overflow-y: auto; /* Allow vertical scrolling ONLY in the main content */
   overflow-x: hidden; /* Prevent horizontal scrolling within main content */
 }
 

@@ -4,26 +4,32 @@ import { NavLink } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../firebase';
 import { GoogleAuthProvider, signInWithPopup, signOut, signInAnonymously } from 'firebase/auth';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { FaGoogle, FaAward } from 'react-icons/fa';
+import { doc, getDoc, setDoc, serverTimestamp, increment } from 'firebase/firestore';
+import { FaGoogle, FaAward, FaCoins } from 'react-icons/fa';
 
-import { achievementsList, achievementTiers } from '../data/achievements';
+import { achievementsList, achievementTiers, pointRules } from '../data/achievements';
 
 const Header = () => {
   const [user] = useAuthState(auth);
   const [userAchievements, setUserAchievements] = useState({});
+  const [points, setPoints] = useState(0);
 
   useEffect(() => {
-    const fetchUserAchievements = async () => {
+    const fetchUserData = async () => {
       if (user && !user.isAnonymous) {
         const userAchievementsRef = doc(db, "userAchievements", user.uid);
         const userAchievementsSnap = await getDoc(userAchievementsRef);
         if (userAchievementsSnap.exists()) {
-          setUserAchievements(userAchievementsSnap.data());
+          const data = userAchievementsSnap.data();
+          setUserAchievements(data);
+          setPoints(data.points || 0);
         }
+      } else {
+        setUserAchievements({});
+        setPoints(0);
       }
     };
-    fetchUserAchievements();
+    fetchUserData();
   }, [user]);
 
   const anonymousNicknames = [
@@ -61,39 +67,49 @@ const Header = () => {
   };
 
   useEffect(() => {
-    const trackLoginDays = async () => {
-      console.log("Header: trackLoginDays called. User:", user);
+    const handleDailyLoginRewards = async () => {
       if (user && !user.isAnonymous) {
-        console.log("Header: User is authenticated and not anonymous. Checking login days.");
         const userAchievementsRef = doc(db, "userAchievements", user.uid);
         const userAchievementsSnap = await getDoc(userAchievementsRef);
         const userAchievementsData = userAchievementsSnap.exists() ? userAchievementsSnap.data() : {};
 
         const today = new Date();
-        today.setHours(0, 0, 0, 0); // Normalize to start of day
+        today.setHours(0, 0, 0, 0);
 
         const lastLoginDate = userAchievementsData.lastLoginDate?.toDate();
         let loginDaysCount = userAchievementsData.loginDaysCount || 0;
-
-        console.log("Header: lastLoginDate from Firestore:", lastLoginDate, "loginDaysCount from Firestore:", loginDaysCount);
+        let pointsToAdd = 0;
 
         if (!lastLoginDate || lastLoginDate.setHours(0, 0, 0, 0) < today.getTime()) {
-          console.log("Header: Incrementing loginDaysCount for today.");
           loginDaysCount += 1;
+          pointsToAdd = 1; // Base daily point
+
+          const unlockedAchievementIds = Object.keys(userAchievementsData).filter(key => userAchievementsData[key] === true);
+          const unlockedTiers = new Set(
+            achievementsList
+              .filter(ach => unlockedAchievementIds.includes(ach.id))
+              .map(ach => ach.tier)
+          );
+
+          if (unlockedTiers.has('DIAMOND')) {
+            pointsToAdd += pointRules.dailyBonus.DIAMOND;
+          }
+          if (unlockedTiers.has('MASTER')) {
+            pointsToAdd += pointRules.dailyBonus.MASTER;
+          }
+
           await setDoc(userAchievementsRef, {
             lastLoginDate: serverTimestamp(),
-            loginDaysCount: loginDaysCount
+            loginDaysCount: loginDaysCount,
+            points: increment(pointsToAdd)
           }, { merge: true });
-          console.log("Header: Login days updated in Firestore. New count:", loginDaysCount);
-        } else {
-          console.log("Header: Already logged in today or lastLoginDate is future.");
+
+          setPoints(prevPoints => prevPoints + pointsToAdd);
         }
-      } else {
-        console.log("Header: User is null, anonymous, or not yet resolved.");
       }
     };
 
-    trackLoginDays();
+    handleDailyLoginRewards();
   }, [user]);
 
   const getHighestAchievementTier = () => {
@@ -103,7 +119,7 @@ const Header = () => {
     let highestOrder = -1;
 
     for (const achievement of achievementsList) {
-      if (userAchievements[achievement.id]) { // If achievement is unlocked
+      if (userAchievements[achievement.id]) {
         const tierKey = achievement.tier;
         const tierData = achievementTiers[tierKey];
         if (tierData && tierData.order > highestOrder) {
@@ -170,9 +186,16 @@ const Header = () => {
                   </span>
                 }
                 id="basic-nav-dropdown"
+                menuVariant="dark"
               >
+                <NavDropdown.Item disabled>
+                  <FaCoins className="me-2" /> {points} 點
+                </NavDropdown.Item>
+                <NavDropdown.Divider />
                 <NavDropdown.Item as={NavLink} to="/quiz-history">我的遊戲紀錄</NavDropdown.Item>
                 <NavDropdown.Item as={NavLink} to="/achievements">我的成就</NavDropdown.Item>
+                <NavDropdown.Item as={NavLink} to="/store">點數商店</NavDropdown.Item>
+                <NavDropdown.Divider />
                 <NavDropdown.Item onClick={handleLogout}>登出</NavDropdown.Item>
               </NavDropdown>
             ) : (

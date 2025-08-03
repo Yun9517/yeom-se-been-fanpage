@@ -7,6 +7,21 @@ export const achievementTiers = {
   MASTER: { name: '大師', order: 6, color: '#AE00AE' }, // 原鑽石色
 };
 
+export const pointRules = {
+  oneTime: {
+    BRONZE: 5,
+    SILVER: 10,
+    GOLD: 20,
+    PLATINUM: 50,
+    DIAMOND: 100,
+    MASTER: 300,
+  },
+  dailyBonus: {
+    DIAMOND: 1,
+    MASTER: 2,
+  },
+};
+
 export const achievementsList = [
   // --- 登入類成就 ---
   {
@@ -138,9 +153,65 @@ export const achievementsList = [
     id: 'thousandQuizzes',
     name: '阿彬代言人',
     description: '累積完成 1000 次測驗，你就是阿彬的官方代言人！',
-    tier: 'PLATINUM',
+    tier: 'MASTER',
     hidden: true, // 預設隱藏，達成後才顯示
     progressField: 'totalQuizzesAnswered',
     targetValue: 1000,
+  },
+  // --- 點數兌換類成就 ---
+  {
+    id: 'pointsMillionaire',
+    name: '點數富翁',
+    description: '累積財富的象徵。',
+    tier: 'GOLD',
+    hidden: false,
+    redeemable: true,
+    cost: 100,
+  },
+  {
+    id: 'superFan',
+    name: '超級粉絲認證',
+    description: '用點數證明你對阿彬的愛！',
+    tier: 'PLATINUM',
+    hidden: false,
+    redeemable: true,
+    cost: 250,
+  },
+  // --- New Redeemable Achievements ---
+  {
+    id: 'bronzeSupporter',
+    name: '初階贊助者',
+    description: '對阿彬的小小支持，意義非凡。',
+    tier: 'BRONZE',
+    hidden: false,
+    redeemable: true,
+    cost: 25,
+  },
+  {
+    id: 'bronzeCollector',
+    name: '銅牌收藏家',
+    description: '開啟你的收藏之路。',
+    tier: 'BRONZE',
+    hidden: false,
+    redeemable: true,
+    cost: 25,
+  },
+  {
+    id: 'silverContributor',
+    name: '進階貢獻者',
+    description: '你的貢獻，讓這裡更美好。',
+    tier: 'SILVER',
+    hidden: false,
+    redeemable: true,
+    cost: 50,
+  },
+  {
+    id: 'diamondPatron',
+    name: '阿彬的守護者',
+    description: '最頂級的守護，最耀眼的光芒。',
+    tier: 'DIAMOND',
+    hidden: false,
+    redeemable: true,
+    cost: 500,
   },
 ];
