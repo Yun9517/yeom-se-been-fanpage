@@ -20,6 +20,8 @@
 
 .redeem-card-override.achievement-card .btn-theme-gradient {
     height: 40px !important; /* Fixed height for the button, forced */
+    width: 50% !important; /* Fixed width for the button, forced */
+    margin: auto;
     display: flex;
     justify-content: center;
     align-items: center;

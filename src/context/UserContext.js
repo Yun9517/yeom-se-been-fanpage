@@ -112,10 +112,10 @@ export const UserProvider = ({ children }) => {
         const achievementId = 'earlySupporter';
         const cutoffDate = new Date('2025-08-31');
         if (new Date() <= cutoffDate) {
-          initialData[achievementId] = true;
-          initialData[`${achievementId}Date`] = serverTimestamp();
           const achievement = achievementsList.find(a => a.id === achievementId);
           if (achievement) {
+            initialData[achievementId] = true;
+            initialData[`${achievementId}Date`] = serverTimestamp();
             const pointsGained = require('../data/achievements').pointRules.oneTime[achievement.tier] || 0;
             initialData.points += pointsGained;
           }

@@ -17,8 +17,8 @@ export const pointRules = {
     MASTER: 300,
   },
   dailyBonus: {
-    DIAMOND: 1,
-    MASTER: 2,
+    DIAMOND: 10,
+    MASTER: 20,
   },
 };
 
@@ -162,7 +162,7 @@ export const achievementsList = [
   {
     id: 'pointsMillionaire',
     name: '點數富翁',
-    description: '累積財富的象徵。',
+    description: '這代表你對阿彬的愛與支持，你是最棒的彬粉！',
     tier: 'GOLD',
     hidden: false,
     redeemable: true,
@@ -171,7 +171,7 @@ export const achievementsList = [
   {
     id: 'superFan',
     name: '超級粉絲認證',
-    description: '用點數證明你對阿彬的愛！',
+    description: '這代表你對阿彬的愛與支持，到了一個新高度！',
     tier: 'PLATINUM',
     hidden: false,
     redeemable: true,
@@ -190,7 +190,7 @@ export const achievementsList = [
   {
     id: 'bronzeCollector',
     name: '銅牌收藏家',
-    description: '開啟你的收藏之路。',
+    description: '小小的起步，開啟你的收藏之路。',
     tier: 'BRONZE',
     hidden: false,
     redeemable: true,
@@ -198,8 +198,8 @@ export const achievementsList = [
   },
   {
     id: 'silverContributor',
-    name: '進階貢獻者',
-    description: '你的貢獻，讓這裡更美好。',
+    name: '銀牌貢獻者',
+    description: '不要否定自己，你的貢獻，讓這裡更美好。',
     tier: 'SILVER',
     hidden: false,
     redeemable: true,

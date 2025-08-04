@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useUser } from '../context/UserContext'; // Import the useUser hook
 import { Container, Alert, Card, Button, Row, Col, ListGroup, Spinner, Tabs, Tab } from 'react-bootstrap';
-import { achievementsList, achievementTiers } from '../data/achievements';
+import { achievementsList, achievementTiers, pointRules } from '../data/achievements';
 import { FaCoins } from 'react-icons/fa';
 import './Achievements.css'; // Reuse styles
 import './RedemptionStore.css'; // Import store-specific styles
@@ -93,15 +93,15 @@ const RedemptionStore = () => {
                       <Card.Title>{item.name}</Card.Title>
                       <Card.Text>{item.description}</Card.Text>
                       <div className="mt-auto">
-                        <div className="d-flex justify-content-between align-items-center mb-2">
-                          <span>等級: {tierInfo.name}</span>
+                        <div className="d-flex justify-content-between align-items-center mb-3">
+                          <span className="me-2">等級: {tierInfo.name}</span>
                           <span style={{ color: tierInfo.color, fontWeight: 'bold' }}>
                             <FaCoins className="me-1" /> {item.cost}
                           </span>
                         </div>
                         <Button
                           variant="primary"
-                          className="w-100 btn-theme-gradient"
+                          className="btn-theme-gradient"
                           disabled={isUnlocked || !canAfford || redeeming === item.id}
                           onClick={() => handleRedeem(item)}
                         >
@@ -125,15 +125,15 @@ const RedemptionStore = () => {
                       <Card.Title>{masterAchievement.name}</Card.Title>
                       <Card.Text>{masterAchievement.description}</Card.Text>
                       <div className="mt-auto">
-                        <div className="d-flex justify-content-between align-items-center mb-2">
-                          <span>等級: {achievementTiers[masterAchievement.tier].name}</span>
+                        <div className="d-flex justify-content-between align-items-center mb-3">
+                          <span className="me-2">等級: {achievementTiers[masterAchievement.tier].name}</span>
                           <span style={{ color: achievementTiers[masterAchievement.tier].color, fontWeight: 'bold' }}>
                             <FaCoins className="me-1" /> {masterAchievement.cost}
                           </span>
                         </div>
                         <Button
                           variant="primary"
-                          className="w-100 btn-theme-gradient"
+                          className="btn-theme-gradient"
                           disabled={userAchievements[masterAchievement.id] || points < masterAchievement.cost || redeeming === masterAchievement.id}
                           onClick={() => handleRedeem(masterAchievement)}
                         >
@@ -175,6 +175,32 @@ const RedemptionStore = () => {
           ) : (
             <Alert variant="info">您目前沒有任何兌換紀錄。</Alert>
           )}
+        </Tab>
+        <Tab eventKey="rules" title="點數規則">
+          <Card className="p-3 bg-dark text-white">
+            <Card.Title>點數獲取規則</Card.Title>
+            <Card.Text as="div">
+              <div>您可以在網站中透過以下方式獲得點數：</div>
+              <ul>
+                <li><strong>每日登入獎勵：</strong></li>
+                <ul>
+                  <li>基礎每日登入：1 點</li>
+                  <li>鑽石級粉絲加成：額外 {pointRules.dailyBonus.DIAMOND} 點</li>
+                  <li>大師級粉絲加成：額外 {pointRules.dailyBonus.MASTER} 點</li>
+                </ul>
+                <li><strong>成就解鎖：</strong></li>
+                <ul>
+                  {Object.entries(pointRules.oneTime).map(([tier, points]) => (
+                    <li key={tier}>解鎖 {achievementTiers[tier].name} 成就：{points} 點</li>
+                  ))}
+                </ul>
+                <li><strong>其他活動：</strong></li>
+                <ul>
+                  <li>未來將開放更多活動，敬請期待！</li>
+                </ul>
+              </ul>
+            </Card.Text>
+          </Card>
         </Tab>
       </Tabs>
     </Container>
