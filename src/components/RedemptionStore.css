@@ -29,3 +29,22 @@
     padding: 0 !important; /* Remove padding to control height precisely */
     line-height: 40px !important; /* Ensure line height matches button height */
 }
+
+/* Styles for the master mystery card */
+.redeem-card-override.tier-master-mystery {
+  background: linear-gradient(145deg, #1a1a1a, #333333);
+  border: 2px dashed #ae00ae;
+  color: #fff;
+  text-align: center;
+}
+
+.mystery-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #ae00ae;
+}
+
+.mystery-text {
+  font-size: 1rem;
+  color: #ccc;
+}

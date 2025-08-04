@@ -214,4 +214,14 @@ export const achievementsList = [
     redeemable: true,
     cost: 500,
   },
+  {
+    id: 'masterCollector',
+    name: '大師收藏家',
+    description: '解鎖所有其他商店物品，證明你是終極粉絲。',
+    tier: 'MASTER',
+    hidden: false,
+    redeemable: true,
+    cost: 10,
+    isMaster: true, // The master achievement
+  },
 ];

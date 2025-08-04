@@ -26,6 +26,14 @@ const RedemptionStore = () => {
     });
   }, []);
 
+  const masterAchievement = useMemo(() => redeemableItems.find(item => item.isMaster), [redeemableItems]);
+  const regularRedeemableItems = useMemo(() => redeemableItems.filter(item => !item.isMaster), [redeemableItems]);
+
+  const allRegularItemsUnlocked = useMemo(() => {
+    if (!user || user.isAnonymous) return false;
+    return regularRedeemableItems.every(item => userAchievements[item.id]);
+  }, [user, userAchievements, regularRedeemableItems]);
+
   useEffect(() => {
     const fetchData = async () => {
       if (!user || user.isAnonymous) {
@@ -146,14 +154,14 @@ const RedemptionStore = () => {
       >
         <Tab eventKey="store" title="兌換商店">
           <Row xs={2} md={3} lg={5} className="g-4">
-            {redeemableItems.map(item => {
+            {regularRedeemableItems.map(item => {
               const isUnlocked = userAchievements[item.id];
               const canAfford = points >= item.cost;
               const tierInfo = achievementTiers[item.tier];
               return (
                 <Col key={item.id}>
-              <Card className={`achievement-card redeem-card-override h-100 ${isUnlocked ? 'unlocked' : 'locked'} tier-${item.tier.toLowerCase()}`}>
-                <Card.Body className="d-flex flex-column">
+                  <Card className={`achievement-card redeem-card-override h-100 ${isUnlocked ? 'unlocked' : 'locked'} tier-${item.tier.toLowerCase()}`}>
+                    <Card.Body className="d-flex flex-column">
                       <Card.Title>{item.name}</Card.Title>
                       <Card.Text>{item.description}</Card.Text>
                       <div className="mt-auto">
@@ -179,6 +187,46 @@ const RedemptionStore = () => {
                 </Col>
               );
             })}
+            {/* Master Achievement Card */}
+            {masterAchievement && (
+              <Col>
+                {allRegularItemsUnlocked ? (
+                  // Revealed Master Card
+                  <Card className={`achievement-card redeem-card-override h-100 ${userAchievements[masterAchievement.id] ? 'unlocked' : 'locked'} tier-${masterAchievement.tier.toLowerCase()}`}>
+                    <Card.Body className="d-flex flex-column">
+                      <Card.Title>{masterAchievement.name}</Card.Title>
+                      <Card.Text>{masterAchievement.description}</Card.Text>
+                      <div className="mt-auto">
+                        <div className="d-flex justify-content-between align-items-center mb-2">
+                          <span>等級: {achievementTiers[masterAchievement.tier].name}</span>
+                          <span style={{ color: achievementTiers[masterAchievement.tier].color, fontWeight: 'bold' }}>
+                            <FaCoins className="me-1" /> {masterAchievement.cost}
+                          </span>
+                        </div>
+                        <Button
+                          variant="primary"
+                          className="w-100 btn-theme-gradient"
+                          disabled={userAchievements[masterAchievement.id] || points < masterAchievement.cost || redeeming === masterAchievement.id}
+                          onClick={() => handleRedeem(masterAchievement)}
+                        >
+                          {redeeming === masterAchievement.id ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> :
+                          userAchievements[masterAchievement.id] ? '已擁有' :
+                          points < masterAchievement.cost ? '點數不足' : '兌換'}
+                        </Button>
+                      </div>
+                    </Card.Body>
+                  </Card>
+                ) : (
+                  // Mystery Card
+                  <Card className="achievement-card redeem-card-override h-100 locked tier-master-mystery">
+                    <Card.Body className="d-flex flex-column justify-content-center align-items-center">
+                      <Card.Title className="mystery-title">???</Card.Title>
+                      <Card.Text className="mystery-text">解鎖所有其他商店物品以揭曉</Card.Text>
+                    </Card.Body>
+                  </Card>
+                )}
+              </Col>
+            )}
           </Row>
         </Tab>
         <Tab eventKey="history" title="兌換紀錄">
