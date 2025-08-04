@@ -1,7 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { db, auth } from '../firebase';
-import { doc, getDoc, writeBatch, serverTimestamp, collection, query, where, getDocs } from 'firebase/firestore';
-import { useAuthState } from 'react-firebase-hooks/auth';
+import React, { useState, useMemo } from 'react';
+import { useUser } from '../context/UserContext'; // Import the useUser hook
 import { Container, Alert, Card, Button, Row, Col, ListGroup, Spinner, Tabs, Tab } from 'react-bootstrap';
 import { achievementsList, achievementTiers } from '../data/achievements';
 import { FaCoins } from 'react-icons/fa';
@@ -9,14 +7,19 @@ import './Achievements.css'; // Reuse styles
 import './RedemptionStore.css'; // Import store-specific styles
 
 const RedemptionStore = () => {
-  const [user] = useAuthState(auth);
-  const [points, setPoints] = useState(0);
-  const [userAchievements, setUserAchievements] = useState({});
-  const [history, setHistory] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [redeeming, setRedeeming] = useState(null); // State to track which item is being redeemed
+  const {
+    user,
+    points,
+    userAchievements,
+    redemptionHistory,
+    loading,
+    error: contextError,
+    redeemItem,
+  } = useUser();
+
+  const [redeeming, setRedeeming] = useState(null);
   const [key, setKey] = useState('store');
+  const [localError, setLocalError] = useState('');
 
   const redeemableItems = useMemo(() => {
     return achievementsList.filter(a => a.redeemable).sort((a, b) => {
@@ -34,95 +37,18 @@ const RedemptionStore = () => {
     return regularRedeemableItems.every(item => userAchievements[item.id]);
   }, [user, userAchievements, regularRedeemableItems]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!user || user.isAnonymous) {
-        setLoading(false);
-        return;
-      }
-      try {
-        setLoading(true);
-        setError(''); // Reset error on fetch
-        // Fetch user data
-        const userDocRef = doc(db, 'userAchievements', user.uid);
-        const userDocSnap = await getDoc(userDocRef);
-        if (userDocSnap.exists()) {
-          const data = userDocSnap.data();
-          setPoints(data.points || 0);
-          setUserAchievements(data);
-        }
-
-        // Fetch redemption history
-        const historyQuery = query(
-          collection(db, 'redemptionHistory'),
-          where('userId', '==', user.uid)
-        );
-        const historySnapshot = await getDocs(historyQuery);
-        const historyData = historySnapshot.docs
-          .map(d => d.data())
-          .sort((a, b) => (b.redeemedAt?.toDate() || 0) - (a.redeemedAt?.toDate() || 0));
-        setHistory(historyData);
-
-      } catch (e) {
-        console.error("Error fetching user data or history: ", e);
-        setError('無法載入商店資料，請稍後再試。');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [user]);
-
   const handleRedeem = async (item) => {
     if (!user || points < item.cost || userAchievements[item.id]) {
       return;
     }
     setRedeeming(item.id);
-    setError('');
+    setLocalError('');
 
     try {
-      const batch = writeBatch(db);
-
-      // 1. Update user's points and achievements
-      const userDocRef = doc(db, 'userAchievements', user.uid);
-      batch.update(userDocRef, {
-        points: points - item.cost,
-        [item.id]: true,
-        [`${item.id}Date`]: serverTimestamp(),
-      });
-
-      // 2. Create redemption history record
-      const historyDocRef = doc(collection(db, 'redemptionHistory'));
-      batch.set(historyDocRef, {
-        userId: user.uid,
-        userName: user.displayName,
-        itemId: item.id,
-        itemName: item.name,
-        pointsSpent: item.cost,
-        redeemedAt: serverTimestamp(),
-      });
-
-      await batch.commit();
-
-      // Update state locally
-      setPoints(prev => prev - item.cost);
-      setUserAchievements(prev => ({ ...prev, [item.id]: true }));
-      
-      // Refetch history to show the new item
-      const historyQuery = query(
-        collection(db, 'redemptionHistory'),
-        where('userId', '==', user.uid)
-      );
-      const historySnapshot = await getDocs(historyQuery);
-      const historyData = historySnapshot.docs
-        .map(d => d.data())
-        .sort((a, b) => (b.redeemedAt?.toDate() || 0) - (a.redeemedAt?.toDate() || 0));
-      setHistory(historyData);
-
-
+      await redeemItem(item);
     } catch (e) {
       console.error("Error redeeming item: ", e);
-      setError('兌換失敗，請稍後再試。');
+      setLocalError('兌換失敗，請稍後再試。');
     } finally {
       setRedeeming(null);
     }
@@ -136,6 +62,8 @@ const RedemptionStore = () => {
     return <Container className="mt-5"><Alert variant="warning">請登入以使用點數商店。</Alert></Container>;
   }
 
+  const error = localError || contextError;
+
   return (
     <Container className="mt-5">
       <div className="d-flex justify-content-between align-items-center">
@@ -144,7 +72,7 @@ const RedemptionStore = () => {
           <FaCoins className="me-2" /> 您目前擁有：<strong>{points}</strong> 點
         </Alert>
       </div>
-      {error && <Alert variant="danger" dismissible onClose={() => setError('')}>{error}</Alert>}
+      {error && <Alert variant="danger" dismissible onClose={() => setLocalError('')}>{error}</Alert>}
 
       <Tabs
         id="redemption-store-tabs"
@@ -230,9 +158,9 @@ const RedemptionStore = () => {
           </Row>
         </Tab>
         <Tab eventKey="history" title="兌換紀錄">
-          {history.length > 0 ? (
+          {redemptionHistory.length > 0 ? (
             <ListGroup>
-              {history.map((record, index) => (
+              {redemptionHistory.map((record, index) => (
                 <ListGroup.Item key={index} className="d-flex justify-content-between align-items-center">
                   <div>
                     <strong>{record.itemName}</strong>

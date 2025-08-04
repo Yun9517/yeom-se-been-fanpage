@@ -5,14 +5,11 @@ import { FaLine } from 'react-icons/fa';
 import { Alert, Accordion, Toast, ToastContainer, Button } from 'react-bootstrap';
 import './FanQuiz.css';
 
-import { db, auth } from '../firebase';
-import { collection, addDoc, serverTimestamp, setDoc, doc, getDoc, increment } from 'firebase/firestore';
-import { useAuthState } from 'react-firebase-hooks/auth';
+import { useUser } from '../context/UserContext'; // Import the useUser hook
 
 import Leaderboard from './Leaderboard';
 import LoadingSpinner from './LoadingSpinner';
 import useFirestoreCollection from '../hooks/useFirestoreCollection';
-import { achievementsList, pointRules } from '../data/achievements';
 
 // Helper function to get random questions
 const getRandomQuestions = (allQuestions, num = 5) => {
@@ -26,12 +23,12 @@ function FanQuiz() {
   const [score, setScore] = useState(0);
   const [showScore, setShowScore] = useState(false);
   const [userAnswers, setUserAnswers] = useState([]);
-  const [user] = useAuthState(auth);
+  const { user, processQuizResults } = useUser(); // Use the context
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastVariant, setToastVariant] = useState('success');
 
-  const quizQueryConstraints = useMemo(() => [], []); // No specific order for initial fetch, will be shuffled anyway
+  const quizQueryConstraints = useMemo(() => [], []);
   const { data: masterQuestions, loading, error } = useFirestoreCollection('quizzes', quizQueryConstraints);
 
   useEffect(() => {
@@ -40,139 +37,13 @@ function FanQuiz() {
     }
   }, [masterQuestions, loading, error]);
 
-  useEffect(() => {
-    const saveScore = async () => {
-      if (showScore && user && !user.isAnonymous) { // Only save score if user is logged in and not anonymous
-        try {
-          await addDoc(collection(db, "scores"), {
-            userName: user.displayName,
-            userId: user.uid,
-            score: score,
-            userAnswers: userAnswers, // Add userAnswers here
-            createdAt: serverTimestamp()
-          });
-        } catch (e) {
-          console.error("Error adding document: ", e);
-        }
-      }
-    };
-
-    saveScore();
-  }, [showScore, user, score, userAnswers]);
-
-  const checkAndUnlockAchievements = useCallback(async () => {
-    if (!user || user.isAnonymous) return; // Only check for logged-in users
-
-    const userAchievementsRef = doc(db, "userAchievements", user.uid);
-    const userAchievementsSnap = await getDoc(userAchievementsRef);
-    const userAchievements = userAchievementsSnap.exists() ? userAchievementsSnap.data() : {};
-
-    const achievementData = {
-      userName: user.displayName,
-      userEmail: user.email,
-    };
-
-    const grantAchievement = async (achievementId) => {
-        const achievement = achievementsList.find(a => a.id === achievementId);
-        if (!achievement) return;
-
-        const pointsGained = pointRules.oneTime[achievement.tier] || 0;
-        
-        await setDoc(userAchievementsRef, {
-            ...achievementData,
-            [achievementId]: true,
-            [`${achievementId}Date`]: serverTimestamp(),
-            points: increment(pointsGained)
-        }, { merge: true });
-
-        showAchievementToast(`恭喜！您解鎖了 [${achievement.name}] 成就！獲得 ${pointsGained} 點！`);
-    };
-
-    // Achievement: 首次作答全對
-    if (score === questions.length && !userAchievements.firstPerfectScore) {
-      await grantAchievement('firstPerfectScore');
-    }
-
-    // Achievement: 首次全錯
-    if (score === 0 && !userAchievements.firstAllWrong) {
-      await grantAchievement('firstAllWrong');
-    }
-
-    // Login Achievements
-    const loginDaysCount = userAchievements.loginDaysCount || 0;
-
-    if (loginDaysCount >= 1 && !userAchievements.firstLogin) {
-      await grantAchievement('firstLogin');
-    }
-
-    if (loginDaysCount >= 3 && !userAchievements.threeDayLogin) {
-      await grantAchievement('threeDayLogin');
-    }
-
-    if (loginDaysCount >= 7 && !userAchievements.sevenDayLogin) {
-      await grantAchievement('sevenDayLogin');
-    }
-
-    if (loginDaysCount >= 30 && !userAchievements.thirtyDayLogin) {
-      await grantAchievement('thirtyDayLogin');
-    }
-
-    // Quizzes Answered Achievements
-    const totalQuizzesAnswered = userAchievements.totalQuizzesAnswered || 0;
-    const totalCorrectAnswers = userAchievements.totalCorrectAnswers || 0;
-    const totalIncorrectAnswers = userAchievements.totalIncorrectAnswers || 0;
-
-    if (totalCorrectAnswers >= 10 && !userAchievements.tenCorrectAnswers) {
-      await grantAchievement('tenCorrectAnswers');
-    }
-
-    if (totalCorrectAnswers >= 50 && !userAchievements.fiftyCorrectAnswers) {
-      await grantAchievement('fiftyCorrectAnswers');
-    }
-
-    if (totalCorrectAnswers >= 100 && !userAchievements.hundredCorrectAnswers) {
-      await grantAchievement('hundredCorrectAnswers');
-    }
-
-    if (totalIncorrectAnswers >= 10 && !userAchievements.tenIncorrectAnswers) {
-      await grantAchievement('tenIncorrectAnswers');
-    }
-
-    if (totalIncorrectAnswers >= 50 && !userAchievements.fiftyIncorrectAnswers) {
-      await grantAchievement('fiftyIncorrectAnswers');
-    }
-
-    if (totalIncorrectAnswers >= 100 && !userAchievements.hundredIncorrectAnswers) {
-      await grantAchievement('hundredIncorrectAnswers');
-    }
-
-    if (totalQuizzesAnswered >= 100 && !userAchievements.hundredQuizzes) {
-      await grantAchievement('hundredQuizzes');
-    }
-
-    if (totalQuizzesAnswered >= 500 && !userAchievements.fiveHundredQuizzes) {
-      await grantAchievement('fiveHundredQuizzes');
-    }
-
-    if (totalQuizzesAnswered >= 1000 && !userAchievements.thousandQuizzes) {
-      await grantAchievement('thousandQuizzes');
-    }
-
-  }, [user, score, questions.length]);
-
   const showAchievementToast = (message, variant = 'success') => {
     setToastMessage(message);
     setToastVariant(variant);
     setShowToast(true);
   };
 
-  useEffect(() => {
-    if (showScore && user && !user.isAnonymous) {
-      checkAndUnlockAchievements();
-    }
-  }, [showScore, user, checkAndUnlockAchievements]);
-
-  const handleAnswerOptionClick = (selectedOption) => {
+  const handleAnswerOptionClick = async (selectedOption) => {
     const currentQ = questions[currentQuestion];
     const isCorrect = selectedOption === currentQ.answer;
 
@@ -180,32 +51,34 @@ function FanQuiz() {
       setScore(score + 1);
     }
 
-    setUserAnswers(prevAnswers => [
-      ...prevAnswers,
+    const newUserAnswers = [
+      ...userAnswers,
       {
         question: currentQ.question,
         correctAnswer: currentQ.answer,
         userAnswer: selectedOption,
         isCorrect: isCorrect,
       },
-    ]);
+    ];
+    setUserAnswers(newUserAnswers);
 
     const nextQuestion = currentQuestion + 1;
     if (nextQuestion < questions.length) {
       setCurrentQuestion(nextQuestion);
     } else {
       setShowScore(true);
-      // Increment totalQuizSessions and other stats when the quiz ends
       if (user && !user.isAnonymous) {
-        const userAchievementsRef = doc(db, "userAchievements", user.uid);
-        const finalScore = isCorrect ? score + 1 : score; // Calculate final score for this quiz session
-        const updateData = {
-          totalQuizSessions: increment(1),
-          totalQuizzesAnswered: increment(questions.length),
-          totalCorrectAnswers: increment(finalScore),
-          totalIncorrectAnswers: increment(questions.length - finalScore),
-        };
-        setDoc(userAchievementsRef, updateData, { merge: true });
+        const finalScore = isCorrect ? score + 1 : score;
+        const unlockedAchievements = await processQuizResults({
+          score: finalScore,
+          questions,
+          userAnswers: newUserAnswers,
+        });
+
+        // Show toasts for any unlocked achievements
+        unlockedAchievements.forEach(ach => {
+          showAchievementToast(`恭喜！您解鎖了 [${ach.name}] 成就！獲得 ${ach.points} 點！`);
+        });
       }
     }
   };

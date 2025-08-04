@@ -1,36 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth, db } from '../firebase';
+import { useUser } from '../context/UserContext'; // Import the useUser hook
+import { auth } from '../firebase';
 import { GoogleAuthProvider, signInWithPopup, signOut, signInAnonymously } from 'firebase/auth';
-import { doc, getDoc, setDoc, serverTimestamp, increment } from 'firebase/firestore';
 import { FaGoogle, FaAward, FaCoins } from 'react-icons/fa';
 
-import { achievementsList, achievementTiers, pointRules } from '../data/achievements';
-
 const Header = () => {
-  const [user] = useAuthState(auth);
-  const [userAchievements, setUserAchievements] = useState({});
-  const [points, setPoints] = useState(0);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (user && !user.isAnonymous) {
-        const userAchievementsRef = doc(db, "userAchievements", user.uid);
-        const userAchievementsSnap = await getDoc(userAchievementsRef);
-        if (userAchievementsSnap.exists()) {
-          const data = userAchievementsSnap.data();
-          setUserAchievements(data);
-          setPoints(data.points || 0);
-        }
-      } else {
-        setUserAchievements({});
-        setPoints(0);
-      }
-    };
-    fetchUserData();
-  }, [user]);
+  const { user, points, getHighestAchievementTier } = useUser(); // Use context
 
   const anonymousNicknames = [
     "阿彬鐵粉",
@@ -64,71 +41,6 @@ const Header = () => {
     } catch (error) {
       console.error('Error during anonymous login:', error);
     }
-  };
-
-  useEffect(() => {
-    const handleDailyLoginRewards = async () => {
-      if (user && !user.isAnonymous) {
-        const userAchievementsRef = doc(db, "userAchievements", user.uid);
-        const userAchievementsSnap = await getDoc(userAchievementsRef);
-        const userAchievementsData = userAchievementsSnap.exists() ? userAchievementsSnap.data() : {};
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const lastLoginDate = userAchievementsData.lastLoginDate?.toDate();
-        let loginDaysCount = userAchievementsData.loginDaysCount || 0;
-        let pointsToAdd = 0;
-
-        if (!lastLoginDate || lastLoginDate.setHours(0, 0, 0, 0) < today.getTime()) {
-          loginDaysCount += 1;
-          pointsToAdd = 1; // Base daily point
-
-          const unlockedAchievementIds = Object.keys(userAchievementsData).filter(key => userAchievementsData[key] === true);
-          const unlockedTiers = new Set(
-            achievementsList
-              .filter(ach => unlockedAchievementIds.includes(ach.id))
-              .map(ach => ach.tier)
-          );
-
-          if (unlockedTiers.has('DIAMOND')) {
-            pointsToAdd += pointRules.dailyBonus.DIAMOND;
-          }
-          if (unlockedTiers.has('MASTER')) {
-            pointsToAdd += pointRules.dailyBonus.MASTER;
-          }
-
-          await setDoc(userAchievementsRef, {
-            lastLoginDate: serverTimestamp(),
-            loginDaysCount: loginDaysCount,
-            points: increment(pointsToAdd)
-          }, { merge: true });
-
-          setPoints(prevPoints => prevPoints + pointsToAdd);
-        }
-      }
-    };
-
-    handleDailyLoginRewards();
-  }, [user]);
-
-  const getHighestAchievementTier = () => {
-    if (!user || user.isAnonymous || !userAchievements) return null;
-
-    let highestTierInfo = null;
-    let highestOrder = -1;
-
-    for (const achievement of achievementsList) {
-      if (userAchievements[achievement.id]) {
-        const tierKey = achievement.tier;
-        const tierData = achievementTiers[tierKey];
-        if (tierData && tierData.order > highestOrder) {
-          highestOrder = tierData.order;
-          highestTierInfo = { key: tierKey, ...tierData };
-        }
-      }
-    }
-    return highestTierInfo;
   };
 
   const highestTierInfo = getHighestAchievementTier();

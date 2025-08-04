@@ -127,7 +127,7 @@ const Achievements = () => {
         </Dropdown>
       </div>
       {sortedAchievements.length === 0 ? (
-        <Alert variant="info">目前沒有可解鎖的成就。</Alert>
+        <Alert variant="info">繼續探索網站，解鎖你的第一個成就</Alert>
       ) : (
         <Row xs={2} sm={2} md={3} lg={4} className="g-4">
           {sortedAchievements.map((achievement) => {

@@ -241,7 +241,7 @@ const QuizHistory = () => {
     );
   }
 
-  const totalGamesOverall = userAchievementsData.totalQuizSessions || 0;
+  const totalGamesOverall = userAchievementsData ? userAchievementsData.totalQuizSessions || 0 : 0;
   const highestScore = history.reduce((max, record) => Math.max(max, record.score), 0);
   const averageScore = history.length > 0 ? (history.reduce((sum, record) => sum + record.score, 0) / history.length).toFixed(2) : 0;
 
