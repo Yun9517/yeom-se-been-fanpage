@@ -15,6 +15,28 @@ export const UserProvider = ({ children }) => {
   const [redemptionHistory, setRedemptionHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  // const [loginNotification, setLoginNotification] = useState(null); // Removed
+
+  // const clearLoginNotification = useCallback(() => { // Removed
+  //   setLoginNotification(null);
+  // }, []);
+
+  const addNotification = useCallback(async (userId, type, title, message, link = null) => {
+    if (!userId) return;
+    try {
+      await addDoc(collection(db, 'notifications'), {
+        userId,
+        type,
+        title,
+        message,
+        timestamp: serverTimestamp(),
+        read: false,
+        link,
+      });
+    } catch (e) {
+      console.error("Error adding notification:", e);
+    }
+  }, []);
 
   const checkLoginAchievements = useCallback(async (currentAchievements) => {
     if (!user || user.isAnonymous) return false;
@@ -34,6 +56,9 @@ export const UserProvider = ({ children }) => {
           points: increment(pointsGained)
       }, { merge: true });
       madeChanges = true;
+
+      // Add specific notification for login achievements
+      await addNotification(user.uid, 'achievement_login', '成就解鎖！', `恭喜！您解鎖了「${achievement.name}」成就，獲得 ${pointsGained} 點！`, '/achievements');
     };
 
     const loginDaysCount = currentAchievements.loginDaysCount || 0;
@@ -44,7 +69,7 @@ export const UserProvider = ({ children }) => {
     if (loginDaysCount >= 30) await grantLoginAchievement('thirtyDayLogin');
     
     return madeChanges;
-  }, [user]);
+  }, [user, addNotification]);
 
   const fetchUserData = useCallback(async () => {
     if (!user || user.isAnonymous) {
@@ -85,6 +110,7 @@ export const UserProvider = ({ children }) => {
             loginDaysCount: increment(1),
             points: increment(pointsToAdd)
           }).commit();
+          await addNotification(user.uid, 'daily_login', '每日登入獎勵', `您已獲得 ${pointsToAdd} 點每日登入獎勵！`);
           
           const updatedDocAfterDaily = await getDoc(userDocRef);
           const dataAfterDaily = updatedDocAfterDaily.data();
@@ -109,20 +135,43 @@ export const UserProvider = ({ children }) => {
           points: 1,
         };
 
-        const achievementId = 'earlySupporter';
+        const achievementIdEarlySupporter = 'earlySupporter';
         const cutoffDate = new Date('2025-08-31');
         if (new Date() <= cutoffDate) {
-          const achievement = achievementsList.find(a => a.id === achievementId);
+          const achievement = achievementsList.find(a => a.id === achievementIdEarlySupporter);
           if (achievement) {
-            initialData[achievementId] = true;
-            initialData[`${achievementId}Date`] = serverTimestamp();
+            initialData[achievementIdEarlySupporter] = true;
+            initialData[`${achievementIdEarlySupporter}Date`] = serverTimestamp();
             const pointsGained = require('../data/achievements').pointRules.oneTime[achievement.tier] || 0;
             initialData.points += pointsGained;
           }
         }
+
+        // Handle 'firstLogin' achievement for new users
+        const firstLoginAchievement = achievementsList.find(a => a.id === 'firstLogin');
+        if (firstLoginAchievement) {
+          initialData.firstLogin = true;
+          initialData.firstLoginDate = serverTimestamp();
+          const firstLoginPoints = require('../data/achievements').pointRules.oneTime[firstLoginAchievement.tier] || 0;
+          initialData.points += firstLoginPoints;
+        }
         
         batch.set(userDocRef, initialData);
         await batch.commit();
+
+        // Send individual notifications for new user initial points
+        await addNotification(user.uid, 'daily_login', '每日登入獎勵', `您已獲得 1 點每日登入獎勵！`);
+
+        const earlySupporterAchievement = achievementsList.find(a => a.id === 'earlySupporter');
+        if (earlySupporterAchievement) {
+          const earlySupporterPoints = require('../data/achievements').pointRules.oneTime[earlySupporterAchievement.tier] || 0;
+          await addNotification(user.uid, 'achievement_login', '成就解鎖！', `恭喜！您解鎖了「${earlySupporterAchievement.name}」成就，獲得 ${earlySupporterPoints} 點！`, '/achievements');
+        }
+
+        if (firstLoginAchievement) {
+          const firstLoginPoints = require('../data/achievements').pointRules.oneTime[firstLoginAchievement.tier] || 0;
+          await addNotification(user.uid, 'achievement_login', '成就解鎖！', `恭喜！您解鎖了「${firstLoginAchievement.name}」成就，獲得 ${firstLoginPoints} 點！`, '/achievements');
+        }
 
         await checkLoginAchievements(initialData);
         
@@ -183,9 +232,11 @@ export const UserProvider = ({ children }) => {
 
     await batch.commit();
 
+    await addNotification(user.uid, 'redemption_success', '兌換成功！', `您已成功兌換「${item.name}」，花費 ${item.cost} 點。`, '/store');
+
     await fetchUserData();
 
-  }, [user, points, userAchievements, fetchUserData]);
+  }, [user, points, userAchievements, fetchUserData, addNotification]);
 
   const processQuizResults = useCallback(async (quizResults) => {
     if (!user || user.isAnonymous) return [];
@@ -225,6 +276,7 @@ export const UserProvider = ({ children }) => {
       }, { merge: true });
 
       unlockedAchievements.push({ name: achievement.name, points: pointsGained });
+      await addNotification(user.uid, 'achievement_quiz', '成就解鎖！', `恭喜！您解鎖了「${achievement.name}」成就，獲得 ${pointsGained} 點！`, '/achievements');
     };
 
     if (score === questions.length) await grantAchievement('firstPerfectScore');
@@ -245,7 +297,7 @@ export const UserProvider = ({ children }) => {
 
     return unlockedAchievements;
 
-  }, [user, fetchUserData]);
+  }, [user, fetchUserData, addNotification, achievementsList]);
   
   const value = {
     user,
@@ -257,6 +309,7 @@ export const UserProvider = ({ children }) => {
     redeemItem,
     processQuizResults,
     fetchUserData,
+    addNotification,
     getHighestAchievementTier: () => {
         if (!user || user.isAnonymous || !userAchievements) return null;
         let highestTierInfo = null;

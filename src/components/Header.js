@@ -72,6 +72,9 @@ const Header = () => {
             <Nav.Link as={NavLink} to="/profile">生涯經歷</Nav.Link>
             <Nav.Link as={NavLink} to="/news">最新消息</Nav.Link>
             <Nav.Link as={NavLink} to="/quiz">粉絲小遊戲</Nav.Link>
+            {user && !user.isAnonymous && (
+              <Nav.Link as={NavLink} to="/messages">訊息中心</Nav.Link>
+            )}
           </Nav>
           <Nav>
             {user ? (

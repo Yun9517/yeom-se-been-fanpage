@@ -23,6 +23,7 @@ const FanQuiz = lazy(() => import('./components/FanQuiz'));
 const QuizHistory = lazy(() => import('./components/QuizHistory'));
 const Achievements = lazy(() => import('./components/Achievements'));
 const RedemptionStore = lazy(() => import('./components/RedemptionStore'));
+const MessageCenter = lazy(() => import('./components/MessageCenter')); // Import MessageCenter
 
 // Component to track page views
 const PageTracker = () => {
@@ -73,6 +74,7 @@ function App() {
                 <Route path="/quiz-history" element={<QuizHistory />} />
                 <Route path="/achievements" element={<Achievements />} />
                 <Route path="/store" element={<RedemptionStore />} />
+                <Route path="/messages" element={<MessageCenter />} /> {/* Add MessageCenter route */}
               </Routes>
             </Suspense>
           </main>
