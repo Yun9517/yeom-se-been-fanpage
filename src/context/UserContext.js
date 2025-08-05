@@ -21,12 +21,12 @@ export const UserProvider = ({ children }) => {
   //   setLoginNotification(null);
   // }, []);
 
-  const addNotification = useCallback(async (userId, type, title, message, link = null) => {
+  const addNotification = useCallback(async (userId, source, title, message, link = null) => {
     if (!userId) return;
     try {
       await addDoc(collection(db, 'notifications'), {
         userId,
-        type,
+        source,
         title,
         message,
         timestamp: serverTimestamp(),
@@ -58,7 +58,7 @@ export const UserProvider = ({ children }) => {
       madeChanges = true;
 
       // Add specific notification for login achievements
-      await addNotification(user.uid, 'achievement_login', '成就解鎖！', `恭喜！您解鎖了「${achievement.name}」成就，獲得 ${pointsGained} 點！`, '/achievements');
+      await addNotification(user.uid, 'achievement', '成就解鎖！', `恭喜！您解鎖了「${achievement.name}」成就，獲得 ${pointsGained} 點！`, '/achievements');
     };
 
     const loginDaysCount = currentAchievements.loginDaysCount || 0;
@@ -165,12 +165,12 @@ export const UserProvider = ({ children }) => {
         const earlySupporterAchievement = achievementsList.find(a => a.id === 'earlySupporter');
         if (earlySupporterAchievement) {
           const earlySupporterPoints = require('../data/achievements').pointRules.oneTime[earlySupporterAchievement.tier] || 0;
-          await addNotification(user.uid, 'achievement_login', '成就解鎖！', `恭喜！您解鎖了「${earlySupporterAchievement.name}」成就，獲得 ${earlySupporterPoints} 點！`, '/achievements');
+          await addNotification(user.uid, 'achievement', '成就解鎖！', `恭喜！您解鎖了「${earlySupporterAchievement.name}」成就，獲得 ${earlySupporterPoints} 點！`, '/achievements');
         }
 
         if (firstLoginAchievement) {
           const firstLoginPoints = require('../data/achievements').pointRules.oneTime[firstLoginAchievement.tier] || 0;
-          await addNotification(user.uid, 'achievement_login', '成就解鎖！', `恭喜！您解鎖了「${firstLoginAchievement.name}」成就，獲得 ${firstLoginPoints} 點！`, '/achievements');
+          await addNotification(user.uid, 'achievement', '成就解鎖！', `恭喜！您解鎖了「${firstLoginAchievement.name}」成就，獲得 ${firstLoginPoints} 點！`, '/achievements');
         }
 
         await checkLoginAchievements(initialData);
@@ -232,7 +232,7 @@ export const UserProvider = ({ children }) => {
 
     await batch.commit();
 
-    await addNotification(user.uid, 'redemption_success', '兌換成功！', `您已成功兌換「${item.name}」，花費 ${item.cost} 點。`, '/store');
+    await addNotification(user.uid, 'redemption', '兌換成功！', `您已成功兌換「${item.name}」，花費 ${item.cost} 點。`, '/store');
 
     await fetchUserData();
 
@@ -276,7 +276,7 @@ export const UserProvider = ({ children }) => {
       }, { merge: true });
 
       unlockedAchievements.push({ name: achievement.name, points: pointsGained });
-      await addNotification(user.uid, 'achievement_quiz', '成就解鎖！', `恭喜！您解鎖了「${achievement.name}」成就，獲得 ${pointsGained} 點！`, '/achievements');
+      await addNotification(user.uid, 'achievement', '成就解鎖！', `恭喜！您解鎖了「${achievement.name}」成就，獲得 ${pointsGained} 點！`, '/achievements');
     };
 
     if (score === questions.length) await grantAchievement('firstPerfectScore');
@@ -297,7 +297,7 @@ export const UserProvider = ({ children }) => {
 
     return unlockedAchievements;
 
-  }, [user, fetchUserData, addNotification, achievementsList]);
+  }, [user, fetchUserData, addNotification]);
   
   const value = {
     user,
