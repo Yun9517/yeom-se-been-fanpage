@@ -57,7 +57,7 @@ const CareerJourney = () => {
                 <div id="profile-timeline" className="mt-4">
                   <div className="timeline">
                     {cheerleadingExperience.map((item, index) => (
-                      <div key={index} className={`timeline-item ${index % 2 === 0 ? 'left' : 'right'}`} data-aos={item.fade}>
+                      <div key={index} className={`timeline-item ${index % 2 === 0 ? 'left' : 'right'}`}>
                         <div className="timeline-content">
                           <span className="timeline-year">{item.year}</span>
                           <p className="timeline-teams">{item.teams}</p>

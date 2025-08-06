@@ -5,7 +5,14 @@ function ScrollToTop() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // Try to scroll the main content area first, which is a common pattern in SPA layouts.
+    const mainContent = document.querySelector('main');
+    if (mainContent) {
+      mainContent.scrollTo(0, 0);
+    } else {
+      // Fallback to scrolling the window, which is the default browser behavior.
+      window.scrollTo(0, 0);
+    }
   }, [pathname]);
 
   return null;

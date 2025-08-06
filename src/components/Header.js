@@ -72,6 +72,7 @@ const Header = () => {
             <Nav.Link as={NavLink} to="/profile">生涯經歷</Nav.Link>
             <Nav.Link as={NavLink} to="/news">最新消息</Nav.Link>
             <Nav.Link as={NavLink} to="/quiz">粉絲小遊戲</Nav.Link>
+            <Nav.Link as={NavLink} to="/chatroom">聊天室</Nav.Link>
             {user && !user.isAnonymous && (
               <Nav.Link as={NavLink} to="/messages">訊息中心</Nav.Link>
             )}
@@ -115,10 +116,10 @@ const Header = () => {
               </NavDropdown>
             ) : (
               <NavDropdown title="登入" id="basic-nav-dropdown">
-                <NavDropdown.Item onClick={handleGoogleLogin}>
+                <NavDropdown.Item onClick={(e) => handleGoogleLogin(e)}>
                   <FaGoogle className="me-2" /> 使用 Google 登入
                 </NavDropdown.Item>
-                <NavDropdown.Item onClick={handleAnonymousLogin}>
+                <NavDropdown.Item onClick={(e) => handleAnonymousLogin(e)}>
                   匿名遊玩
                 </NavDropdown.Item>
               </NavDropdown>

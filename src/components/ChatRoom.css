@@ -1,0 +1,142 @@
+/* src/components/ChatRoom.css */
+.chat-container {
+  max-width: 800px;
+  margin: auto;
+  background-color: #2c2c2c; /* Dark background for the container */
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  color: #e0e0e0;
+}
+
+.messages-area {
+  height: 60vh;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background-color: #1e1e1e; /* Even darker for the message area */
+  border-radius: 10px;
+  border: 1px solid #444;
+}
+
+.message-item {
+  background-color: transparent;
+  border: none;
+  margin-bottom: 1rem;
+  display: flex;
+}
+
+.message-item.sent {
+  justify-content: flex-end;
+}
+
+.message-item.received {
+  justify-content: flex-start;
+}
+
+.message-content {
+  padding: 0.75rem 1rem;
+  border-radius: 15px;
+  max-width: 70%;
+  position: relative;
+}
+
+.message-item.sent .message-content {
+  background-color: #007bff; /* Blue for sent messages */
+  color: white;
+  border-bottom-right-radius: 0;
+}
+
+.message-item.received .message-content {
+  background-color: #495057; /* Gray for received messages */
+  color: white;
+  border-bottom-left-radius: 0;
+}
+
+.message-user {
+  font-size: 0.8rem;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #a0a0a0; /* Lighter color for username */
+}
+
+.message-item.sent .message-user {
+    color: #d1e7ff;
+}
+
+.message-text {
+  font-size: 1rem;
+  word-wrap: break-word;
+}
+
+.message-time {
+  font-size: 0.7rem;
+  color: #999;
+  display: block;
+  text-align: right;
+  margin-top: 0.25rem;
+}
+
+.message-item.sent .message-time {
+    color: #d1e7ff;
+}
+
+.message-form {
+  display: flex;
+}
+
+.message-form .form-control {
+  flex-grow: 1;
+  background-color: #333;
+  border-color: #555;
+  color: #fff;
+}
+
+.emoji-button {
+    margin: 0 0.5rem;
+}
+
+.message-form .form-control:focus {
+  background-color: #333;
+  border-color: #007bff;
+  color: #fff;
+  box-shadow: none;
+}
+
+.picker-container {
+    position: relative;
+}
+
+.picker-container .EmojiPickerReact {
+    position: absolute;
+    bottom: 50px; /* Position it above the form */
+    right: 0;
+    z-index: 1000;
+}
+
+.message-form .form-control::placeholder {
+  color: #888; /* Lighter color for placeholder text */
+}
+
+.emoji-tip {
+  font-size: 0.8rem;
+  color: #888;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+/* Custom scrollbar for messages area */
+.messages-area::-webkit-scrollbar {
+  width: 8px;
+}
+
+.messages-area::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+.messages-area::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 4px;
+  border: 2px solid #1e1e1e;
+}

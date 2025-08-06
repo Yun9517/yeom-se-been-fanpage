@@ -99,7 +99,7 @@ const About = () => {
       <section className="about-section section-2025 py-5">
         <Container>
           <Row className="align-items-center">
-            <Col md={6} data-aos="fade-right">
+            <Col md={6}>
               <OverlayTrigger
                 placement="top"
                 overlay={
@@ -131,7 +131,7 @@ const About = () => {
                 <ImageWithFallback filename="yeomsebeen_2025_nc_01.jpg" fluid rounded />
               </OverlayTrigger>
             </Col>
-            <Col md={6} data-aos="fade-left">
+            <Col md={6}>
               <h2 className="text-white">{aboutContent.section2025Title}</h2>
               <p className="text-white">
                 {aboutContent.section2025Content}
