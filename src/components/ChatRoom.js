@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Container, Form, Button, ListGroup, Spinner, Alert, Badge } from 'react-bootstrap';
+import { Container, Form, Button, ListGroup, Spinner, Alert, Badge, Modal } from 'react-bootstrap';
 import { IoClose } from 'react-icons/io5';
 import EmojiPicker from 'emoji-picker-react';
 import { useUser } from '../context/UserContext';
@@ -12,7 +12,7 @@ import './ChatRoom.css';
 const RETRACT_TIME_LIMIT = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 const ChatRoom = () => {
-  const { user, authLoading } = useUser();
+  const { user, authLoading, updateUserProfile, userAchievements, loading } = useUser();
   const [newMessage, setNewMessage] = useState('');
   const [showInputPicker, setShowInputPicker] = useState(false);
   const [hoveredMessageId, setHoveredMessageId] = useState(null);
@@ -22,10 +22,15 @@ const ChatRoom = () => {
   const emojiPickerRef = useRef(null); // Ref for emoji picker container
   const reactionToggleButtonRef = useRef(null); // Ref for the reaction toggle button
 
+  const [showNicknameModal, setShowNicknameModal] = useState(false);
+  const [newNickname, setNewNickname] = useState(user?.displayName || '');
+  const [isUpdatingNickname, setIsUpdatingNickname] = useState(false);
+  const [nicknameUpdateError, setNicknameUpdateError] = useState('');
+
   const commonEmojis = ['👍', '😲', '🥺'];
 
   const messagesQueryConstraints = useMemo(() => [orderBy('createdAt', 'desc'), limit(100)], []);
-  const { data: messages, loading, error } = useFirestoreCollection('messages', messagesQueryConstraints, true);
+  const { data: messages, loading: messagesLoading, error } = useFirestoreCollection('messages', messagesQueryConstraints, true);
 
   const sortedMessages = useMemo(() => messages.slice().reverse(), [messages]);
 
@@ -45,7 +50,7 @@ const ChatRoom = () => {
     if (messagesAreaRef.current) {
       messagesAreaRef.current.scrollTop = messagesAreaRef.current.scrollHeight;
     }
-  }, [loading]);
+  }, [messagesLoading]);
 
   // Effect to handle click outside for closing emoji picker
   useEffect(() => {
@@ -121,6 +126,39 @@ const ChatRoom = () => {
     setActiveReactionPickerId(null);
   };
 
+  const handleUpdateNickname = async (e) => {
+    e.preventDefault();
+    setNicknameUpdateError('');
+    setIsUpdatingNickname(true);
+
+    try {
+      await updateUserProfile(newNickname);
+      setShowNicknameModal(false);
+    } catch (error) {
+      setNicknameUpdateError(error.message);
+    } finally {
+      setIsUpdatingNickname(false);
+    }
+  };
+
+  const handleResetNickname = async () => {
+    setNicknameUpdateError('');
+    setIsUpdatingNickname(true);
+
+    try {
+      if (!user || !userAchievements || !userAchievements.initialDisplayName) {
+        throw new Error("很抱歉暫時無法取得初始暱稱。請先自行手動修改。");
+      }
+      const initialNickname = userAchievements.initialDisplayName;
+      await updateUserProfile(initialNickname);
+      setShowNicknameModal(false);
+    } catch (error) {
+      setNicknameUpdateError(error.message);
+    } finally {
+      setIsUpdatingNickname(false);
+    }
+  };
+
   if (authLoading) {
     return (
       <Container className="mt-5 text-center">
@@ -140,7 +178,18 @@ const ChatRoom = () => {
 
   return (
     <Container className="mt-5 chat-container">
-      <h2 className="mb-4">粉絲聊天室</h2>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h2 className="mb-0">粉絲聊天室</h2>
+        {user && !user.isAnonymous && (
+          <Button variant="outline-info" size="sm" onClick={() => {
+            setNewNickname(user.displayName || '');
+            setNicknameUpdateError('');
+            setShowNicknameModal(true);
+          }}>
+            修改暱稱
+          </Button>
+        )}
+      </div>
       <div className="messages-area" ref={messagesAreaRef}>
         {loading && <Spinner animation="border" />}
         {error && <Alert variant="danger">無法載入訊息：{error.message}</Alert>}
@@ -244,6 +293,42 @@ const ChatRoom = () => {
           傳送
         </Button>
       </Form>
+
+      {/* Nickname Edit Modal */}
+      <Modal show={showNicknameModal} onHide={() => setShowNicknameModal(false)} centered>
+        <Modal.Header closeButton className="bg-dark text-white">
+          <Modal.Title>修改聊天室暱稱</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="bg-dark text-white">
+          <Form onSubmit={handleUpdateNickname}>
+            <Form.Group className="mb-3">
+              <Form.Label>新暱稱</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="輸入新暱稱"
+                value={newNickname}
+                onChange={(e) => setNewNickname(e.target.value)}
+                isInvalid={!!nicknameUpdateError}
+                disabled={isUpdatingNickname}
+              />
+              <Form.Control.Feedback type="invalid">
+                {nicknameUpdateError}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <div className="d-flex justify-content-end">
+              <Button variant="secondary" onClick={() => setShowNicknameModal(false)} disabled={isUpdatingNickname} className="me-2">
+                取消
+              </Button>
+              <Button variant="outline-warning" onClick={handleResetNickname} disabled={isUpdatingNickname || loading} className="me-2">
+                初始暱稱
+              </Button>
+              <Button variant="primary" type="submit" disabled={isUpdatingNickname}>
+                {isUpdatingNickname ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : '儲存變更'}
+              </Button>
+            </div>
+          </Form>
+        </Modal.Body>
+      </Modal>
     </Container>
   );
 };
