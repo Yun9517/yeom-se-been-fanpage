@@ -82,6 +82,144 @@
     color: #d1e7ff;
 }
 
+.retracted-message {
+  color: #888;
+  font-style: italic;
+}
+
+.retract-button {
+  position: absolute;
+  left: -60px; /* Position it to the left of the message bubble */
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+  color: #ffc107;
+  background-color: transparent;
+  border: none;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  text-decoration: none;
+}
+
+.message-item.sent:hover .retract-button {
+  opacity: 1;
+}
+
+.retract-button:hover {
+    color: #ffdd70;
+    text-decoration: underline;
+}
+
+.message-toolbar {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 0.5rem;
+  white-space: nowrap;
+  z-index: 1001; /* Ensure it's above the emoji picker */
+}
+
+.message-toolbar.sent {
+  left: -80px; /* Reverted position for sent messages */
+}
+
+.message-toolbar.received {
+  right: -80px; /* Reverted position for received messages */
+}
+
+.quick-reactions-container {
+  position: absolute;
+  bottom: -30px; /* Position below the message content */
+  display: flex;
+  gap: 0.2rem;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.message-item.sent .quick-reactions-container {
+  right: 0;
+}
+
+.message-item.received .quick-reactions-container {
+  left: 0;
+}
+
+.message-item:hover .quick-reactions-container {
+  opacity: 1;
+}
+
+.reaction-button,
+.retract-button {
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+  background-color: transparent;
+  border: none;
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.message-item:hover .reaction-button,
+.message-item:hover .retract-button {
+  opacity: 1;
+}
+
+.reaction-button {
+  font-size: 0.9rem;
+  color: #fff;
+}
+
+.quick-reaction-button {
+  font-size: 1.1rem; /* Larger for emojis */
+  color: #fff;
+  background-color: transparent; /* Changed to transparent */
+  border-radius: 5px;
+  padding: 0.1rem 0.3rem;
+  cursor: pointer;
+}
+
+.quick-reaction-button:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.retract-button {
+  color: #ffc107;
+}
+
+.retract-button:hover {
+    color: #ffdd70;
+    text-decoration: underline;
+}
+
+.reactions-display {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.reaction-badge {
+  cursor: pointer;
+  user-select: none; /* Prevents text selection */
+  transition: background-color 0.2s ease;
+}
+
+.picker-container-absolute {
+  position: absolute;
+  top: 100%; /* Changed from bottom: 100% */
+  z-index: 1000;
+}
+
+.picker-container-absolute.sent-picker {
+  right: 0;
+}
+
+.picker-container-absolute.received-picker {
+  left: 0;
+}
+
 .message-form {
   display: flex;
 }
@@ -95,6 +233,24 @@
 
 .emoji-button {
     margin: 0 0.5rem;
+}
+
+.input-picker-container {
+  position: relative;
+}
+
+.input-picker-container .EmojiPickerReact {
+  position: absolute;
+  bottom: 100%; /* Position it above the input field */
+  right: 0;
+  z-index: 1000;
+}
+
+.emoji-close-button {
+  position: absolute;
+  top: 5px; /* Adjust as needed */
+  right: 5px; /* Adjust as needed */
+  z-index: 1001; /* Ensure it's above the emoji picker */
 }
 
 .message-form .form-control:focus {
@@ -139,4 +295,15 @@
   background-color: #555;
   border-radius: 4px;
   border: 2px solid #1e1e1e;
+}
+
+/* Media Queries for responsiveness */
+@media (max-width: 768px) {
+  .input-picker-container .EmojiPickerReact,
+  .picker-container-absolute .EmojiPickerReact {
+    width: 100%; /* Make it full width */
+    left: 0 !important; /* Override any right:0 or left:0 */
+    right: 0 !important;
+    transform: translateX(0); /* Reset any transforms */
+  }
 }

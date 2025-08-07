@@ -9,7 +9,7 @@ const UserContext = createContext();
 export const useUser = () => useContext(UserContext);
 
 export const UserProvider = ({ children }) => {
-  const [user] = useAuthState(auth);
+  const [user, authLoading] = useAuthState(auth);
   const [points, setPoints] = useState(0);
   const [userAchievements, setUserAchievements] = useState({});
   const [redemptionHistory, setRedemptionHistory] = useState([]);
@@ -306,6 +306,7 @@ export const UserProvider = ({ children }) => {
     redemptionHistory,
     loading,
     error,
+    authLoading, // Add authLoading here
     redeemItem,
     processQuizResults,
     fetchUserData,

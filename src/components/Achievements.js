@@ -24,7 +24,7 @@ const Achievements = () => {
   );
 
   // Combine loading and error states
-  const loading = authLoading || userAchievementsLoading;
+  // const loading = authLoading || userAchievementsLoading; // Remove this line
   const error = userAchievementsError;
 
   // Effect to handle redirection on logout
@@ -78,11 +78,30 @@ const Achievements = () => {
     });
   }, [userAchievements, sortOption]);
 
-  if (loading) {
-    console.log("Achievements: Loading user authentication status or achievements data...");
+  if (authLoading) {
+    console.log("Achievements: Loading user authentication status...");
     return (
       <Container className="mt-5 text-center">
-        <LoadingSpinner loading={true} />
+        <LoadingSpinner />
+        <p className="mt-3">載入使用者狀態...</p>
+      </Container>
+    );
+  }
+
+  if (!user) {
+    return (
+      <Container className="mt-5">
+        <Alert variant="warning">請登入後繼續使用此功能</Alert>
+      </Container>
+    );
+  }
+
+  if (userAchievementsLoading) {
+    console.log("Achievements: Loading achievements data...");
+    return (
+      <Container className="mt-5 text-center">
+        <LoadingSpinner />
+        <p className="mt-3">載入成就資料...</p>
       </Container>
     );
   }

@@ -15,6 +15,7 @@ const RedemptionStore = () => {
     loading,
     error: contextError,
     redeemItem,
+    authLoading, // Add authLoading here
   } = useUser();
 
   const [redeeming, setRedeeming] = useState(null);
@@ -54,12 +55,30 @@ const RedemptionStore = () => {
     }
   };
 
-  if (loading) {
-    return <Container className="mt-5 text-center"><Spinner animation="border" /></Container>;
+  if (authLoading) {
+    return (
+      <Container className="mt-5 text-center">
+        <Spinner animation="border" />
+        <p className="mt-3">載入使用者狀態...</p>
+      </Container>
+    );
   }
 
   if (!user || user.isAnonymous) {
-    return <Container className="mt-5"><Alert variant="warning">請登入以使用點數商店。</Alert></Container>;
+    return (
+      <Container className="mt-5">
+        <Alert variant="warning">請登入以使用點數商店。</Alert>
+      </Container>
+    );
+  }
+
+  if (loading) {
+    return (
+      <Container className="mt-5 text-center">
+        <Spinner animation="border" />
+        <p className="mt-3">載入商店資料...</p>
+      </Container>
+    );
   }
 
   const error = localError || contextError;
