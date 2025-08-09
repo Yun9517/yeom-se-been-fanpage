@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useLayoutEffect } from 'react';
 import { Container, Form, Button, ListGroup, Spinner, Alert, Badge, Modal } from 'react-bootstrap';
 import { IoClose } from 'react-icons/io5';
 import EmojiPicker from 'emoji-picker-react';
@@ -31,6 +31,7 @@ const ChatRoom = () => {
 
   const messagesQueryConstraints = useMemo(() => [orderBy('createdAt', 'desc'), limit(100)], []);
   const { data: messages, loading: messagesLoading, error } = useFirestoreCollection('messages', messagesQueryConstraints, true);
+  const prevMessagesCountRef = useRef(messages.length);
 
   const sortedMessages = useMemo(() => messages.slice().reverse(), [messages]);
 
@@ -42,9 +43,18 @@ const ChatRoom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [sortedMessages]);
+  useLayoutEffect(() => {
+    const messagesArea = messagesAreaRef.current;
+    if (!messagesArea) return;
+
+    // Only scroll to bottom if a new message has been added
+    if (messages.length > prevMessagesCountRef.current) {
+      scrollToBottom();
+    }
+
+    // Update the ref to the current message count for the next render
+    prevMessagesCountRef.current = messages.length;
+  }, [messages, messages.length]);
 
   useEffect(() => {
     if (messagesAreaRef.current) {
@@ -84,6 +94,7 @@ const ChatRoom = () => {
         reactions: {}, // Ensure reactions field is created
       });
       setNewMessage('');
+      scrollToBottom(); // Force scroll to bottom after sending a message
     } catch (err) {
       console.error("Error sending message:", err);
     }
@@ -240,9 +251,11 @@ const ChatRoom = () => {
 
                     {activeReactionPickerId === msg.id && (
                       <div className={`picker-container-absolute ${msg.userId === user.uid ? 'sent-picker' : 'received-picker'}`} ref={emojiPickerRef}> {/* Add ref here */}
-                        <EmojiPicker 
+                        <EmojiPicker
                           onEmojiClick={(e) => handleReaction(msg.id, e.emoji)}
-                          pickerStyle={msg.userId === user.uid ? { right: '0px' } : { left: '0px' }}
+                          height={350}
+                          width={250}
+                          className="reaction-emoji-picker"
                         />
                       </div>
                     )}
@@ -295,8 +308,8 @@ const ChatRoom = () => {
       </Form>
 
       {/* Nickname Edit Modal */}
-      <Modal show={showNicknameModal} onHide={() => setShowNicknameModal(false)} centered>
-        <Modal.Header closeButton className="bg-dark text-white">
+      <Modal show={showNicknameModal} onHide={() => setShowNicknameModal(false)} centered dialogClassName="nickname-modal">
+        <Modal.Header className="bg-dark text-white">
           <Modal.Title>修改聊天室暱稱</Modal.Title>
         </Modal.Header>
         <Modal.Body className="bg-dark text-white">

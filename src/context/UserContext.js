@@ -91,6 +91,15 @@ export const UserProvider = ({ children }) => {
         // --- Existing User Logic ---
         const data = userDocSnap.data();
 
+        // Backfill initialDisplayName for existing users if it's missing
+        if (!data.initialDisplayName) {
+          await updateDoc(userDocRef, {
+            initialDisplayName: data.userName || user.displayName || user.email.split('@')[0]
+          });
+          // Re-fetch the document to get the most up-to-date data
+          userDocSnap = await getDoc(userDocRef);
+        }
+
         // Daily login check
         const today = new Date();
         today.setHours(0, 0, 0, 0);

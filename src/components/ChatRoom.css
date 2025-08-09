@@ -307,3 +307,23 @@
     transform: translateX(0); /* Reset any transforms */
   }
 }
+
+.reaction-emoji-picker {
+  --epr-emoji-size: 20px;
+  --epr-category-navigation-button-size: 25px;
+}
+
+/* Custom styles for the nickname modal */
+.nickname-modal .modal-content {
+  border-radius: 15px; /* Consistent rounded corners */
+  border: none; /* Remove default border */
+  overflow: hidden; /* Ensures child elements conform to border radius */
+}
+
+.nickname-modal .modal-header {
+  border-bottom: none; /* Removes the white line below the header */
+}
+
+.nickname-modal .modal-body {
+  background-color: #343a40; /* Ensure body has the dark background */
+}
