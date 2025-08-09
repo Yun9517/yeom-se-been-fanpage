@@ -3,6 +3,7 @@ import { Container, Form, Button, ListGroup, Spinner, Alert, Badge, Modal } from
 import { IoClose } from 'react-icons/io5';
 import EmojiPicker from 'emoji-picker-react';
 import { useUser } from '../context/UserContext';
+import { useUserProfile } from '../hooks/useUserProfile';
 import LoadingSpinner from './LoadingSpinner'; // Import LoadingSpinner
 import useFirestoreCollection from '../hooks/useFirestoreCollection';
 import { collection, addDoc, serverTimestamp, orderBy, limit, doc, updateDoc, getDoc } from 'firebase/firestore';
@@ -12,7 +13,14 @@ import './ChatRoom.css';
 const RETRACT_TIME_LIMIT = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 const ChatRoom = () => {
-  const { user, authLoading, updateUserProfile, userAchievements, loading } = useUser();
+  const { user, authLoading, loading } = useUser();
+  const { 
+    updateUserProfile, 
+    resetToInitialNickname, 
+    isUpdating: isUpdatingNickname, 
+    error: nicknameUpdateError, 
+    setError: setNicknameUpdateError 
+  } = useUserProfile();
   const [newMessage, setNewMessage] = useState('');
   const [showInputPicker, setShowInputPicker] = useState(false);
   const [hoveredMessageId, setHoveredMessageId] = useState(null);
@@ -24,8 +32,6 @@ const ChatRoom = () => {
 
   const [showNicknameModal, setShowNicknameModal] = useState(false);
   const [newNickname, setNewNickname] = useState(user?.displayName || '');
-  const [isUpdatingNickname, setIsUpdatingNickname] = useState(false);
-  const [nicknameUpdateError, setNicknameUpdateError] = useState('');
 
   const commonEmojis = ['👍', '😲', '🥺'];
 
@@ -139,34 +145,22 @@ const ChatRoom = () => {
 
   const handleUpdateNickname = async (e) => {
     e.preventDefault();
-    setNicknameUpdateError('');
-    setIsUpdatingNickname(true);
-
     try {
       await updateUserProfile(newNickname);
       setShowNicknameModal(false);
-    } catch (error) {
-      setNicknameUpdateError(error.message);
-    } finally {
-      setIsUpdatingNickname(false);
+    } catch (err) {
+      // Error is already set in the hook, just log it
+      console.error(err.message);
     }
   };
 
   const handleResetNickname = async () => {
-    setNicknameUpdateError('');
-    setIsUpdatingNickname(true);
-
     try {
-      if (!user || !userAchievements || !userAchievements.initialDisplayName) {
-        throw new Error("很抱歉暫時無法取得初始暱稱。請先自行手動修改。");
-      }
-      const initialNickname = userAchievements.initialDisplayName;
-      await updateUserProfile(initialNickname);
+      await resetToInitialNickname();
       setShowNicknameModal(false);
-    } catch (error) {
-      setNicknameUpdateError(error.message);
-    } finally {
-      setIsUpdatingNickname(false);
+    } catch (err) {
+      // Error is already set in the hook, just log it
+      console.error(err.message);
     }
   };
 
@@ -194,7 +188,7 @@ const ChatRoom = () => {
         {user && !user.isAnonymous && (
           <Button variant="outline-info" size="sm" onClick={() => {
             setNewNickname(user.displayName || '');
-            setNicknameUpdateError('');
+            setNicknameUpdateError(null); // Clear previous errors
             setShowNicknameModal(true);
           }}>
             修改暱稱
@@ -325,7 +319,7 @@ const ChatRoom = () => {
                 disabled={isUpdatingNickname}
               />
               <Form.Control.Feedback type="invalid">
-                {nicknameUpdateError}
+                {nicknameUpdateError?.message}
               </Form.Control.Feedback>
             </Form.Group>
             <div className="d-flex justify-content-end">

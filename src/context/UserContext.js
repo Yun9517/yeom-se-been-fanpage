@@ -2,7 +2,6 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../firebase';
 import { doc, getDoc, writeBatch, serverTimestamp, collection, query, where, getDocs, increment, addDoc, setDoc, updateDoc } from 'firebase/firestore';
-import { updateProfile } from 'firebase/auth';
 import { achievementsList } from '../data/achievements';
 
 const UserContext = createContext();
@@ -218,7 +217,7 @@ export const UserProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, [user, checkLoginAchievements]);
+  }, [user, checkLoginAchievements, addNotification]);
 
   useEffect(() => {
     fetchUserData();
@@ -317,59 +316,6 @@ export const UserProvider = ({ children }) => {
 
   }, [user, fetchUserData, addNotification]);
 
-  const updateUserProfile = useCallback(async (newDisplayName) => {
-    if (!user || user.isAnonymous) {
-      throw new Error("未登入或匿名用戶無法修改暱稱。");
-    }
-    if (!newDisplayName || newDisplayName.trim() === '') {
-      throw new Error("暱稱不能為空。");
-    }
-
-    console.log("updateUserProfile: Attempting to update with newDisplayName:", newDisplayName);
-
-    try {
-      // 1. Update Firebase Auth displayName
-      console.log("updateUserProfile: Updating Firebase Auth displayName...");
-      await updateProfile(auth.currentUser, {
-        displayName: newDisplayName.trim()
-      });
-      console.log("updateUserProfile: Firebase Auth displayName updated.");
-
-      // 2. Update userName in userAchievements document
-      console.log("updateUserProfile: Updating Firestore userName...");
-      const userDocRef = doc(db, 'userAchievements', user.uid);
-      await setDoc(userDocRef, { userName: newDisplayName.trim() }, { merge: true });
-      console.log("updateUserProfile: Firestore userName updated.");
-
-      // 3. Re-fetch user data to update context state
-      console.log("updateUserProfile: Re-fetching user data...");
-      await fetchUserData();
-      console.log("updateUserProfile: User data re-fetched.");
-
-      return { success: true };
-    } catch (error) {
-      console.error("Error updating user profile:", error);
-      throw new Error("更新暱稱失敗，請稍後再試。");
-    }
-  }, [user, fetchUserData]);
-
-  const resetToInitialNickname = useCallback(async () => {
-    if (!user || user.isAnonymous) {
-      throw new Error("未登入或匿名用戶無法重設暱稱。");
-    }
-    if (!userAchievements || !userAchievements.initialDisplayName) {
-      throw new Error("無法取得初始暱稱。");
-    }
-
-    try {
-      await updateUserProfile(userAchievements.initialDisplayName);
-      return { success: true };
-    } catch (error) {
-      console.error("Error resetting nickname:", error);
-      throw new Error("重設暱稱失敗，請稍後再試。");
-    }
-  }, [user, userAchievements, updateUserProfile]);
-  
   const value = {
     user,
     points,
@@ -382,8 +328,6 @@ export const UserProvider = ({ children }) => {
     processQuizResults,
     fetchUserData,
     addNotification,
-    updateUserProfile,
-    resetToInitialNickname,
     getHighestAchievementTier: () => {
         if (!user || user.isAnonymous || !userAchievements) return null;
         let highestTierInfo = null;
