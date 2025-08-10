@@ -7,6 +7,7 @@ import { GoogleAuthProvider, signInWithPopup, signOut, signInAnonymously } from 
 import { FaGoogle, FaAward, FaCoins } from 'react-icons/fa';
 
 const Header = () => {
+  const [expanded, setExpanded] = React.useState(false);
   const { user, points, getHighestAchievementTier } = useUser(); // Use context
 
   const anonymousNicknames = [
@@ -52,7 +53,7 @@ const Header = () => {
   }
 
   return (
-    <Navbar bg="dark" variant="dark" expand="lg" sticky="top">
+  <Navbar bg="dark" variant="dark" expand="lg" sticky="top" expanded={expanded} onToggle={setExpanded}>
       <Container>
         <Navbar.Brand as={NavLink} to="/">
           <img
@@ -65,16 +66,17 @@ const Header = () => {
           廉世彬粉絲專頁
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
+  <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link as={NavLink} to="/gallery">照片牆</Nav.Link>
-            <Nav.Link as={NavLink} to="/videos">影音區</Nav.Link>
-            <Nav.Link as={NavLink} to="/profile">生涯經歷</Nav.Link>
-            <Nav.Link as={NavLink} to="/news">最新消息</Nav.Link>
-            <Nav.Link as={NavLink} to="/quiz">粉絲小遊戲</Nav.Link>
-            <Nav.Link as={NavLink} to="/chatroom">聊天室</Nav.Link>
+            <Nav.Link as={NavLink} to="/gallery" onClick={() => setExpanded(false)}>照片牆</Nav.Link>
+            <Nav.Link as={NavLink} to="/videos" onClick={() => setExpanded(false)}>影音區</Nav.Link>
+            <Nav.Link as={NavLink} to="/profile" onClick={() => setExpanded(false)}>生涯經歷</Nav.Link>
+            <Nav.Link as={NavLink} to="/news" onClick={() => setExpanded(false)}>最新消息</Nav.Link>
+            <Nav.Link as={NavLink} to="/quiz" onClick={() => setExpanded(false)}>粉絲小遊戲</Nav.Link>
+            <Nav.Link as={NavLink} to="/chatroom" onClick={() => setExpanded(false)}>聊天室</Nav.Link>
+            <Nav.Link as={NavLink} to="/bintalk" onClick={() => setExpanded(false)}>彬Talk</Nav.Link>
             {user && !user.isAnonymous && (
-              <Nav.Link as={NavLink} to="/messages">訊息中心</Nav.Link>
+              <Nav.Link as={NavLink} to="/messages" onClick={() => setExpanded(false)}>訊息中心</Nav.Link>
             )}
           </Nav>
           <Nav>
