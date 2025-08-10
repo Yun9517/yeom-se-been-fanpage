@@ -4,6 +4,7 @@
   "homepage": "https://yun9517.github.io/yeom-se-been-fanpage",
   "private": true,
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
