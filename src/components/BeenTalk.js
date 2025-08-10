@@ -13,7 +13,6 @@ const BeenTalk = () => { // Corrected component name
 
   useEffect(() => {
     const apiKey = process.env.REACT_APP_GEMINI_API_KEY;
-    console.log("Gemini API Key:", apiKey); // Debugging line to check if the key is loaded
     if (apiKey && !aboutLoading && !aboutError) {
       const ai = new GoogleGenerativeAI(apiKey);
       setGenAI(ai);
