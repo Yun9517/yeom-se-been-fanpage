@@ -24,7 +24,7 @@ const Achievements = lazy(() => import('./components/Achievements'));
 const RedemptionStore = lazy(() => import('./components/RedemptionStore'));
 const MessageCenter = lazy(() => import('./components/MessageCenter'));
 const ChatRoom = lazy(() => import('./components/ChatRoom'));
-const BinTalk = lazy(() => import('./components/BinTalk'));
+const BeenTalk = lazy(() => import('./components/BeenTalk'));
 
 // Component to track page views
 const PageTracker = () => {
@@ -76,7 +76,7 @@ function App() {
               <Route path="/store" element={<RedemptionStore />} />
               <Route path="/messages" element={<MessageCenter />} />
               <Route path="/chatroom" element={<ChatRoom />} />
-              <Route path="/bintalk" element={<BinTalk />} />
+              <Route path="/beentalk" element={<BeenTalk />} />
             </Routes>
           </Suspense>
         </main>

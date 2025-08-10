@@ -74,7 +74,7 @@ const Header = () => {
             <Nav.Link as={NavLink} to="/news" onClick={() => setExpanded(false)}>最新消息</Nav.Link>
             <Nav.Link as={NavLink} to="/quiz" onClick={() => setExpanded(false)}>粉絲小遊戲</Nav.Link>
             <Nav.Link as={NavLink} to="/chatroom" onClick={() => setExpanded(false)}>聊天室</Nav.Link>
-            <Nav.Link as={NavLink} to="/bintalk" onClick={() => setExpanded(false)}>彬Talk</Nav.Link>
+            <Nav.Link as={NavLink} to="/beentalk" onClick={() => setExpanded(false)}>彬Talk</Nav.Link>
             {user && !user.isAnonymous && (
               <Nav.Link as={NavLink} to="/messages" onClick={() => setExpanded(false)}>訊息中心</Nav.Link>
             )}
