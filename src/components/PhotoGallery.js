@@ -21,6 +21,9 @@ const photos = [
     filename: 'yeomsebeen_about.jpg',
     title: '專輯封面',
   },
+  { filename: 'yeomsebeen_ballet_dress.jpeg',
+    title: '芭蕾風格',
+  }
 ];
 
 const PhotoGallery = () => {
@@ -29,7 +32,7 @@ const PhotoGallery = () => {
 
   // Lightbox still needs the full URL, so we construct it here
   const slides = photos.map(photo => ({
-    src: `https://storage.googleapis.com/yeom-se-been-fanpage-assets/${photo.filename}`,
+    src: `${process.env.PUBLIC_URL}/${photo.filename}`,
     title: photo.title,
   }));
 
