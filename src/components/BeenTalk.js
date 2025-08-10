@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react'; // Added useRef
 import './BeenTalk.css'; // Corrected import
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import useFirestoreDocument from '../hooks/useFirestoreDocument';
@@ -9,6 +9,7 @@ const BeenTalk = () => { // Corrected component name
   const [isLoading, setIsLoading] = useState(false);
   const [genAI, setGenAI] = useState(null);
   const { data: aboutContent, loading: aboutLoading, error: aboutError } = useFirestoreDocument('pages', 'about');
+  const messagesEndRef = useRef(null); // Created ref
 
   useEffect(() => {
     const apiKey = process.env.REACT_APP_GEMINI_API_KEY;
@@ -20,6 +21,13 @@ const BeenTalk = () => { // Corrected component name
       console.error("Error loading about content:", aboutError);
     }
   }, [aboutLoading, aboutError]);
+
+  // New useEffect for auto-scrolling
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+    }
+  }, [messages]); // Dependency on messages array
 
   const handleSend = async () => {
     if (input.trim() === '' || !genAI || aboutLoading) return;
@@ -41,7 +49,7 @@ ${aboutContent.section2025Title}: ${aboutContent.section2025Content}
 `;
       }
 
-      const prompt = `你是一位熱情且樂於助人的助理，也是啦啦隊員廉世彬（廉世彬）的超級粉絲。你的目標是回答有關她的問題。如果問題與她無關，請禮貌地拒絕並將話題引導回廉世彬。
+      const prompt = `你是一位熱情且樂於助人的助理，也是啦啦隊員廉世彬（廉世彬）的超級粉絲。你的目標是精簡的回答有關她的問題。如果問題與她無關，請禮貌地拒絕並將話題引導回廉世彬。
 
 ${context}
 
@@ -93,15 +101,15 @@ ${context}
     <div className="beentalk-container">
       <div className="beentalk-header">
         <h2>彬Talk</h2>
-        <p>快來聊聊彬彬的大小事，粉絲限定話題等你來問！</p>
+        <p>有想知道的都等你來問！</p>
       </div>
-      <div className="beentalk-messages">
+      <div className="beentalk-messages" ref={messagesEndRef}> {/* Added ref */}
         {messages.map((msg, index) => (
           <div key={index} className={`message ${msg.sender}`}>
             {msg.text}
           </div>
         ))}
-        {isLoading && <div className="message bot">回覆中請耐心等待...</div>}
+        {isLoading && <div className="message bot">請稍等...</div>}
       </div>
       <div className="beentalk-input-area">
         <input

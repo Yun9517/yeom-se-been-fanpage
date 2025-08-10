@@ -15,12 +15,13 @@
   text-align: center;
   border-bottom: 1px solid #495057; /* Darker border for dark background */
   padding-bottom: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem; /* Increased spacing below header */
 }
 
 .beentalk-header h2 {
   margin: 0;
   color: #e9ecef; /* Changed to light color for dark background */
+  margin-bottom: 1rem;
 }
 
 .beentalk-messages {
@@ -89,4 +90,13 @@
 .beentalk-input-area button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .beentalk-container {
+    height: 80vh; /* Adjust height for mobile devices */
+    margin: 2px;
+    padding: 1rem;
+    border-radius: 0;
+  }
 }
