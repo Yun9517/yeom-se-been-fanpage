@@ -119,7 +119,7 @@ ${context}
           placeholder={genAI ? (aboutLoading ? "正在載入網站介紹內容..." : "輸入你想問的問題...") : "正在初始化，請稍候..."}
           disabled={isLoading || !genAI || aboutLoading}
         />
-        <button onClick={handleSend} disabled={isLoading || !genAI || aboutLoading}>
+        <button onClick={handleSend} disabled={isLoading || !genAI || aboutLoading} className="btn btn-theme-gradient">
           傳送
         </button>
       </div>

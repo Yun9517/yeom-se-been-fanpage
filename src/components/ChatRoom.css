@@ -1,16 +1,315 @@
 /* src/components/ChatRoom.css */
 .chat-container {
-  max-width: 800px;
-  margin: auto;
-  background-color: #2c2c2c; /* Dark background for the container */
-  padding: 2rem;
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  max-width: 900px;
+  margin: 2rem auto;
+  background-color: #2c3034; /* Matched BeenTalk */
+  padding: 1rem; /* Adjusted by user */
+  border-radius: 20px; /* Matched BeenTalk */
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Matched BeenTalk */
   color: #e0e0e0;
+  height: 70vh; /* Matched BeenTalk */
 }
 
 .messages-area {
-  height: 60vh;
+  height: 80vh;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+  padding: 10px; /* Matched BeenTalk */
+  background-color: #1e1e1e; /* Even darker for the message area */
+  border-radius: 10px;
+  border: 1px solid #444;
+  gap: 10px;
+}
+
+.message-item {
+  background-color: transparent;
+  border: none;
+  margin-bottom: 1rem;
+  display: flex;
+}
+
+.message-item.sent {
+  justify-content: flex-end;
+}
+
+.message-item.received {
+  justify-content: flex-start;
+}
+
+.message-content {
+  padding: 0.75rem 1rem;
+  border-radius: 15px;
+  max-width: 70%;
+  position: relative;
+}
+
+.message-item.sent .message-content {
+  background-color: #007bff; /* Blue for sent messages */
+  color: white;
+  border-bottom-right-radius: 0;
+}
+
+.message-item.received .message-content {
+  background-color: #495057; /* Gray for received messages */
+  color: white;
+  border-bottom-left-radius: 0;
+}
+
+.message-user {
+  font-size: 0.8rem;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #a0a0a0; /* Lighter color for username */
+}
+
+.message-item.sent .message-user {
+    color: #d1e7ff;
+}
+
+.message-text {
+  font-size: 1rem;
+  word-wrap: break-word;
+}
+
+.message-time {
+  font-size: 0.7rem;
+  color: #999;
+  display: block;
+  text-align: right;
+  margin-top: 0.25rem;
+}
+
+.message-item.sent .message-time {
+    color: #d1e7ff;
+}
+
+.retracted-message {
+  color: #888;
+  font-style: italic;
+}
+
+.retract-button {
+  position: absolute;
+  left: -60px; /* Position it to the left of the message bubble */
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.75rem;
+  color: #ffc107;
+  background-color: transparent;
+  border: none;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  text-decoration: none;
+}
+
+.message-item.sent:hover .retract-button {
+  opacity: 1;
+}
+
+.retract-button:hover {
+    color: #ffdd70;
+    text-decoration: underline;
+}
+
+.message-toolbar {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 0.5rem;
+  white-space: nowrap;
+  z-index: 1001; /* Ensure it's above the emoji picker */
+}
+
+.message-toolbar.sent {
+  left: -80px; /* Reverted position for sent messages */
+}
+
+.message-toolbar.received {
+  right: -80px; /* Reverted position for received messages */
+}
+
+.quick-reactions-container {
+  position: absolute;
+  bottom: -30px; /* Position below the message content */
+  display: flex;
+  gap: 0.2rem;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.message-item.sent .quick-reactions-container {
+  right: 0;
+}
+
+.message-item.received .quick-reactions-container {
+  left: 0;
+}
+
+.message-item:hover .quick-reactions-container {
+  opacity: 1;
+}
+
+.reaction-button,
+.retract-button {
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+  background-color: transparent;
+  border: none;
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.message-item:hover .reaction-button,
+.message-item:hover .retract-button {
+  opacity: 1;
+}
+
+.reaction-button {
+  font-size: 0.9rem;
+  color: #fff;
+}
+
+.quick-reaction-button {
+  font-size: 1rem; /* Larger for emojis */
+  color: #fff;
+  background-color: transparent; /* Changed to transparent */
+  border-radius: 10px;
+  padding: 0.1rem 0.3rem;
+  cursor: pointer;
+}
+
+.quick-reaction-button:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.retract-button {
+  color: #ffc107;
+}
+
+.retract-button:hover {
+    color: #ffdd70;
+    text-decoration: underline;
+}
+
+.reactions-display {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.reaction-badge {
+  cursor: pointer;
+  user-select: none; /* Prevents text selection */
+  transition: background-color 0.2s ease;
+}
+
+.picker-container-absolute {
+  position: absolute;
+  top: 100%; /* Changed from bottom: 100% */
+  z-index: 1000;
+}
+
+.picker-container-absolute.sent-picker {
+  right: 0;
+}
+
+.picker-container-absolute.received-picker {
+  left: 0;
+}
+
+.message-form {
+  display: flex;
+}
+
+.message-form .form-control {
+  flex-grow: 1;
+  background-color: #333;
+  border-color: #555;
+  color: #fff;
+}
+
+.emoji-button {
+    margin: 0 0.5rem;
+}
+
+.input-picker-container {
+  position: relative;
+}
+
+.input-picker-container .EmojiPickerReact {
+  position: absolute;
+  bottom: 100%; /* Position it above the input field */
+  right: 0;
+  z-index: 1000;
+}
+
+.emoji-close-button {
+  position: absolute;
+  top: 5px; /* Adjust as needed */
+  right: 5px; /* Adjust as needed */
+  z-index: 1001; /* Ensure it's above the emoji picker */
+}
+
+.message-form .form-control:focus {
+  background-color: #333;
+  border-color: #007bff;
+  color: #fff;
+  box-shadow: none;
+}
+
+.picker-container {
+    position: relative;
+}
+
+.picker-container .EmojiPickerReact {
+    position: absolute;
+    bottom: 30px; /* Position it above the form */
+    right: 0;
+    z-index: 1000;
+}
+
+.message-form .form-control::placeholder {
+  color: #888; /* Lighter color for placeholder text */
+}
+
+.emoji-tip {
+  font-size: 0.8rem;
+  color: #888;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+/* Custom scrollbar for messages area */
+.messages-area::-webkit-scrollbar {
+  width: 8px;
+}
+
+.messages-area::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+/* src/components/ChatRoom.css */
+.chat-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  background-color: #2c3034; /* Matched BeenTalk */
+  padding: 2rem;
+  border-radius: 20px; /* Matched BeenTalk */
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Matched BeenTalk */
+  color: #e0e0e0;
+  height: 70vh; /* Matched BeenTalk */
+}
+
+.messages-area {
+  height: 80vh;
   overflow-y: auto;
   margin-bottom: 1rem;
   padding: 1rem;
@@ -92,7 +391,6 @@
   left: -60px; /* Position it to the left of the message bubble */
   top: 50%;
   transform: translateY(-50%);
-  padding: 0.2rem 0.5rem;
   font-size: 0.75rem;
   color: #ffc107;
   background-color: transparent;
@@ -172,7 +470,7 @@
 }
 
 .quick-reaction-button {
-  font-size: 1.1rem; /* Larger for emojis */
+  font-size: 1rem; /* Larger for emojis */
   color: #fff;
   background-color: transparent; /* Changed to transparent */
   border-radius: 5px;
@@ -266,7 +564,7 @@
 
 .picker-container .EmojiPickerReact {
     position: absolute;
-    bottom: 50px; /* Position it above the form */
+    bottom: 30px; /* Position it above the form */
     right: 0;
     z-index: 1000;
 }
@@ -301,7 +599,11 @@
 @media (max-width: 768px) {
   .input-picker-container .EmojiPickerReact,
   .picker-container-absolute .EmojiPickerReact {
+    height: 80vh;
     width: 100%; /* Make it full width */
+    margin: 1px;
+    padding: 1rem;
+    border-radius: 20px;
     left: 0 !important; /* Override any right:0 or left:0 */
     right: 0 !important;
     transform: translateX(0); /* Reset any transforms */
@@ -327,3 +629,58 @@
 .nickname-modal .modal-body {
   background-color: #343a40; /* Ensure body has the dark background */
 }
+
+/* Prevent chat buttons from shrinking when the input is long */
+.message-form .btn {
+  flex-shrink: 0;
+}
+
+/* Match border-radius to BeenTalk's input area */
+.message-form .form-control,
+.message-form .btn {
+  border-radius: 10px;
+}
+
+/* Media Queries for responsiveness */
+@media (max-width: 768px) {
+  .input-picker-container .EmojiPickerReact,
+  .picker-container-absolute .EmojiPickerReact {
+    height: 80vh;
+    width: 100%; /* Make it full width */
+    margin: 1px;
+    padding: 1rem;
+    border-radius: 20px;
+    left: 0 !important; /* Override any right:0 or left:0 */
+    right: 0 !important;
+    transform: translateX(0); /* Reset any transforms */
+  }
+}
+
+.reaction-emoji-picker {
+  --epr-emoji-size: 20px;
+  --epr-category-navigation-button-size: 25px;
+}
+
+/* Custom styles for the nickname modal */
+.nickname-modal .modal-content {
+  border-radius: 15px; /* Consistent rounded corners */
+  border: none; /* Remove default border */
+  overflow: hidden; /* Ensures child elements conform to border radius */
+}
+
+.nickname-modal .modal-header {
+  border-bottom: none; /* Removes the white line below the header */
+}
+
+.nickname-modal .modal-body {
+  background-color: #343a40; /* Ensure body has the dark background */
+}
+
+/* Prevent chat buttons from shrinking when the input is long */
+.message-form .btn {
+  flex-shrink: 0;
+}
+
+
+
+

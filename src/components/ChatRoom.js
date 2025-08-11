@@ -182,15 +182,20 @@ const ChatRoom = () => {
   }
 
   return (
-    <Container className="mt-5 chat-container">
-      <div className="d-flex justify-content-between align-items-center mb-3">
+    <Container className="chat-container">
+      <div className="position-relative text-center mb-3">
         <h2 className="mb-0">粉絲聊天室</h2>
         {user && !user.isAnonymous && (
-          <Button variant="outline-info" size="sm" onClick={() => {
-            setNewNickname(user.displayName || '');
-            setNicknameUpdateError(null); // Clear previous errors
-            setShowNicknameModal(true);
-          }}>
+          <Button
+            variant="outline-info"
+            size="sm"
+            onClick={() => {
+              setNewNickname(user.displayName || '');
+              setNicknameUpdateError(null); // Clear previous errors
+              setShowNicknameModal(true);
+            }}
+            style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)' }}
+          >
             修改暱稱
           </Button>
         )}
@@ -289,14 +294,15 @@ const ChatRoom = () => {
       </div>
       <Form onSubmit={handleSendMessage} className="message-form">
         <Form.Control
+          size="md"
           type="text"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           placeholder="輸入訊息..."
           autoComplete="off"
         />
-        <Button variant="light" onClick={() => setShowInputPicker(val => !val)} className="emoji-button">😊</Button>
-        <Button variant="primary" type="submit" className="btn-theme-gradient">
+        <Button size="md" variant="light" onClick={() => setShowInputPicker(val => !val)} className="emoji-button">😊</Button>
+        <Button size="md" variant="primary" type="submit" className="btn-theme-gradient">
           傳送
         </Button>
       </Form>
