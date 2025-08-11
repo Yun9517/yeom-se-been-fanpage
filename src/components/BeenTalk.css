@@ -31,6 +31,7 @@
   background-color: #1e1e1e; /* Even darker for the message area */
   border-radius: 10px;
   border: 1px solid #444;
+  scrollbar-gutter: stable;
 }
 
 .message {
