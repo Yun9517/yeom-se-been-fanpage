@@ -19,7 +19,10 @@ const ChatPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [genAI, setGenAI] = useState(null);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  
+  // Fetch dynamic data from Firestore
   const { data: aboutContent, loading: aboutLoading } = useFirestoreDocument('pages', 'about');
+  const { data: promptConfig, loading: promptLoading } = useFirestoreDocument('pages', 'beentalk');
 
   // Initialize Gemini AI
   useEffect(() => {
@@ -88,8 +91,9 @@ const ChatPage = () => {
 
   const handleSendMessage = async (inputText) => {
     const isGuest = !user || user.isAnonymous;
+    const dataIsLoading = aboutLoading || promptLoading;
 
-    if (!genAI || (!isGuest && aboutLoading)) return;
+    if (!genAI || (!isGuest && dataIsLoading)) return;
 
     const userMessage = { sender: 'user', text: inputText };
     setIsLoading(true);
@@ -98,9 +102,11 @@ const ChatPage = () => {
     setMessages(newMessages);
 
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    let context = '';
+    
+    // Dynamically build context from Firestore
+    let aboutContext = '';
     if (aboutContent) {
-      context = `
+      aboutContext = `
 以下是網站關於廉世彬的介紹內容，請參考這些資訊來回答問題：
 ${aboutContent.section2022Title}: ${aboutContent.section2022Content}
 ${aboutContent.section2023Title}: ${aboutContent.section2023Content}
@@ -108,47 +114,18 @@ ${aboutContent.section2025Title}: ${aboutContent.section2025Content}
 `;
     }
 
-    const loginPromptSegment = isGuest 
-      ? `在回答完問題後，請用友善且簡短的語氣，溫馨地提醒使用者「對了!!登入後就可以保存我們的對話紀錄喔！」，但如果使用者只是簡單問候(例如:你好)，則不需提醒。`
-      : '';
+    const persona = promptConfig?.persona || '你是一位熱情且樂於助人的助理。';
+    const staticData = promptConfig?.static_data || '';
+    const faqData = promptConfig?.faq ? `
+常見問題參考：
+${promptConfig.faq}` : '';
+    const loginPromptSegment = isGuest ? (promptConfig?.guest_prompt || '') : '';
 
-    const prompt = `你是一位熱情且樂於助人的助理，也是啦啦隊員廉世彬（廉世彬）的超級粉絲。你的目標是精簡的回答有關她的問題。如果問題與她無關，請禮貌地拒絕並將話題引導回廉世彬。 ${loginPromptSegment}
+    const prompt = `${persona} ${loginPromptSegment}
 
-${context}
-
-以下是固定的基本資料：
-出生: 2002年4月23日, 韓國首爾
-身高: 166cm
-學歷: 白石藝術大學 實用音樂系
-出道日期: 2022年
-MBTI: ISTP
-Instagram: beena._s2
-Instagram粉絲數: 破十萬人，還在增加唷!!
-Threads: beena._s2，阿彬會常常跟粉絲們互動唷!!
-Twitter: 沒在用，請去IG或Thread找阿彬
-FB: 沒在用，請去IG或Thread找阿彬
-YouTube: https://www.youtube.com/@MyAsteroids2
-夢想: 成為一名優秀的音樂人和啦啦隊員，你知道嗎，如果阿彬沒當啦啦隊，會想去當歌手呢!!
-興趣: 音樂、舞蹈、運動、與粉絲互動
-特長: 舞蹈、音樂創作、啦啦隊表演
-喜歡的食物: 韓國料理、甜點、台灣的雞排等，阿彬不挑食
-
-啦啦隊經歷：
-2022年: KEPCO Vixtorm Volleyball Team, Hana Bank Women's Basketball Team
-2023年: 起亞虎, 高陽索諾天空槍手
-2024年: 起亞虎, 安養正官庄赤紅火箭
-2025年: 樂天桃猿, NC恐龍
-
-音樂作品：
-2024年: Snooze - 새벽감성
-2025年: Snooze - Cherry Blooming
-
-明星賽特殊經歷:
-與禹洙漢、河智媛，在明星賽期間在外野開快閃餐廳: 好厝邊〝Hasubeen〞，兩天都賣光光唷!!
-好厝邊〝Hasubeen〞: 是跟"響食天堂"集團合作的品牌唷!!的店名取自三人名字的諧音，象徵著她們的合作精神，也希望成為大家的「好朋友、好鄰居」。 他們也參與了快閃店的企劃、品牌、形象設計，並由河智媛手繪店內主視覺!
-
-近況:
-跟翻譯"粒姐"常常形影不離的被粉絲拍到，被粉絲說跟翻譯是雙胞胎
+${staticData}
+${faqData}
+${aboutContext}
 
 問題：${inputText}`;
 
@@ -178,7 +155,7 @@ YouTube: https://www.youtube.com/@MyAsteroids2
 
     } catch (error) {
       console.error("Error calling Gemini API:", error);
-      let botMessageText = '哎呀！彬Talk 目前有點忙碌，就像廉世彬在場上一樣分身乏術！這是個暫時的狀況，請稍後再試一次。';
+      let botMessageText = '抱歉，我現在無法回答問題。請檢查 API 金鑰或稍後再試。';
       if (error.message && error.message.includes('[503]')) {
           botMessageText = '哎呀！彬Talk 目前有點忙碌，就像廉世彬在場上一樣分身乏術！這是個暫時的狀況，請稍後再試一次。';
       }
@@ -186,7 +163,6 @@ YouTube: https://www.youtube.com/@MyAsteroids2
       const finalMessages = [...newMessages, errorMessage];
       setMessages(finalMessages);
 
-      // Also save the error message to history for logged-in users
       if (user && !user.isAnonymous && activeChatId) {
           const chatRef = doc(db, 'users', user.uid, 'chats', activeChatId);
           await updateDoc(chatRef, { messages: finalMessages });
@@ -199,6 +175,8 @@ YouTube: https://www.youtube.com/@MyAsteroids2
   if (authLoading) {
     return <LoadingSpinner loading={true} />;
   }
+
+  const totalLoading = aboutLoading || promptLoading;
 
   if (user && !user.isAnonymous) {
     // Logged-in user UI
@@ -216,7 +194,7 @@ YouTube: https://www.youtube.com/@MyAsteroids2
         <ChatWindow 
           messages={messages}
           onSendMessage={handleSendMessage}
-          isLoading={isLoading}
+          isLoading={isLoading || totalLoading}
           activeChatId={activeChatId}
           onToggleSidebar={() => setSidebarOpen(!isSidebarOpen)}
         />
@@ -229,7 +207,7 @@ YouTube: https://www.youtube.com/@MyAsteroids2
             <ChatWindow 
                 messages={messages}
                 onSendMessage={handleSendMessage}
-                isLoading={isLoading}
+                isLoading={isLoading || totalLoading}
                 activeChatId={null}
                 onToggleSidebar={() => {}}
             />

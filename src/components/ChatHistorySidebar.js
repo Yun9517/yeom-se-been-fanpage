@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaTrash, FaBars } from 'react-icons/fa';
+import { FaTrash } from 'react-icons/fa';
 
 const ChatHistorySidebar = ({ chats, activeChatId, onSelectChat, onNewChat, onDeleteChat, isOpen }) => {
   return (

@@ -4,12 +4,14 @@ import './ChatPage.css';
 
 const ChatWindow = ({ messages, onSendMessage, isLoading, activeChatId, onToggleSidebar }) => {
   const [input, setInput] = useState('');
-  const messagesEndRef = useRef(null);
+  const messagesEndRef = useRef(null); // Ref for the anchor div
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }
 
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
+    scrollToBottom();
   }, [messages]);
 
   // Clear input when starting a new chat
@@ -44,13 +46,14 @@ const ChatWindow = ({ messages, onSendMessage, isLoading, activeChatId, onToggle
         <h2>彬Talk</h2>
         <p>有想知道的都等你來問！</p>
       </div>
-      <div className="beentalk-messages" ref={messagesEndRef}>
+      <div className="beentalk-messages">
         {messages.map((msg, index) => (
           <div key={index} className={`message ${msg.sender}`}>
             {msg.text}
           </div>
         ))}
         {isLoading && <div className="message bot">請稍等...</div>}
+        <div ref={messagesEndRef} /> {/* Invisible anchor div at the end */}
       </div>
       <div className="beentalk-input-area">
         <input
