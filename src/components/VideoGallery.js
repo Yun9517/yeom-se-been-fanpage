@@ -37,7 +37,7 @@ const VideoGallery = () => {
   );
 
   return (
-    <Container id="videos" className="my-5">
+    <Container id="videos" className="mt-4 mb-5">
       <h2 className="text-center mb-4">影音區</h2>
       {loading && <LoadingSpinner loading={loading} />}
       {error && <Alert variant="danger">{error}</Alert>}
@@ -46,7 +46,7 @@ const VideoGallery = () => {
           <p>目前沒有影片。</p>
         </div>
       ) : (
-        <Row>
+        <Row className="g-4">
           {videosData.map((video) => (
             <Col md={6} className="mb-4" key={video.id}>
               <VideoPlayer videoId={video.id} title={video.title} />

@@ -43,9 +43,9 @@ const PhotoGallery = () => {
 
   return (
     <section className="section-gallery py-5">
-      <Container id="gallery" className="my-5">
+      <Container id="gallery" className="mt-0 mb-5">
         <h2 className="text-center mb-4 text-white">照片牆</h2>
-        <Row>
+        <Row className="g-4">
           {photos.map((photo, idx) => (
             <PhotoItem key={idx} photo={photo} index={idx} onClick={handlePhotoClick} />
           ))}
