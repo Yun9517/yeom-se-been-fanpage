@@ -1,7 +1,9 @@
-import React from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
+import React, { useEffect } from 'react';
+import { Container, Row, Col, Card } from 'react-bootstrap';
 import ImageWithFallback from './ImageWithFallback'; // Import our custom component
 import './CareerJourney.css';
+import AOS from 'aos'; // Import AOS
+import 'aos/dist/aos.css';
 
 const CareerJourney = () => {
     const cheerleadingExperience = [
@@ -31,18 +33,22 @@ const CareerJourney = () => {
     }
   ];
 
+  useEffect(() => {
+    AOS.refresh(); // Refresh AOS after component mounts
+  }, []); // Empty dependency array to run once after initial render
+
   return (
     <div className="profile-background">
-      <Container className="my-5">
+      <Container className="my-4">
         <Row className="justify-content-center">
           <Col md={10} lg={8}>
-            <div className="profile-card">
+            <Card className="profile-card">
               {/* --- 基本資料 --- */}
-              <div className="text-center mb-4">
+              <Card.Body className="text-center mb-4">
                 <ImageWithFallback filename="yeomsebeen_about.jpg" roundedCircle width={150} height={150} className="profile-main-image" />
                 <h1 className="text-white mt-3">廉世彬 (염세빈)</h1>
                 <p className="text-white-50">Yeom Se-Been</p>
-              </div>
+              </Card.Body>
 
               <div className="profile-section">
                 <h3 className="section-title">基本資料</h3>
@@ -77,7 +83,7 @@ const CareerJourney = () => {
                 </ul>
               </div>
 
-            </div>
+            </Card>
           </Col>
         </Row>
       </Container>
