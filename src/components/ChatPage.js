@@ -155,10 +155,7 @@ ${aboutContext}
 
     } catch (error) {
       console.error("Error calling Gemini API:", error);
-      let botMessageText = '抱歉，我現在無法回答問題。請檢查 API 金鑰或稍後再試。';
-      if (error.message && error.message.includes('[503]')) {
-          botMessageText = '哎呀！彬Talk 目前有點忙碌，就像廉世彬在場上一樣分身乏術！這是個暫時的狀況，請稍後再試一次。';
-      }
+      let botMessageText = '哎呀！彬Talk目前有點忙碌，就像廉世彬在場上一樣分身乏術！這可能是因為短時間內的用量達到了上限，請稍後再試一次，或明天再回來看看喔，不好意思！';
       const errorMessage = { sender: 'bot', text: botMessageText };
       const finalMessages = [...newMessages, errorMessage];
       setMessages(finalMessages);
@@ -197,6 +194,7 @@ ${aboutContext}
           isLoading={isLoading || totalLoading}
           activeChatId={activeChatId}
           onToggleSidebar={() => setSidebarOpen(!isSidebarOpen)}
+          isGuest={false}
         />
       </div>
     );
@@ -210,6 +208,7 @@ ${aboutContext}
                 isLoading={isLoading || totalLoading}
                 activeChatId={null}
                 onToggleSidebar={() => {}}
+                isGuest={true}
             />
         </div>
     );

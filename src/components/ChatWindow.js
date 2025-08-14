@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FaBars } from 'react-icons/fa';
 import './ChatPage.css';
 
-const ChatWindow = ({ messages, onSendMessage, isLoading, activeChatId, onToggleSidebar }) => {
+const ChatWindow = ({ messages, onSendMessage, isLoading, activeChatId, onToggleSidebar, isGuest }) => {
   const [input, setInput] = useState('');
   const messagesEndRef = useRef(null); // Ref for the anchor div
 
@@ -40,9 +40,11 @@ const ChatWindow = ({ messages, onSendMessage, isLoading, activeChatId, onToggle
   return (
     <div className="chat-window-main">
        <div className="beentalk-header">
-        <button className="sidebar-toggle-btn" onClick={onToggleSidebar}>
-          <FaBars />
-        </button>
+        { !isGuest && (
+          <button className="sidebar-toggle-btn" onClick={onToggleSidebar}>
+            <FaBars />
+          </button>
+        )}
         <h2>彬Talk</h2>
         <p>有想知道的都等你來問！</p>
       </div>
