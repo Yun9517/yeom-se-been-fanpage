@@ -1,11 +1,19 @@
-import React from 'react';
-import { Container, Row, Col, OverlayTrigger, Tooltip, Alert } from 'react-bootstrap';
+import React, { useEffect } from 'react';
+import { Container, Row, Col, OverlayTrigger, Tooltip, Alert, Card } from 'react-bootstrap';
 import ImageWithFallback from './ImageWithFallback'; // Import our custom component
 import LoadingSpinner from './LoadingSpinner';
 import useFirestoreDocument from '../hooks/useFirestoreDocument';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 const About = () => {
   const { data: aboutContent, loading, error } = useFirestoreDocument('pages', 'about');
+
+  useEffect(() => {
+    if (!loading && aboutContent) {
+      AOS.refresh();
+    }
+  }, [loading, aboutContent]);
 
   if (loading) {
     return (
@@ -50,10 +58,14 @@ const About = () => {
               </OverlayTrigger>
             </Col>
             <Col md={6} data-aos="fade-left">
-              <h2 className="text-white">{aboutContent.section2022Title}</h2>
-              <p className="text-white">
-                {aboutContent.section2022Content}
-              </p>
+              <Card className="bg-transparent border-0 text-white">
+                <Card.Body>
+                  <Card.Title as="h2" className="mb-4">{aboutContent.section2022Title}</Card.Title>
+                  <Card.Text>
+                    {aboutContent.section2022Content}
+                  </Card.Text>
+                </Card.Body>
+              </Card>
             </Col>
           </Row>
         </Container>
@@ -86,10 +98,14 @@ const About = () => {
               </OverlayTrigger>
             </Col>
             <Col md={6} data-aos="fade-right">
-              <h2 className="text-white">{aboutContent.section2023Title}</h2>
-              <p className="text-white">
-                {aboutContent.section2023Content}
-              </p>
+              <Card className="bg-transparent border-0 text-white">
+                <Card.Body>
+                  <Card.Title as="h2" className="mb-4">{aboutContent.section2023Title}</Card.Title>
+                  <Card.Text>
+                    {aboutContent.section2023Content}
+                  </Card.Text>
+                </Card.Body>
+              </Card>
             </Col>
           </Row>
         </Container>
@@ -132,10 +148,14 @@ const About = () => {
               </OverlayTrigger>
             </Col>
             <Col md={6}>
-              <h2 className="text-white">{aboutContent.section2025Title}</h2>
-              <p className="text-white">
-                {aboutContent.section2025Content}
-              </p>
+              <Card className="bg-transparent border-0 text-white">
+                <Card.Body>
+                  <Card.Title as="h2" className="mb-4">{aboutContent.section2025Title}</Card.Title>
+                  <Card.Text>
+                    {aboutContent.section2025Content}
+                  </Card.Text>
+                </Card.Body>
+              </Card>
             </Col>
           </Row>
         </Container>

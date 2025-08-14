@@ -1,15 +1,16 @@
 // src/components/NewsItem.js
 import React from 'react';
-import './NewsItem.css';
 
-function NewsItem({ date, title, content }) {
+const NewsItem = ({ title, date, content }) => {
   return (
-    <div className="news-item">
-      <span className="news-date">{date}</span>
-      <span className="news-title">{title}</span>
-      <p className="news-content">{content}</p>
+    // 使用 bg-light, border, rounded, p-3, mb-4, shadow-sm 來模擬您原來的CSS
+    <div className="bg-light rounded-3 p-3 mb-4 shadow-sm text-dark h-100 border-start border-primary border-5">
+      <h5 className="fw-bold">{title}</h5>
+      <small className="text-muted">{new Date(date).toLocaleDateString()}</small>
+      <p className="mt-2 mb-0">{content}</p>
     </div>
   );
-}
+};
 
-export default React.memo(NewsItem);
+export default NewsItem;
+

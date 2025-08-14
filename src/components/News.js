@@ -24,23 +24,24 @@ const News = () => {
         {/* Manual News Section */}
         <div className="mb-5">
           <h2 className="text-white">站內消息</h2>
-          <div className="news-list">
-            {loading && <LoadingSpinner loading={loading} />}
-            {error && <Alert variant="danger">{error}</Alert>}
-            {!loading && !error && newsData.length === 0 && (
-              <div className="text-center text-white-50">
-                <p>目前沒有最新消息。</p>
-              </div>
-            )}
+          {loading && <LoadingSpinner loading={loading} />}
+          {error && <Alert variant="danger">{error}</Alert>}
+          {!loading && !error && newsData.length === 0 && (
+            <div className="text-center text-white-50">
+              <p>目前沒有最新消息。</p>
+            </div>
+          )}
+          <Row className="g-4">
             {!loading && !error && newsData.length > 0 && visibleNews.map(item => (
-              <NewsItem
-                key={item.id}
-                date={item.date}
-                title={item.title}
-                content={item.content}
-              />
+              <Col key={item.id} md={6} lg={4}>
+                <NewsItem
+                  date={item.date}
+                  title={item.title}
+                  content={item.content}
+                />
+              </Col>
             ))}
-          </div>
+          </Row>
           {newsData.length > 3 && !loading && !error && (
             <div className="text-center mt-4">
               <Button variant="outline-light" onClick={() => setIsExpanded(!isExpanded)}>
