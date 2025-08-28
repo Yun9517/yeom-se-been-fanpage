@@ -90,9 +90,22 @@ const ChatRoom = () => {
     e.preventDefault();
     if (newMessage.trim() === '' || !user) return;
 
+    // Simple profanity filter
+    const filterProfanity = (text) => {
+      const badWords = ['白癡', '約跑', '想色色', '想色']; // Example list
+      let filteredText = text;
+      badWords.forEach(word => {
+        const regex = new RegExp(word, 'gi');
+        filteredText = filteredText.replace(regex, '***');
+      });
+      return filteredText;
+    };
+
+    const filteredMessage = filterProfanity(newMessage);
+
     try {
       await addDoc(collection(db, 'messages'), {
-        text: newMessage,
+        text: filteredMessage,
         createdAt: serverTimestamp(),
         userId: user.uid,
         userName: user.displayName || '匿名用戶',

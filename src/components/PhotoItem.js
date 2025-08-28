@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Col } from 'react-bootstrap';
-import ImageWithFallback from './ImageWithFallback';
+
 
 function PhotoItem({ photo, index, onClick }) {
   return (
