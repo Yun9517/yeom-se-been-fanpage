@@ -78,6 +78,16 @@ h2 {
   background: linear-gradient(to right, #004B97, #D9006C); /* Blue and Wine Red */
 }
 
+.section-win-zhuang {
+  background: linear-gradient(135deg, #006400, #4B0082); /* Dark Green to Indigo */
+}
+
+/* 提升內容層級，確保不被背景覆蓋 */
+.section-win-zhuang .row {
+  position: relative;
+  z-index: 2;
+}
+
 .about-section img {
   max-width: 100%;
   max-height: 400px; /* Add max-height to control size on large screens */

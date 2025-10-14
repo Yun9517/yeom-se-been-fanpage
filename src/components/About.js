@@ -160,6 +160,32 @@ const About = () => {
           </Row>
         </Container>
       </section>
+
+      {/* 2026 台中連莊時期 */}
+      <section className="about-section section-win-zhuang py-5">
+        <Container>
+          <Row className="align-items-center flex-md-row-reverse">
+            <Col md={6}>
+              <OverlayTrigger
+                placement="top"
+                overlay={<Tooltip id="tooltip-win-zhuang">加盟台中連莊，開啟排球應援新篇章</Tooltip>}
+              >
+                <ImageWithFallback filename="yeomsebeen_2026_tc_01.jpg" fluid rounded />
+              </OverlayTrigger>
+            </Col>
+            <Col md={6}>
+              <Card className="bg-transparent border-0 text-white">
+                <Card.Body>
+                  <Card.Title as="h2" className="mb-4">{aboutContent.section2026Title || '標題讀取中...'}</Card.Title>
+                  <Card.Text>
+                    {aboutContent.section2026Content || '內容讀取中，請檢查 Firebase 資料庫欄位...'}
+                  </Card.Text>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+        </Container>
+      </section>
     </div>
   );
 };

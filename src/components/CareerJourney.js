@@ -1,41 +1,44 @@
 import React, { useEffect } from 'react';
-import { Container, Row, Col, Card } from 'react-bootstrap';
+import { Container, Row, Col, Card, Alert } from 'react-bootstrap';
 import ImageWithFallback from './ImageWithFallback'; // Import our custom component
+import LoadingSpinner from './LoadingSpinner';
+import useFirestoreDocument from '../hooks/useFirestoreDocument';
 import './CareerJourney.css';
 import AOS from 'aos'; // Import AOS
 import 'aos/dist/aos.css';
 
 const CareerJourney = () => {
-    const cheerleadingExperience = [
-    {
-      year: '2022',
-      teams: 'KEPCO Vixtorm Volleyball Team, Hana Bank Women\'s Basketball Team',
-      image: 'yeomsebeen_2022_volleyball_02.jpg',
-      fade: 'fade-right'
-    },
-    {
-    year: '2023',
-      teams: '起亞虎, 高陽索諾天空槍手',
-      image: 'yeomsebeen_2023_kia_02.jpg',
-      fade: 'fade-left'
-    },
-    {
-      year: '2024',
-      teams: '起亞虎, 安養正官庄赤紅火箭',
-      image: 'yeomsebeen_2023_kia_03.jpg',
-      fade: 'fade-right'
-    },
-    {
-      year: '2025',
-      teams: '樂天桃猿, NC恐龍',
-      image: 'yeomsebeen_2025_nc_01.jpg',
-      fade: 'fade-left'
-    }
-  ];
+  const { data: pageContent, loading, error } = useFirestoreDocument('pages', 'careerJourney');
+
+
 
   useEffect(() => {
     AOS.refresh(); // Refresh AOS after component mounts
   }, []); // Empty dependency array to run once after initial render
+
+  if (loading) {
+    return (
+      <Container className="mt-5 text-center">
+        <LoadingSpinner loading={true} />
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container className="mt-5">
+        <Alert variant="danger">{error}</Alert>
+      </Container>
+    );
+  }
+
+  if (!pageContent) {
+    return (
+      <Container className="mt-5">
+        <Alert variant="info">找不到生涯旅程頁面的內容。</Alert>
+      </Container>
+    );
+  } 
 
   return (
     <div className="profile-background">
@@ -51,10 +54,10 @@ const CareerJourney = () => {
               </Card.Body>
 
               <div className="profile-section">
-                <h3 className="section-title">基本資料</h3>
-                <p><strong>出生:</strong> 2002年4月23日, 韓國首爾</p>
-                <p><strong>學歷:</strong> 白石藝術大學 實用音樂系</p>
-                <p><strong>出道日期:</strong> 2022年</p>
+                <h3 className="section-title">{pageContent.bioTitle || '基本資料'}</h3>
+                <p><strong>{pageContent.birthLabel || '出生:'}</strong> {pageContent.birthValue}</p>
+                <p><strong>{pageContent.educationLabel || '學歷:'}</strong> {pageContent.educationValue}</p>
+                <p><strong>{pageContent.debutLabel || '出道日期:'}</strong> {pageContent.debutValue}</p>
               </div>
 
               {/* --- 啦啦隊經歷 Timeline --- */}
@@ -62,7 +65,7 @@ const CareerJourney = () => {
                 <h3 className="section-title">啦啦隊經歷</h3>
                 <div id="profile-timeline" className="mt-4">
                   <div className="timeline">
-                    {cheerleadingExperience.map((item, index) => (
+                    {pageContent.timeline && pageContent.timeline.map((item, index) => (
                       <div key={index} className={`timeline-item ${index % 2 === 0 ? 'left' : 'right'}`}>
                         <div className="timeline-content">
                           <span className="timeline-year">{item.year}</span>
