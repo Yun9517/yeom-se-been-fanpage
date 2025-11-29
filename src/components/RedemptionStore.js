@@ -35,7 +35,9 @@ const RedemptionStore = () => {
 
   const allRegularItemsUnlocked = useMemo(() => {
     if (!user || user.isAnonymous) return false;
-    return regularRedeemableItems.every(item => userAchievements[item.id]);
+    // Exclude bonus items from the master achievement unlock condition
+    const coreItems = regularRedeemableItems.filter(item => !item.isBonus);
+    return coreItems.every(item => userAchievements[item.id]);
   }, [user, userAchievements, regularRedeemableItems]);
 
   const handleRedeem = async (item) => {
