@@ -101,7 +101,7 @@ const ChatPage = () => {
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     
     // Dynamically build context from Firestore
     let aboutContext = '';
