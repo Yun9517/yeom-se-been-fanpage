@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Alert } from 'react-bootstrap';
 import ImageWithFallback from './ImageWithFallback'; // Import our custom component
 import LoadingSpinner from './LoadingSpinner';
@@ -9,12 +9,18 @@ import 'aos/dist/aos.css';
 
 const CareerJourney = () => {
   const { data: pageContent, loading, error } = useFirestoreDocument('pages', 'careerJourney');
-
-
+  const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
     AOS.refresh(); // Refresh AOS after component mounts
-  }, []); // Empty dependency array to run once after initial render
+    if (!loading && pageContent) {
+      setAnimate(false);
+      const timer = setTimeout(() => {
+        setAnimate(true);
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [pageContent, loading]);
 
   if (loading) {
     return (
@@ -64,15 +70,33 @@ const CareerJourney = () => {
               <div className="profile-section">
                 <h3 className="section-title">啦啦隊經歷</h3>
                 <div id="profile-timeline" className="mt-4">
-                  <div className="timeline">
-                    {pageContent.timeline && pageContent.timeline.map((item, index) => (
-                      <div key={index} className={`timeline-item ${index % 2 === 0 ? 'left' : 'right'}`}>
-                        <div className="timeline-content">
-                          <span className="timeline-year">{item.year}</span>
-                          <p className="timeline-teams">{item.teams}</p>
+                  <div className={`timeline ${animate ? 'animate-start' : ''}`}>
+                    {pageContent.timeline && pageContent.timeline.map((item, index) => {
+                      const yearStr = String(item.year || '');
+                      let colorClass = `color-${index % 4}`;
+                      if (yearStr.includes('2022')) {
+                        colorClass = 'color-2022';
+                      } else if (yearStr.includes('2023') || yearStr.includes('2024')) {
+                        colorClass = 'color-2023';
+                      } else if (yearStr.includes('2025')) {
+                        colorClass = 'color-2025';
+                      } else if (yearStr.includes('2026') || yearStr.includes('win-zhuang') || yearStr.includes('連莊')) {
+                        colorClass = 'color-2026';
+                      }
+
+                      return (
+                        <div 
+                          key={index} 
+                          className={`timeline-item ${index % 2 === 0 ? 'left' : 'right'} ${colorClass}`}
+                          style={{ animationDelay: `${index * 0.15}s` }}
+                        >
+                          <div className="timeline-content">
+                            <span className="timeline-year">{item.year}</span>
+                            <p className="timeline-teams">{item.teams}</p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               </div>
